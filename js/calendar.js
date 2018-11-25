@@ -17,7 +17,7 @@ $(document).ready(function() {
             document.getElementById('titleModifyEvent').innerHTML = 'צור אירוע חדש';
             document.getElementById('startDate').value = start._d.toDateString();
             document.getElementById('title').value = '';
-            document.getElementById('endDate').value = end._d.getFullYear().toString() + '-' + ((end._d.getMonth())+1).toString() + '-' + end._d.getDate().toString();
+            document.getElementById('endDate').value = end._d.toDateString();
         },
         eventClick: (event) => {
             currentEvent = event;
