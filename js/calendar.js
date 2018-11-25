@@ -1,3 +1,4 @@
+let currentEvent;
 $(document).ready(function() {
 
     $('#calendar').fullCalendar({
@@ -11,23 +12,29 @@ $(document).ready(function() {
         navLinks: true, // can click day/week names to navigate views
         selectable: true,
         selectHelper: true,
-        function( isLoading, view ) {
-            isLoading = true;
+        select: function (start, end, allDay) {
+            $('#createEventModal').modal('show');
+            document.getElementById('titleModifyEvent').innerHTML = 'צור אירוע חדש';
+            document.getElementById('startDate').value = start._d.toDateString();
+            document.getElementById('title').value = '';
+            document.getElementById('endDate').value = end._d.getFullYear().toString() + '-' + ((end._d.getMonth())+1).toString() + '-' + end._d.getDate().toString();
         },
-        select: function(start, end) {
-            var title = prompt('Event Title:');
-            var eventData;
-            if (title) {
-                eventData = {
-                    title: title,
-                    start: start,
-                    end: end
-                };
-                $('#calendar').fullCalendar('renderEvent', eventData, true); // stick? = true
-            }
-            $('#calendar').fullCalendar('unselect');
+        eventClick: (event) => {
+            currentEvent = event;
+            $('#createEventModal').modal('show');
+            document.getElementById('titleModifyEvent').innerHTML = 'ערוך אירוע';
+            document.getElementById('startDate').value = event.start._d.getFullYear().toString() + '-' + ((event.start._d.getMonth())+1).toString() + '-' + event.start._d.getDate().toString();
+            document.getElementById('title').value = event.title.toString();
+            if(event.end)
+                document.getElementById('endDate').value = event.end._d.getFullYear().toString() + '-' + ((event.end._d.getMonth())+1).toString() + '-' + event.end._d.getDate().toString();
+            else
+                document.getElementById('endDate').value = '';
+
         },
         editable: true,
+        eventDrop: (event) => {
+            console.log(event.title);
+        },
         eventLimit: true, // allow "more" link when too many events
         events: [
             {
@@ -87,5 +94,33 @@ $(document).ready(function() {
             }
         ]
     });
+
+    $('#submitButton').on('click', () => {
+        if(document.getElementById('titleModifyEvent').innerHTML === 'ערוך אירוע')
+            editEvent();
+        if(document.getElementById('titleModifyEvent').innerHTML === 'צור אירוע חדש')
+            addEvent();
+    });
+
+    function addEvent() {
+        $("#createEventModal").modal('hide');
+        $("#calendar").fullCalendar('renderEvent',
+            {
+                title: $('#title').val(),
+                start: moment($('#startDate').val()),
+                end: moment($('#endDate').val()),
+                allDay: true
+            },
+            true);
+    }
+    function editEvent() {
+        $("#createEventModal").modal('hide');
+        currentEvent.title = $('#title').val();
+        currentEvent.start = $('#startDate').val();
+        currentEvent.end = $('#endDate').val();
+
+        $('#calendar').fullCalendar('updateEvent', currentEvent);
+
+    }
 
 });
