@@ -1,14 +1,14 @@
-xhttp = new XMLHttpRequest();
 function login(email,password) {
-    let xhr = new XMLHttpRequest(),
+    let xhttp = new XMLHttpRequest(),
         method = "POST",
         url = "";
 
-    xhr.open(method, url, true);
-    xhr.onreadystatechange = function () {
-        if(xhr.readyState === 4 && xhr.status === 200) {
-            console.log(xhr.responseText);
-        }
+    xhttp.open(method, url, true);
+    xhttp.onreadystatechange = function () {
+        if(xhttp.readyState === 4 && xhttp.status === 200) {
+            window.location.replace("index.html");
+    }
     };
-    xhr.send("email=" + email + "&password=" + password);
+    xhttp.send("email=" + email + "&password=" + password);
 }
+// localhost:3000/login
