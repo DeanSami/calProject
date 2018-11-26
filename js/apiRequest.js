@@ -19,9 +19,9 @@ function login(username, password) {
         if(xhttp.readyState === 4 && xhttp.status === 200) {
             let response = JSON.parse(xhttp.responseText);
             if (response) {
-                console.log(response.success);
+                console.log(response);
                 if (response.success === "true") window.location.assign('index.html');
-                else {document.getElementById("error").innerHTML("<h2>שגיאה</h2>");}
+                else {document.getElementById("error").innerHTML = "<h2>שגיאה</h2>";}
             }
             
         }

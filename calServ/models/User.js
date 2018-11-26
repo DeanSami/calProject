@@ -34,7 +34,8 @@ let UserSchema = mongoose.Schema({
         {
             username: String
         }
-    ]
+    ],
+    token: String
 });
 
 let User = module.exports = mongoose.model('User', UserSchema, 'users');
