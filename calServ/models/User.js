@@ -43,9 +43,9 @@ module.exports.createUser = (newUser, callback) => {
     newUser.save(callback);
 };
 
-module.exports.getUserByUsername = (username, callback) => {
+module.exports.getUserByUsername = (username) => {
     let query = {username: username};
-    User.findOne(query, callback);
+    return User.findOne(query);
 };
 
 module.exports.comparePassword = (password1, password2) => {

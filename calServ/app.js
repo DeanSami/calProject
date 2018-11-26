@@ -5,6 +5,7 @@ const passport = require('passport');
 const localStrategy = require('passport-local');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const cors = require('cors');
 
 let User = require('./models/User');
 let Event = require('./models/Event');
@@ -21,6 +22,8 @@ app.set('port', process.env.PORT || 3000);
 app.use(bodyParser.json());
 
 app.use(cookieParser());
+
+app.use(cors());
 
 app.use(session({
     secret: 'secret',
@@ -115,10 +118,16 @@ app.get('/login', ensureUnAuthenticated, (req, res) => {
     res.end('דף התחברות');
 });
 
-app.post('/login', (req, res) => {
-    console.log(req.body.userDetails);
-    // if (User.findOne({username: req.body.username}))
-    res.status(200).header("Access-Control-Allow-Origin", "*").send(JSON.stringify('success'));
+app.post('/login', async (req, res) => {
+    let response = {
+        success: "true"
+    };
+    
+    let user = await User.getUserByUsername(req.body.username);
+    if (user) {
+        response.success = "false";
+    }
+    res.status(200).header("Access-Control-Allow-Origin", "*").header("Content-Type", "application/json").json(response);
 });
 
 // app.post('/login', passport.authenticate('local', {successRedirect:'/', failureRedirect:'/login'}),(req, res) => {
