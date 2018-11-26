@@ -75,22 +75,30 @@ app.post('/login', async (req, res) => {
     
     let user = await User.findOne({ username: req.body.username });
     if (user) {
-        user.loggedInAt.push({loginTime: Date.now()});
-        
-        let cert = fs.readFileSync('private.key');
-        let token = await jwt.sign({username: user.username, loggedInAt: Date.now().toString() }, cert, { algorithm: 'RS256', expiresIn: '1h'});
-
-        if (token) {
-            user.token = token;
-            response.token = token;
-            response.username = user.username;
-            response.success = "true";
+        console.log("user input password: " + req.body.password + ". user actual password: " + user.password);
+        if (req.body.password == user.password) {
+            let cert = fs.readFileSync('private.key');
+            let token = await jwt.sign({username: user.username, loggedInAt: Date.now().toString() }, cert, { algorithm: 'RS256', expiresIn: '1h'});
+            
+            if (token) {
+                user.loggedInAt.push({loginTime: Date.now()});
+                user.token = token;
+                response.token = token;
+                response.username = user.username;
+                response.success = "true";
+                response.message = "משתמש התחבר"
+                user.save((err) => {
+                    if (err) throw err;
+                });
+            } else {
+                response.message = "שגיאה ביצירת מפתח";
+            }
+        } else {
+            response.message = "סיסמאות לא תואמות";
         }
-        user.save((err) => {
-            if (err) throw err;
-        });
-    }
-    res.status(200).header("Access-Control-Allow-Origin", "*").header("Content-Type", "application/json").json(response);
+    } else response.message = "לא נמצא משתמש";
+
+    res.json(response);
 });
 
 // CAL GET - returns all events of requesting user
