@@ -115,23 +115,32 @@ app.get('/calendar', async (req, res) => {
 });
 
 // USER ADD EVENT
-app.post('/calendar', (req, res) => {
-    let newEvent = new Event({
-        eventName: req.body.eventName,
-        eventStart: req.body.eventStart,
-        eventEnd: req.body.eventEnd,
-        eventDetails: req.body.eventDetails,
-        owner: req.body.user._id
-    });
-    newEvent.save((err) => {
-        if (err) res.send('שגיאה');
-        else res.send('אירוע חדש נוצר');
-    })
+app.post('/calendar', async (req, res) => {
+    let response = {
+        success: "false"
+    };
+    let user = await User.findOne({username: req.body.username, token: req.body.token});
+    if (user) {
+        let newEvent = new Event({
+            eventName: req.body.eventName,
+            eventStart: req.body.eventStart,
+            eventEnd: req.body.eventEnd,
+            eventDetails: req.body.eventDetails,
+            owner: user._id
+        });
+        let promise = await newEvent.save();
+        if (promise) response.success = "true";
+    }
+    res.json(response);
 });
 
 // USER EDIT EVENT
-app.post('/calendar/:id', (req, res) => {
+app.post('/calendar/:id', async (req, res) => {
     let event;
+    let user = await User.findOne({username: req.body.username, token: req.body.token});
+    if (user) {
+        let events = user.userEvents
+    }
     req.user.userEvents.forEach((element) => {
         if (element._id == req.params.id) event = element;
     });
