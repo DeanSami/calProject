@@ -93,7 +93,7 @@ app.post('/login', async (req, res) => {
     res.status(200).header("Access-Control-Allow-Origin", "*").header("Content-Type", "application/json").json(response);
 });
 
-
+// CAL GET - returns all events of requesting user
 app.get('/calendar', async (req, res) => {
     let username = req.body.username;
     let userToken = req.body.token;
@@ -172,6 +172,34 @@ app.post('/calendar/:id', async (req, res) => {
                 response.success = "true";
             }
         }
+    }
+    res.json(response);
+});
+
+// USER GIVE PERMISSIONS
+app.post('/givepermissions', async (req, res) => {
+    let response = {
+        success: "false"
+    };
+    let user = await User.findOne({username: req.body.username, token: req.body.token});
+    if (user) {
+        user.iPermit.push(req.body.permitedUserID);
+        user.save();
+        response.success = "true";
+    }
+    res.json(response);
+});
+
+app.delete('/removepermission/:id', async (req, res) => {
+    let response = {
+        success: "false"
+    };
+    let user = await User.findOne({username: req.body.username, token: req.body.token});
+    if (user) {
+        let index = user.iPermit.indexOf(req.params.id);
+        user.iPermit.splice(index, 1);
+        user.save();
+        response.success = "true";
     }
     res.json(response);
 });

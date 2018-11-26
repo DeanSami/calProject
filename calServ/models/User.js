@@ -7,34 +7,10 @@ let UserSchema = mongoose.Schema({
     fullname: String,
     permission: String,
     registeredAt: Date,
-    loggedInAt: [ 
-        {
-            loginTime: Date
-        }
-    ],
-    userEvents: [
-        {
-            eventName: String,
-            eventStart: String,
-            eventEnd: Date,
-            eventDetails: String
-        }
-    ],
-    globalEvents: [
-        {
-            event: String
-        }
-    ],
-    iPermit: [
-        {
-            username: String
-        }
-    ],
-    theyPermit: [
-        {
-            username: String
-        }
-    ],
+    loggedInAt: Array,
+    globalEvents: Array,
+    iPermit: Array,
+    theyPermit: Array,
     token: String
 });
 
