@@ -42,7 +42,7 @@ app.post('/register', (req, res) => {
     // check if username doesnt exist in DB
     User.findOne({username: userDetails.username}, (err, user) => {
         if (user) res.end('משתמש כבר רשום');
-            if (userDetails.password != password2) {
+        else if (userDetails.password != password2) {
                 res.end('סיסמאות לא תואמות');
             } else {
                 let newUser = new User({
@@ -94,7 +94,24 @@ app.post('/login', async (req, res) => {
 });
 
 
-app.get('/calendar', (req, res) => {
+app.get('/calendar', async (req, res) => {
+    let username = req.body.username;
+    let userToken = req.body.token;
+    let user = await User.findOne({username: username, token: userToken});
+    let response = {
+        success: "false"
+    };
+    if (user) {
+        let events = await Event.find().where('owner').equals(user._id).exec();
+        if (events) {
+            response.events = [];
+            events.forEach((event) => {
+                response.success = "true";
+                response.events.push(event);
+            });
+        }                
+    }
+    res.json(response);
 });
 
 // USER ADD EVENT
@@ -104,7 +121,7 @@ app.post('/calendar', (req, res) => {
         eventStart: req.body.eventStart,
         eventEnd: req.body.eventEnd,
         eventDetails: req.body.eventDetails,
-        owner: req.user._id
+        owner: req.body.user._id
     });
     newEvent.save((err) => {
         if (err) res.send('שגיאה');
