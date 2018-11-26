@@ -1,7 +1,7 @@
 function login(email,password) {
     let xhttp = new XMLHttpRequest(),
         method = "POST",
-        url = "";
+        url = "localhost:3000/login";
 
     xhttp.open(method, url, true);
     xhttp.onreadystatechange = function () {
