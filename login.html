@@ -2,8 +2,7 @@
 <head>
     <meta charset="utf-8">
     <title>calendar - login</title>
-    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css"
-          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="lib/jquery.min.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.js"></script>
@@ -12,9 +11,10 @@
 </head>
 <body>
 <div class="signup-form">
-    <form action="" method="post" onsubmit="login(username.value,password.value)">
+    <form>
     <h2>התחבר</h2>
     <p class="lead"></p>
+    <div id="error"></div>
     <div class="form-group">
         <div class="input-group">
             <span class="input-group-addon"><i class="fa fa-user"></i></span>
@@ -28,7 +28,7 @@
         </div>
     </div>
     <div class="form-group">
-        <button type="submit" onclick="login(username.value,password.value)" class="btn btn-primary btn-block btn-lg">הירשם</button>
+        <button onclick="login(username.value,password.value)" type="button" class="btn btn-primary btn-block btn-lg">הירשם</button>
     </div>
     <p class="small text-center"><br><a href="#"></a><a href="#"></a></p>
 </form>
