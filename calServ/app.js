@@ -1,15 +1,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const passport = require('passport');
-const localStrategy = require('passport-local');
-const cookieParser = require('cookie-parser');
-const session = require('express-session');
+const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const fs = require('fs');
 
 let User = require('./models/User');
 let Event = require('./models/Event');
 
-mongoose.connect('mongodb://localhost/cal', { useNewUrlParser: true });
+const dbURI = "mongodb://deanz:D305622375m@ds117334.mlab.com:17334/calendarproject"
+
+mongoose.connect(dbURI, { useNewUrlParser: true });
 
 let db = mongoose.connection;
 
@@ -20,64 +21,15 @@ app.set('port', process.env.PORT || 3000);
 // parse application/json
 app.use(bodyParser.json());
 
-app.use(cookieParser());
+app.use(cors());
 
-app.use(session({
-    secret: 'secret',
-    saveUninitialized: true,
-    resave: true
-}));
-
-// Passport Init
-app.use(passport.initialize());
-app.use(passport.session());
-
-passport.use(new localStrategy((username, password, done) => {
-    User.find({username: username}, (err, user) => {
-        if (err) throw err;
-        if (!user) {
-            return done(null, false, { message: 'משתמש לא קיים'});
-        }
-        if (User.comparePassword(password, user[0].password)) {
-            return done(null, user[0]);
-        } else {
-            return done(null, false, { message: 'סיסמא לא תואמת'});
-        }
-    });
-}));
-
-passport.serializeUser((user, done) => {
-    done(null, user.id);
-});
-
-passport.deserializeUser((id, done) => {
-    User.getUserById(id, (err, user) => {
-        done(err, user);
-    });
-});
-
-function ensureAuthenticated (req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    } else {
-        res.end('בבקשה התחבר');
-    }
-};
-
-function ensureUnAuthenticated (req, res, next) {
-    if (!req.isAuthenticated()) {
-        return next();
-    } else {
-        res.end('משתמש מחובר');
-    }
-};
-
-// REGISTER
-app.get('/register', ensureUnAuthenticated, (req, res) => {
+// REGISTER GET - gets register page
+app.get('/register', (req, res) => {
     res.end('הרשמה');
 });
 
-app.post('/register', ensureUnAuthenticated, (req, res) => {
+// REGISTER POST - checks validity of username input and if valid put them to DB
+app.post('/register', (req, res) => {
     let password2 = req.body.password2;
     let userDetails = {
         username: req.body.username,
@@ -90,8 +42,7 @@ app.post('/register', ensureUnAuthenticated, (req, res) => {
     // check if username doesnt exist in DB
     User.findOne({username: userDetails.username}, (err, user) => {
         if (user) res.end('משתמש כבר רשום');
-        else {
-            if (userDetails.password != password2) {
+        else if (userDetails.password != password2) {
                 res.end('סיסמאות לא תואמות');
             } else {
                 let newUser = new User({
@@ -99,98 +50,166 @@ app.post('/register', ensureUnAuthenticated, (req, res) => {
                     password: userDetails.password,
                     fullname: userDetails.fullname,
                     permission: 'user',
-                    registeredAt: Date.now()
+                    registeredAt: Date.now(),
+                    token: null
                 });
-                User.createUser(newUser, (err) => {
-                    if (err) res.end('שגיאה');
-                    else res.end('משתמש נרשם');
+                newUser.save((err) => {
+                    if (err) throw err;
+                    res.end('משתמש חדש נרשם');
                 });
             }
         }
-    })
+    );
 });
 
-// LOGIN
-app.get('/login', ensureUnAuthenticated, (req, res) => {
+// LOGIN GET - gets the login page
+app.get('/login', (req, res) => {
     res.end('דף התחברות');
 });
 
-app.post('/login', (req, res) => {
-    console.log(req.body.userDetails);
-    // if (User.findOne({username: req.body.username}))
-    res.status(200).header("Access-Control-Allow-Origin", "*").send(JSON.stringify('success'));
+// LOGIN POST - should create new token and save it, both server and client side
+app.post('/login', async (req, res) => {
+    var response = {
+        success: "false"
+    };
+    
+    let user = await User.findOne({ username: req.body.username });
+    if (user) {
+        console.log("user input password: " + req.body.password + ". user actual password: " + user.password);
+        if (req.body.password == user.password) {
+            let cert = fs.readFileSync('private.key');
+            let token = await jwt.sign({username: user.username, loggedInAt: Date.now().toString() }, cert, { algorithm: 'RS256', expiresIn: '1h'});
+            
+            if (token) {
+                user.loggedInAt.push({loginTime: Date.now()});
+                user.token = token;
+                response.token = token;
+                response.username = user.username;
+                response.success = "true";
+                response.message = "משתמש התחבר"
+                user.save((err) => {
+                    if (err) throw err;
+                });
+            } else {
+                response.message = "שגיאה ביצירת מפתח";
+            }
+        } else {
+            response.message = "סיסמאות לא תואמות";
+        }
+    } else response.message = "לא נמצא משתמש";
+
+    res.json(response);
 });
 
-// app.post('/login', passport.authenticate('local', {successRedirect:'/', failureRedirect:'/login'}),(req, res) => {
-//    res.end(message);
-// });
-
-// USER GET EVENTS
-// app.get('/calendar', ensureAuthenticated, (req, res) => {
-//     res.end('username:' + req.user.userEvents);
-// });
-
-app.get('/calendar', ensureAuthenticated, (req, res) => {
-    let query = { owner: req.user._id };
-    Event.find(query, (err, events) => {
-        if (err) res.end("שגיאה");
-        else {
-            events.forEach((element) => {
-                console.log(element);
+// CAL GET - returns all events of requesting user
+app.get('/calendar', async (req, res) => {
+    let username = req.body.username;
+    let userToken = req.body.token;
+    let user = await User.findOne({username: username, token: userToken});
+    let response = {
+        success: "false"
+    };
+    if (user) {
+        let events = await Event.find().where('owner').equals(user._id).exec();
+        if (events) {
+            response.events = [];
+            events.forEach((event) => {
+                response.success = "true";
+                response.events.push(event);
             });
-            res.end("סוף");
-        }
-    })
+        }                
+    }
+    res.json(response);
 });
 
 // USER ADD EVENT
-app.post('/calendar', ensureAuthenticated, (req, res) => {
-    let newEvent = new Event({
-        eventName: req.body.eventName,
-        eventStart: req.body.eventStart,
-        eventEnd: req.body.eventEnd,
-        eventDetails: req.body.eventDetails,
-        owner: req.user._id
-    });
-    newEvent.save((err) => {
-        if (err) res.send('שגיאה');
-        else res.send('אירוע חדש נוצר');
-    })
-});
-
-// USER EDIT EVENT
-app.post('/calendar/:id', ensureAuthenticated, (req, res) => {
-    let event;
-    req.user.userEvents.forEach((element) => {
-        if (element._id == req.params.id) event = element;
-    });
-    if (event != null) {
-        event.eventName = req.body.eventName;
-        event.eventStart = req.body.eventStart;
-        event.eventEnd = req.body.eventEnd;
-        event.eventDetails = req.body.eventDetails;
+app.post('/calendar', async (req, res) => {
+    let response = {
+        success: "false"
+    };
+    let user = await User.findOne({username: req.body.username, token: req.body.token});
+    if (user) {
+        let newEvent = new Event({
+            eventName: req.body.eventName,
+            eventStart: req.body.eventStart,
+            eventEnd: req.body.eventEnd,
+            eventDetails: req.body.eventDetails,
+            owner: user._id
+        });
+        let promise = await newEvent.save();
+        if (promise) response.success = "true";
     }
-    req.user.save((err) => {
-        if (err) res.end('שגיאה');
-        else res.end('עודכן');
-    })
+    res.json(response);
 });
 
 // USER DELETE EVENT
-app.delete('/calendar/:id', (req, res) => {
-    // let event;
-    // req.user.userEvents.forEach((element) => {
-    //     if (element._id == req.params.id) event = element;
-    // });
-    // User.update(
-    //     {_id : req.user._id},
-    //     { $pull : { userEvents : { _id: req.params.id }}}
-    // );
-    db.collections.users.update(
-        { _id: req.user._id },
-        { $unset: { userEvents: { _id: req.params.id } } }
-    );
-    res.end('נמחק');
+app.delete('/calendar/:id', async (req, res) => {
+    let response = {
+        success: "false"
+    };
+    let user = await User.findOne({username: req.body.username, token: req.body.token});
+    if (user) {
+        let event = await Event.findOne({_id: req.params.id});
+        if (event) {
+            if (event.owner == user._id) {
+                Event.deleteOne({_id: req.params.id}).exec();
+                response.success = "true";
+            }
+        }
+    }
+    res.json(response);
+});
+
+// USER UPDATE EVENT
+app.post('/calendar/:id', async (req, res) => {
+    let response = {
+        success: "false"
+    }
+    let user = await User.findOne({username: req.body.username, token: req.body.token});
+    if (user) {
+        let event = await Event.findOne({_id: req.params.id});
+        
+        if (event) {
+            if (event.owner == user._id) {
+                Event.findOneAndUpdate({_id: req.params.id}, {
+                eventName: req.body.event.eventName,
+                eventStart: req.body.event.eventStart,
+                eventEnd: req.body.event.eventEnd,
+                eventDetails: req.body.event.eventDetails
+                }).exec();
+                response.success = "true";
+            }
+        }
+    }
+    res.json(response);
+});
+
+// USER GIVE PERMISSIONS
+app.post('/givepermissions', async (req, res) => {
+    let response = {
+        success: "false"
+    };
+    let user = await User.findOne({username: req.body.username, token: req.body.token});
+    if (user) {
+        user.iPermit.push(req.body.permitedUserID);
+        user.save();
+        response.success = "true";
+    }
+    res.json(response);
+});
+
+app.delete('/removepermission/:id', async (req, res) => {
+    let response = {
+        success: "false"
+    };
+    let user = await User.findOne({username: req.body.username, token: req.body.token});
+    if (user) {
+        let index = user.iPermit.indexOf(req.params.id);
+        user.iPermit.splice(index, 1);
+        user.save();
+        response.success = "true";
+    }
+    res.json(response);
 });
 
 app.listen(app.get('port'), () => {
