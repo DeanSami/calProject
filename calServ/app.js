@@ -134,35 +134,46 @@ app.post('/calendar', async (req, res) => {
     res.json(response);
 });
 
-// USER EDIT EVENT
-app.post('/calendar/:id', async (req, res) => {
-    let event;
+// USER DELETE EVENT
+app.delete('/calendar/:id', async (req, res) => {
+    let response = {
+        success: "false"
+    };
     let user = await User.findOne({username: req.body.username, token: req.body.token});
     if (user) {
-        let events = user.userEvents
+        let event = await Event.findOne({_id: req.params.id});
+        if (event) {
+            if (event.owner == user._id) {
+                Event.deleteOne({_id: req.params.id}).exec();
+                response.success = "true";
+            }
+        }
     }
-    req.user.userEvents.forEach((element) => {
-        if (element._id == req.params.id) event = element;
-    });
-    if (event != null) {
-        event.eventName = req.body.eventName;
-        event.eventStart = req.body.eventStart;
-        event.eventEnd = req.body.eventEnd;
-        event.eventDetails = req.body.eventDetails;
-    }
-    req.user.save((err) => {
-        if (err) res.end('שגיאה');
-        else res.end('עודכן');
-    })
+    res.json(response);
 });
 
-// USER DELETE EVENT
-app.delete('/calendar/:id', (req, res) => {
-    db.collections.users.update(
-        { _id: req.user._id },
-        { $unset: { userEvents: { _id: req.params.id } } }
-    );
-    res.end('נמחק');
+// USER UPDATE EVENT
+app.post('/calendar/:id', async (req, res) => {
+    let response = {
+        success: "false"
+    }
+    let user = await User.findOne({username: req.body.username, token: req.body.token});
+    if (user) {
+        let event = await Event.findOne({_id: req.params.id});
+        
+        if (event) {
+            if (event.owner == user._id) {
+                Event.findOneAndUpdate({_id: req.params.id}, {
+                eventName: req.body.event.eventName,
+                eventStart: req.body.event.eventStart,
+                eventEnd: req.body.event.eventEnd,
+                eventDetails: req.body.event.eventDetails
+                }).exec();
+                response.success = "true";
+            }
+        }
+    }
+    res.json(response);
 });
 
 app.listen(app.get('port'), () => {
