@@ -25,11 +25,19 @@ app.use(cors());
 
 // REGISTER GET - gets register page
 app.get('/register', (req, res) => {
-    res.end('הרשמה');
+    let response = {
+        success: "true",
+        msg: "register.html"
+    };
+    res.json(response);
 });
 
 // REGISTER POST - checks validity of username input and if valid put them to DB
-app.post('/register', (req, res) => {
+app.post('/register', async (req, res) => {
+    let response = {
+        success: "false"
+    }
+
     let password2 = req.body.password2;
     let userDetails = {
         username: req.body.username,
@@ -40,31 +48,35 @@ app.post('/register', (req, res) => {
     }
     
     // check if username doesnt exist in DB
-    User.findOne({username: userDetails.username}, (err, user) => {
-        if (user) res.end('משתמש כבר רשום');
-        else if (userDetails.password != password2) {
-                res.end('סיסמאות לא תואמות');
-            } else {
-                let newUser = new User({
-                    username: userDetails.username,
-                    password: userDetails.password,
-                    fullname: userDetails.fullname,
-                    permission: 'user',
-                    registeredAt: Date.now(),
-                    token: null
-                });
-                newUser.save((err) => {
-                    if (err) throw err;
-                    res.end('משתמש חדש נרשם');
-                });
-            }
+    let user = await User.findOne({username: userDetails.username});
+        if (user) {
+            response.msg = "משתמש כבר רשום";
         }
-    );
+        else if (userDetails.password == password2) {
+            response.success = "true";
+            let newUser = new User({
+                username: userDetails.username,
+                password: userDetails.password,
+                fullname: userDetails.fullname,
+                permission: 'user',
+                registeredAt: Date.now(),
+                token: null
+            });
+            await newUser.save();
+            response.msg = "משתמש חדש נרשם";
+        } else {
+            response.msg = "סיסמאות לא תואמות";
+        }
+    res.json(response)
 });
 
 // LOGIN GET - gets the login page
 app.get('/login', (req, res) => {
-    res.end('דף התחברות');
+    let response = {
+        success: "true",
+        msg: "login.html"
+    };
+    res.json(response);
 });
 
 // LOGIN POST - should create new token and save it, both server and client side
@@ -75,7 +87,6 @@ app.post('/login', async (req, res) => {
     
     let user = await User.findOne({ username: req.body.username });
     if (user) {
-        console.log("user input password: " + req.body.password + ". user actual password: " + user.password);
         if (req.body.password == user.password) {
             let cert = fs.readFileSync('private.key');
             let token = await jwt.sign({username: user.username, loggedInAt: Date.now().toString() }, cert, { algorithm: 'RS256', expiresIn: '1h'});
