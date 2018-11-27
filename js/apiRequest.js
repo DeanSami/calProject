@@ -1,5 +1,8 @@
 function login(username, password) {
     let xhttp = new XMLHttpRequest(),
+        HEAD,
+        method = "POST",
+        url = "localhost:3000/login";
     method = "POST",
     url = "http://localhost:3000/login",
     async = true;
