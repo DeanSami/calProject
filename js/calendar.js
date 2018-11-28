@@ -1,6 +1,7 @@
 $(document).ready(function() {
-
-    $('#calendar').fullCalendar({
+    setTimeout(() => {
+        $('#calendar').fullCalendar({
+        height: 650,
         header: {
             right: 'next,prev today',
             center: 'title',
@@ -121,5 +122,8 @@ $(document).ready(function() {
         $('#calendar').fullCalendar('updateEvent', currentEvent);
 
     }
+    $("#loading").hide();
+
+    },3000);
 
 });
