@@ -110,3 +110,6 @@ body {
 .new-event-title {
     text-align: center;
 }
+.toast-message {
+    text-align: right;
+}

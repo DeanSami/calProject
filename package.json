@@ -19,6 +19,7 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "bootstrap": "^4.1.3",
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "toastr": "^2.1.4"
   }
 }

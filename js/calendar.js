@@ -1,4 +1,3 @@
-let currentEvent;
 $(document).ready(function() {
 
     $('#calendar').fullCalendar({
