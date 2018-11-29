@@ -6,14 +6,6 @@ const User = require('../models/User');
 const Event = require('../models/Event');
 
 module.exports = (app) => {
-    // REGISTER GET - gets register page
-    app.get('/register', (req, res) => {
-        let response = {
-            success: "true",
-            msg: "register.html"
-        };
-        res.json(response);
-    });
 
     // REGISTER POST - checks validity of username input and if valid put them to DB
     app.post('/register', async (req, res) => {
@@ -21,59 +13,40 @@ module.exports = (app) => {
             success: "false"
         }
 
-        let password2 = req.body.password2;
-        let userDetails = {
-            username: req.body.username,
-            password: req.body.password,
-            fullname: req.body.fullname,
-            permission: 'user',
-            registeredAt: Date.now()
-        }
-
         // check if username doesnt exist in DB
-        let user = await User.findOne({ username: userDetails.username });
+        const user = await User.findOne({ username: req.body.username });
         if (user) {
-            response.msg = "משתמש כבר רשום";
+            response.message = "משתמש כבר רשום";
         }
-        else if (userDetails.password == password2) {
+        else if (req.body.password == req.body.password2) {
             response.success = "true";
             let newUser = new User({
-                username: userDetails.username,
-                password: userDetails.password,
-                fullname: userDetails.fullname,
-                permission: 'user',
-                registeredAt: Date.now(),
-                token: null
+                username: req.body.username,
+                password: req.body.password,
+                fullname: req.body.fullname
             });
-            await newUser.save();
-            response.msg = "משתמש חדש נרשם";
+            response.message = "משתמש חדש נרשם";
+            newUser.save((err) => {
+                if (err) throw err;
+            });
         } else {
-            response.msg = "סיסמאות לא תואמות";
+            response.message = "סיסמאות לא תואמות";
         }
         res.json(response)
     });
 
-    // LOGIN GET - gets the login page
-    app.get('/login', (req, res) => {
-        let response = {
-            success: "true",
-            msg: "login.html"
-        };
-        res.json(response);
-    });
-
     // LOGIN POST - should create new token and save it, both server and client side
     app.post('/login', async (req, res) => {
-        var response = {
+        let response = {
             success: "false"
         };
-        let user = await User.findOne({ username: req.body.username });
+        const user = await User.findOne({ username: req.body.username });
         if (user) {
             if (req.body.password == user.password) {
                 let cert = fs.readFileSync('private.key');
                 let token = await jwt.sign({ username: user.username, loggedInAt: Date.now().toString() }, cert, { algorithm: 'RS256', expiresIn: '1h' });
                 if (token) {
-                    user.loggedInAt.push({ loginTime: Date.now() });
+                    user.loggedInAt.push(Date.now());
                     user.token = token;
                     response.token = token;
                     response.username = user.username;
@@ -93,11 +66,9 @@ module.exports = (app) => {
         res.json(response);
     });
 
-    // CAL GET - returns all events of requesting user
-    app.get('/calendar', async (req, res) => {
-        let username = req.body.username;
-        let userToken = req.body.token;
-        let user = await User.findOne({ username: username, token: userToken });
+    // CAL POST - returns all events of requesting user
+    app.post('/calendar', async (req, res) => {
+        let user = await User.findOne({ username: req.body.username, token: req.body.token });
         let response = {
             success: "false"
         };
@@ -115,7 +86,7 @@ module.exports = (app) => {
     });
 
     // USER ADD EVENT
-    app.post('/calendar', async (req, res) => {
+    app.put('/calendar', async (req, res) => {
         let response = {
             success: "false"
         };
@@ -126,7 +97,7 @@ module.exports = (app) => {
                 eventStart: req.body.eventStart,
                 eventEnd: req.body.eventEnd,
                 eventDetails: req.body.eventDetails,
-                owner: user._id
+                owner: user.username
             });
             let promise = await newEvent.save();
             if (promise) response.success = "true";

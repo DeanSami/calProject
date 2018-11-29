@@ -1,5 +1,8 @@
 const configValues = require('./config');
-const deployEnviroment = configValues.dev;
+
+
+let env = 'dev';
+let deployEnviroment = (env == 'dev')?configValues.dev:configValues.prod;
 
 module.exports = {
     getDbConString: () => {

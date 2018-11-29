@@ -3,17 +3,28 @@ const Schema = mongoose.Schema;
 
 // User Schema
 let EventSchema = new Schema({
-    eventName: String,
+    eventName: {
+        type: String,
+        require: true
+    },
     eventStart: {
         type: Date, 
-        default: Date.now()
+        default: Date.now(),
+        required: false
     },
     eventEnd: {
         type: Date,
-        default: null
+        default: null,
+        required: false
     },
-    eventDetails: String,
-    owner: String
+    eventDetails: {
+        type: String,
+        required: false
+    },
+    owner: {
+        type: String,
+        required: true
+    }
 });
 
 let Event = mongoose.model('Event', EventSchema);
