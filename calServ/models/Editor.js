@@ -5,8 +5,7 @@ const Schema = mongoose.Schema;
 let EditorSchema = new Schema({
     username: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
     declinedRequests: {
         type: Array,
