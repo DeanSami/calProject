@@ -55,51 +55,43 @@ function login(username, password) {
             }
         }
     }
-    };
-
-
-
-    //
-    // xhttp.onreadystatechange = () => {
-    //     console.log('dor1');
-    //     if (xhttp.readyState === 4 && xhttp.status === 200) {
-    //         let response = JSON.parse(xhttp.responseText);
-    //         if (response) {
-    //             if (response.success === "true") {
-    //                 setTimeout(() => {
-    //                     window.location.assign('index.html')
-    //                 },3000);
-    //                 window.localStorage.setItem('username', response.username);
-    //                 window.localStorage.setItem('token', response.token);
-    //                 toastr["success"](response.message);
-    //             }
-    //             else {
-    //                 toastr["error"](response.message);
-    //             }
-    //         }
-    //     }
-    // };
+    }
 }
+function register(data) {
+    if(data === undefined)
+        toastr["error"]('יש למלא את כל השדות');
+    else{
 
-// localhost:3000/login
-//
-//
-//     xhttp.onreadystatechange = () => {
-//         if (xhttp.readyState === 4 && xhttp.status === 200) {
-//             let response = JSON.parse(xhttp.responseText);
-//             if (response) {
-//                 if (response.success === "true") {
-//                     setTimeout(() => window.location.assign('index.html')
-//                         ,10000);
-//                     console.log(response);
-//                     window.localStorage.setItem('username',response.username);
-//                     window.localStorage.setItem('token',response.token);
-//                     toastr["success"](response.message);
-//                 }
-//                 else {
-//                     toastr["error"](response.message);
-//                 }
-//             }
-//         }
-//     };
-// }
+    let xhttp = new XMLHttpRequest(), method = "POST", url = "http://localhost:3000/register";
+    // let userDetails;
+    xhttp.open(method, url);
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.setRequestHeader("Access-Control-Allow-Origin", "*");
+
+    userDetails = JSON.stringify({
+        username: data.username,
+        email: data.email,
+        password: data.password,
+        password2: data.password2
+    });
+
+    xhttp.send(userDetails);
+
+    xhttp.onreadystatechange = () => {
+        if (xhttp.readyState === 4 && xhttp.status === 200) {
+            let response = JSON.parse(xhttp.responseText);
+            if (response) {
+                if (response.success === "true") {
+                    setTimeout(() => window.location.assign('index.html'), 2000);
+                    // window.localStorage.setItem('username',response.username);
+                    // window.localStorage.setItem('token',response.token);
+                    toastr["success"](response.msg);
+                }
+                else {
+                    toastr["error"](response.msg);
+                }
+            }
+        }
+    }
+    }
+}
