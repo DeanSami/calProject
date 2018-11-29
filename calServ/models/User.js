@@ -1,17 +1,55 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 // User Schema
-let UserSchema = mongoose.Schema({
-    username: String,
-    password: String,
-    fullname: String,
-    permission: String,
-    registeredAt: Date,
-    loggedInAt: Array,
-    globalEvents: Array,
-    iPermit: Array,
-    theyPermit: Array,
-    token: String
+let UserSchema = new Schema({
+    username: {
+        type: String,
+        unique: true,
+        required: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    fullname: {
+        type: String,
+        required: false
+    },
+    permission: {
+        type: String,
+        enum: [ 'user', 'editor', 'admin' ],
+        default: 'user',
+        required: true
+    },
+    registeredAt: {
+        type: Date,
+        default: Date.now(),
+        required: false
+    },
+    loggedInAt: {
+        type: Array,
+        require: false
+    },
+    globalEvents: {
+        type: Array,
+        require: false
+    },
+    iPermit: {
+        type: Array,
+        require: false
+    },
+    theyPermit: {
+        type: Array,
+        require: false
+    },
+    token: {
+        type: String,
+        default: null,
+        require: false
+    }
 });
 
-let User = module.exports = mongoose.model('User', UserSchema, 'users');
+let User = mongoose.model('User', UserSchema);
+
+module.exports = User;

@@ -1,20 +1,28 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const config = require('./config');
 const cors = require('cors');
 
-let UserRoutes = require('./controllers/users');
+const SetupRoutes = require('./controllers/SetupController');
+const UserRoutes = require('./controllers/UsersController');
+const EditorRoutes = require('./controllers/EditorController');
+const AdminRoutes = require('./controllers/AdminController');
 
-let app = express();
+mongoose.connect(config.getDbConString(), { useNewUrlParser: true });
 
-app.set('port', process.env.PORT || 3000);
+const app = express();
+app.set('PORT', process.env.PORT || config.getEnviromentPort());
 
 // parse application/json
 app.use(bodyParser.json());
-
 app.use(cors());
 
-app.use('/', UserRoutes);
+UserRoutes(app);
+SetupRoutes(app);
+EditorRoutes(app);
+AdminRoutes(app);
 
-app.listen(app.get('port'), () => {
-    console.log('Server is listening on ' + app.get('port'));
+app.listen(app.get('PORT'), () => {
+    console.log('Server is listening on ' + app.get('PORT'));
 });

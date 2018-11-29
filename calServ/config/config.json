@@ -1,0 +1,11 @@
+{
+    "dev": {
+        "uname": "deanz",
+        "pwd": "D305622375m",
+        "PORT": "3000"
+    },
+    "prod": {
+        "uname": null,
+        "pwd": null
+    }
+}
