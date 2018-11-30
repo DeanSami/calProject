@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const Event = require('../models/Event');
+const GlobalEvent = require('../models/GlobalEvent');
 const RegisterRequest = require('../models/RegisterRequest');
 
 module.exports = (app) => {
@@ -39,13 +39,35 @@ module.exports = (app) => {
     });
 
     // add global event
-    app.post('/globalCal', (req, res) => {
-
+    app.put('/globalCal', async (req, res) => {
+        let response = {
+            success: 'false'
+        };
+        let user = await User.findOne({ username: req.body.username, token: req.body.token, permission: 'editor' });
+        if (user) {
+            let newGlobalEvent = new GlobalEvent({
+                eventName: req.body.eventName,
+                eventStart: req.body.eventStart,
+                eventEnd: req.body.eventEnd,
+                eventDetails: req.body.eventDetails,
+                postedBy: user.username,
+                category: req.body.category,
+                place: req.body.place
+            });
+            let promise = await newGlobalEvent.save();
+            if (promise) {
+                response.success = 'true';
+                response.message = 'אירוע גלובלי חדש נוצר';
+            }
+        } else {
+            response.message = 'שגיאת הרשאות';
+        }
+        res.json(response);
     });
 
     // edit global event
     app.post('/globalCal/:id', (req, res) => {
-
+        
     });
 
     // delete global event

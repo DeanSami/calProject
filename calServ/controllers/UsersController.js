@@ -4,6 +4,7 @@ const fs = require('fs');
 
 const User = require('../models/User');
 const Event = require('../models/Event');
+const GlobalEvent = require('../models/GlobalEvent');
 
 module.exports = (app) => {
 
@@ -103,6 +104,25 @@ module.exports = (app) => {
                     response.events.push(event);
                 });
                 response.message = 'הנך מועבר ליומן';
+            }
+        }
+        res.json(response);
+    });
+
+    app.post('/globalCal', async (req, res) => {
+        let user = await User.findOne({ username: req.body.username, token: req.body.token });
+        let response = {
+            success: "false"
+        };
+        if (user) {
+            let events = await GlobalEvent.find();
+            if (events) {
+                response.events = [];
+                response.success = "true";
+                events.forEach((event) => {
+                    response.events.push(event);
+                });
+                response.message = 'הנך מועבר ליומן הגלובלי';
             }
         }
         res.json(response);
