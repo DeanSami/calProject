@@ -1,4 +1,4 @@
-const express = require('express');
+const { check, validationResult } = require('express-validator/check');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 
@@ -7,45 +7,67 @@ const Event = require('../models/Event');
 
 module.exports = (app) => {
 
-    // REGISTER POST - checks validity of username input and if valid put them to DB
-    app.post('/register', async (req, res) => {
-        let response = {
-            success: "false"
-        }
+    //***********************************************************************************//
+    //***********************************************************************************//
+    //***************************          REGISTRATION      ****************************//
+    //***********************************************************************************//
+    //***********************************************************************************//
+    app.post('/register',
+        check('username').isEmail().withMessage('שם משתמש חייב להיות מייל תקני'),
+        check('password').isLength({ min: 6 }).withMessage('סיסמא חייבת להיות לפחות באורך 6'),
+        async (req, res) => {
+            let response = {
+                success: "false"
+            }
+            // check validation errors
+            const errors = validationResult(req);
+            if (errors.isEmpty()) {
+                // check if username doesnt exist in DB
+                const user = await User.findOne({ username: req.body.username });
+                if (user) {
+                    response.message = "משתמש כבר רשום";
+                }
+                // check if passwords match
+                else if (req.body.password == req.body.password2) {
+                    // construct the response and create the new user
+                    response.success = "true";
+                    let newUser = new User({
+                        username: req.body.username,
+                        password: req.body.password,
+                        fullname: req.body.fullname
+                    });
+                    response.message = "משתמש חדש נרשם";
+                    newUser.save((err) => {
+                        if (err) throw err;
+                    });
+                } else {
+                    response.message = "סיסמאות לא תואמות";
+                }
+            } else {
+                response.message = errors.array()[0].msg;
+            }
+            res.json(response)
+        });
 
-        // check if username doesnt exist in DB
-        const user = await User.findOne({ username: req.body.username });
-        if (user) {
-            response.message = "משתמש כבר רשום";
-        }
-        else if (req.body.password == req.body.password2) {
-            response.success = "true";
-            let newUser = new User({
-                username: req.body.username,
-                password: req.body.password,
-                fullname: req.body.fullname
-            });
-            response.message = "משתמש חדש נרשם";
-            newUser.save((err) => {
-                if (err) throw err;
-            });
-        } else {
-            response.message = "סיסמאות לא תואמות";
-        }
-        res.json(response)
-    });
-
-    // LOGIN POST - should create new token and save it, both server and client side
+    //***********************************************************************************//
+    //***********************************************************************************//
+    //***************************            Login           ****************************//
+    //***********************************************************************************//
+    //***********************************************************************************//
     app.post('/login', async (req, res) => {
         let response = {
             success: "false"
         };
+        // check if a user with the given username exists in DB
         const user = await User.findOne({ username: req.body.username });
         if (user) {
+            // check if passwords match between input and DB
             if (req.body.password == user.password) {
+                // create a token
                 let cert = fs.readFileSync('private.key');
                 let token = await jwt.sign({ username: user.username, loggedInAt: Date.now().toString() }, cert, { algorithm: 'RS256', expiresIn: '1h' });
                 if (token) {
+                    // push login log and tell the requester user has logged in
                     user.loggedInAt.push(Date.now());
                     user.token = token;
                     response.token = token;
@@ -76,10 +98,11 @@ module.exports = (app) => {
             let events = await Event.find().where('owner').equals(user.username).exec();
             if (events) {
                 response.events = [];
+                response.success = "true";
                 events.forEach((event) => {
-                    response.success = "true";
                     response.events.push(event);
                 });
+                response.message = 'הנך מועבר ליומן';
             }
         }
         res.json(response);

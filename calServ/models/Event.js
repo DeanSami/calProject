@@ -14,7 +14,9 @@ let EventSchema = new Schema({
     },
     eventEnd: {
         type: Date,
-        default: null,
+        default: () => {
+            return this.eventStart;
+        },
         required: false
     },
     eventDetails: {

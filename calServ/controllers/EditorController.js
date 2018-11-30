@@ -38,4 +38,21 @@ module.exports = (app) => {
         res.json(response);
     });
 
+    // add global event
+    app.post('/globalCal', (req, res) => {
+
+    });
+
+    // edit global event
+    app.post('/globalCal/:id', (req, res) => {
+
+    });
+
+    // delete global event
+    app.delete('/globalCal/:id', (req, res) => {
+
+    });
+
+    // update category
+
 }
