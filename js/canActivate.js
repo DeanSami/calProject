@@ -41,6 +41,8 @@ function canActivate() {
                         toastr["success"](response.message);
                     }
                     else {
+                        console.log(response);
+                        alert(response);
                         if (currentUrl[currentUrl.length - 1] !== 'login.html' && currentUrl[currentUrl.length - 1] !== 'register.html'){
                             window.location.assign('login.html');
 
