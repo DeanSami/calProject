@@ -136,10 +136,10 @@ module.exports = (app) => {
         let user = await User.findOne({ username: req.body.username, token: req.body.token });
         if (user) {
             let newEvent = new Event({
-                eventName: req.body.eventName,
-                eventStart: req.body.eventStart,
-                eventEnd: req.body.eventEnd,
-                eventDetails: req.body.eventDetails,
+                title: req.body.event.title,
+                start: req.body.event.start,
+                end: req.body.event.end,
+                description: req.body.event.description,
                 owner: user.username
             });
             let promise = await newEvent.save();
@@ -178,10 +178,10 @@ module.exports = (app) => {
             if (event) {
                 if (event.owner == user._id) {
                     Event.findOneAndUpdate({ _id: req.params.id }, {
-                        eventName: req.body.event.eventName,
-                        eventStart: req.body.event.eventStart,
-                        eventEnd: req.body.event.eventEnd,
-                        eventDetails: req.body.event.eventDetails
+                        title: req.body.event.title,
+                        start: req.body.event.start,
+                        end: req.body.event.end,
+                        description: req.body.event.description
                     }).exec();
                     response.success = "true";
                 }
