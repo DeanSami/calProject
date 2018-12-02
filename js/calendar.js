@@ -48,18 +48,7 @@ setTimeout(() => {
                 container: 'body'
             });
         },
-        events: [
-            {
-                id: 1,
-                title: 'All Day Event',
-                start: '2018-12-12',
-                backgroundColor: 'red',
-                description: 'Dor',
-                allDay: true,
-                end: false
-            }
-        ],
-
+        events: [],
 
         // () => {
         //     // let events = getUserEvents();
@@ -124,28 +113,21 @@ function editEvent() {
 
 function addUserEvent() {
     getUserEvents().then((res) => {
-        console.log('res', res);
-        if (res.success === "true") {
-            $('#calendar').fullCalendar('addEventSource', () => {
-                res.events.map((event) => {
-                    return {
-                        id: event._id,
-                        title: event.title,
-                        start: event.start,
-                        end: el => {
-                            if (event.end)
-                                return el;
-                            else
-                                return false;
-                        },
-                        allDay: () => (event.end !== ''),
-                        description: event.description
-                    }
-                });
+        if (JSON.parse(res).success === "true") {
+            let events = JSON.parse(res).events.map(event => {
+                return {
+                    id: event._id,
+                    title: event.title,
+                    start: event.start,
+                    end: event.end !== null ? event.end : false,
+                    allDay: !(event.end !== null),
+                    description: event.description
+                }
             });
+            $('#calendar').fullCalendar('addEventSource', events);
         }
-        else if (res.success === "false")
-            toastr["error"](res.message);
+        else
+            toastr["error"](JSON.parse(res).message);
 
     }).catch(() => toastr["error"]('ארעה שגיאה בגישה לשרת'));
 }

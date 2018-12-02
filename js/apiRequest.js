@@ -23,18 +23,14 @@ function login(username, password) {
     if (username === '' || password === '')
         toastr["error"]('יש למלא את כל השדות');
     else {
-        let xhttp = new XMLHttpRequest(), method = "POST", url = "http://localhost:3000/login";
-        let userDetails;
-        xhttp.open(method, url);
+        let xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "http://localhost:3000/login");
         xhttp.setRequestHeader("Content-Type", "application/json");
-        xhttp.setRequestHeader("Access-Control-Allow-Origin", "*");
 
-        userDetails = JSON.stringify({
+        xhttp.send(JSON.stringify({
             username: username,
             password: password
-        });
-
-        xhttp.send(userDetails);
+        }));
 
         xhttp.onreadystatechange = () => {
             if (xhttp.readyState === 4) {
@@ -64,20 +60,15 @@ function register(data) {
     if (data === undefined)
         toastr["error"]('יש למלא את כל השדות');
     else {
-
-        let xhttp = new XMLHttpRequest(), method = "POST", url = "http://localhost:3000/register";
-        // let userDetails;
-        xhttp.open(method, url);
+        let xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "http://localhost:3000/register");
         xhttp.setRequestHeader("Content-Type", "application/json");
-        xhttp.setRequestHeader("Access-Control-Allow-Origin", "*");
 
-        userDetails = JSON.stringify({
+        xhttp.send(JSON.stringify({
             username: data.username,
             password: data.password,
             password2: data.password2
-        });
-
-        xhttp.send(userDetails);
+        }));
 
         xhttp.onreadystatechange = () => {
             if (xhttp.readyState === 4) {
@@ -111,16 +102,9 @@ function getUserEvents() {
         return null;
     }
     else {
-        let xhttp = new XMLHttpRequest(), method = "POST", url = "http://localhost:3000/calendar";
-        let userDetails;
-        xhttp.open(method, url);
+        let xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "http://localhost:3000/calendar");
         xhttp.setRequestHeader("Content-Type", "application/json");
-        xhttp.setRequestHeader("Access-Control-Allow-Origin", "*");
-
-        userDetails = JSON.stringify({
-            username: window.localStorage.getItem('username'),
-            token: window.localStorage.getItem('token'),
-        });
 
         return new Promise((resolve,reject) => {
             xhttp.onreadystatechange = () => {
@@ -130,11 +114,10 @@ function getUserEvents() {
                     reject();
                 }
             };
-            xhttp.send(userDetails);
-
-            // xhr.onreadystatechange = () => {
-            //     if (xhr.readyState === 4 && xhr.status === 200) resolve(xhr.responseText);
-            // };
+            xhttp.send(JSON.stringify({
+                username: window.localStorage.getItem('username'),
+                token: window.localStorage.getItem('token'),
+            }));
         });
     }
 }
