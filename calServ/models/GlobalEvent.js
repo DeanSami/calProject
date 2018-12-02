@@ -3,23 +3,23 @@ const Schema = mongoose.Schema;
 
 // User Schema
 let GlobalEventSchema = new Schema({
-    eventName: {
+    title: {
         type: String,
         require: true
     },
-    eventStart: {
+    start: {
         type: Date, 
         default: Date.now(),
         required: false
     },
-    eventEnd: {
+    end: {
         type: Date,
         default: () => {
-            return this.eventStart;
+            return this.start;
         },
         required: false
     },
-    eventDetails: {
+    description: {
         type: String,
         required: false
     },
