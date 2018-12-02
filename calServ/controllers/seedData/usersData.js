@@ -1,30 +1,24 @@
 let users = [
     {
-        username: "admin",
-        password: "admin",
-        fullname: "",
+        username: "deanz@cal.co.il",
+        password: "123",
+        fullname: "Dean Abutbul",
         permission: "admin"
     },
     {
-        username: "deanz",
-        password: "123",
-        fullname: "Dean Abutbul",
-        permission: "user"
-    },
-    {
-        username: "dorz",
+        username: "dorz@cal.co.il",
         password: "321",
         fullname: "Dor Shushan",
-        permission: "user"
+        permission: "editor"
     },
     {
-        username: "edenz",
+        username: "edenz@cal.co.il",
         password: "213",
         fullname: "Eden Ohana",
         permission: "user"
     },
     {
-        username: "ofekz",
+        username: "ofekz@cal.co.il",
         password: "132",
         fullname: "Ofek Talker",
         permission: "user"

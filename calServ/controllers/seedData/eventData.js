@@ -18,86 +18,74 @@ let events = [
     {
         eventName: 'Lorem ipsum',
         eventStart: new Date(month1[Math.floor(Math.random() * 2)] + ' ' + Math.floor(Math.random * 31 + 1) + ', ' + year1 + ' ' + '08:00:00'),
-        eventEnd: null,
         eventDetails: 'dolor sit amet',
-        owner: 'deanz'
+        owner: 'deanz@cal.co.il'
     },
     {
         eventName: 'consectetur adipisicing',
         eventStart: new Date(month1[Math.floor(Math.random() * 2)] + ' ' + Math.floor(Math.random * 31 + 1) + ', ' + year1 + ' ' + '16:00:00'),
-        eventEnd: null,
         eventDetails: 'elit. Odio pariatur',
-        owner: 'deanz'
+        owner: 'deanz@cal.co.il'
     },
     {
         eventName: 'voluptatibus quas',
-        eventStart: new Date(month1[Math.floor(Math.random() * 2)] + ' ' + Math.floor(Math.random * 31 + 1) + ', ' + year1 + ' ' + '00:00:00'),
-        eventEnd: null,
+        eventStart: new Date(month2[Math.floor(Math.random() * 12)] + ' ' + Math.floor(Math.random * 31 + 1) + ', ' + year2 + ' ' + '00:00:00'),
         eventDetails: 'suscipit quisquam nesciunt',
-        owner: 'deanz'
+        owner: 'deanz@cal.co.il'
     },
     {
         eventName: 'deleniti natus',
         eventStart: new Date(month1[Math.floor(Math.random() * 2)] + ' ' + Math.floor(Math.random * 31 + 1) + ', ' + year1 + ' ' + '08:00:00'),
-        eventEnd: null,
         eventDetails: 'delectus facilis reiciendis',
-        owner: 'dorz'
+        owner: 'dorz@cal.co.il'
     },
     {
         eventName: 'animi eos',
         eventStart: new Date(month1[Math.floor(Math.random() * 2)] + ' ' + Math.floor(Math.random * 31 + 1) + ', ' + year1 + ' ' + '10:00:00'),
-        eventEnd: null,
         eventDetails: 'sapiente repellat excepturi',
-        owner: 'dorz'
+        owner: 'dorz@cal.co.il'
     },
     {
         eventName: 'ullam, distinctio',
-        eventStart: new Date(month1[Math.floor(Math.random() * 2)] + ' ' + Math.floor(Math.random * 31 + 1) + ', ' + year1 + ' ' + '13:00:00'),
-        eventEnd: null,
+        eventStart: new Date(month2[Math.floor(Math.random() * 12)] + ' ' + Math.floor(Math.random * 31 + 1) + ', ' + year2 + ' ' + '13:00:00'),
         eventDetails: 'itaque quae nobis',
-        owner: 'dorz'
+        owner: 'dorz@cal.co.il'
     },
     {
         eventName: 'maiores mollitia',
         eventStart: new Date(month1[Math.floor(Math.random() * 2)] + ' ' + Math.floor(Math.random * 31 + 1) + ', ' + year1 + ' ' + '21:30:00'),
-        eventEnd: null,
         eventDetails: 'nemo laudantium dolorem',
-        owner: 'edenz'
+        owner: 'edenz@cal.co.il'
     },
     {
         eventName: 'amet! Ipsam',
         eventStart: new Date(month1[Math.floor(Math.random() * 2)] + ' ' + Math.floor(Math.random * 31 + 1) + ', ' + year1 + ' ' + '11:25:00'),
-        eventEnd: null,
         eventDetails: 'enim sunt facilis',
-        owner: 'edenz'
+        owner: 'edenz@cal.co.il'
     },
     {
         eventName: 'cumque dolores',
-        eventStart: new Date(month1[Math.floor(Math.random() * 2)] + ' ' + Math.floor(Math.random * 31 + 1) + ', ' + year1 + ' ' + '13:00:00'),
-        eventEnd: null,
+        eventStart: new Date(month2[Math.floor(Math.random() * 12)] + ' ' + Math.floor(Math.random * 31 + 1) + ', ' + year2 + ' ' + '13:00:00'),
         eventDetails: 'similique porro doloremque',
-        owner: 'edenz'
+        owner: 'edenz@cal.co.il'
     },
     {
         eventName: 'earum deleniti',
         eventStart: new Date(month1[Math.floor(Math.random() * 2)] + ' ' + Math.floor(Math.random * 31 + 1) + ', ' + year1 + ' ' + '09:20:00'),
-        eventEnd: null,
         eventDetails: 'distinctio delectus voluptatibus',
-        owner: 'ofekz'
+        owner: 'ofekz@cal.co.il'
     },
     {
         eventName: 'reprehenderit cum',
         eventStart: new Date(month1[Math.floor(Math.random() * 2)] + ' ' + Math.floor(Math.random * 31 + 1) + ', ' + year1 + ' ' + '18:00:00'),
-        eventEnd: null,
         eventDetails: 'quisquam dignissimos asperiores',
-        owner: 'ofekz'
+        owner: 'ofekz@cal.co.il'
     },
     {
         eventName: 'commodi error',
-        eventStart: new Date(month1[Math.floor(Math.random() * 2)] + ' ' + Math.floor(Math.random * 31 + 1) + ', ' + year1 + ' ' + '17:30:00'),
-        eventEnd: null,
+        eventStart: new Date(month2[Math.floor(Math.random() * 12)] + ' ' + Math.floor(Math.random * 31 + 1) + ', ' + year2 + ' ' + '17:30:00'),
         eventDetails: 'ullam itaque ut',
-        owner: 'ofekz'
+        owner: 'ofekz@cal.co.il'
     }
 ];
 

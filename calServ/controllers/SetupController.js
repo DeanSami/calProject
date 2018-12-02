@@ -5,6 +5,7 @@ const Editor = require('../models/Editor');
 
 const usersData = require('./seedData/usersData');
 const eventsData = require('./seedData/eventData');
+const editorsData = require('./seedData/editorsData');
 
 module.exports = (app) => {
 
@@ -14,10 +15,12 @@ module.exports = (app) => {
         }
         let users = await User.create(usersData);
         let events = await Event.create(eventsData);
-        if (users && events) {
+        let editors = await Editor.create(editorsData);
+        if (users && events && editors) {
             response.success = 'true';
             response.users = users;
             response.events = events;
+            response.editors = editors;
         }
         res.json(response);
     });
@@ -46,15 +49,18 @@ module.exports = (app) => {
         let usersRemoved = await User.deleteMany();
         let eventsRemoved = await Event.deleteMany();
         let requestsRemoved = await RegisterRequest.deleteMany();
-        if (usersRemoved && eventsRemoved && requestsRemoved) {
+        let editorsRemoved = await Editor.deleteMany();
+        if (usersRemoved && eventsRemoved && requestsRemoved && editorsRemoved) {
             let users = await User.find();
             let events = await Event.find();
             let requests = await RegisterRequest.find();
-            if (users && events) {
+            let editors = await Editor.find();
+            if (users && events && requests && editors) {
                 response.success = "true";
                 response.users = users;
                 response.events = events;
                 response.registerRequests = requests;
+                response.editors = editors;
             }
         }
         res.json(response);
