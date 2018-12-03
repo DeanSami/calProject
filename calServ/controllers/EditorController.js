@@ -46,13 +46,13 @@ module.exports = (app) => {
         let user = await User.findOne({ username: req.body.username, token: req.body.token, permission: 'editor' });
         if (user) {
             let newGlobalEvent = new GlobalEvent({
-                eventName: req.body.eventName,
-                eventStart: req.body.eventStart,
-                eventEnd: req.body.eventEnd,
-                eventDetails: req.body.eventDetails,
+                title: req.body.event.title,
+                start: req.body.event.start,
+                end: req.body.event.end,
+                description: req.body.event.description,
                 postedBy: user.username,
-                category: req.body.category,
-                place: req.body.place
+                category: req.body.event.category,
+                place: req.body.event.place
             });
             let promise = await newGlobalEvent.save();
             if (promise) {
