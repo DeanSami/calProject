@@ -67,7 +67,15 @@ function loadCalendar() {
                 container: 'body'
             });
         },
-        events: [],
+        events: [
+            {
+                description: "",
+                end: null,
+                start: "2018-12-20T22:00:00.000Z",
+                title: "check",
+                allDay: true
+            }
+        ],
     });
     addAllUserEvent().then(() => $("#loading").hide()).catch(() => window.location.assign('/404'));
 }
@@ -82,7 +90,7 @@ function editUserEvent() {
             _id: currentEvent.id,
             title: $('#title').val(),
             start: currentEvent.start,
-            end: currentEvent.end !== null ? moment(currentEvent.end) : '',
+            end: currentEvent.end ? moment(currentEvent.end) : null,
             allDay: currentEvent.end === null,
             description: $('#eventDescription').val().toString()
         }
@@ -90,7 +98,7 @@ function editUserEvent() {
         if (res.success === 'true') {
             editEvent();
             toastr["success"]('אירוע עודכן בהצלחה');
-            setTimeout(submitButton.prop('disabled', false), 300);
+            setTimeout(() => $('#submitButton').prop('disabled', false), 300);
         } else
             toastr["error"]('שגיאה בעריכת אירוע');
     }).catch(() => {
@@ -98,12 +106,12 @@ function editUserEvent() {
         $("#createEventModal").modal('hide');
     });
 }
-// edit event mode
+// edit event - local
 function editEvent() {
     $("#createEventModal").modal('hide');
     currentEvent.title = $('#title').val();
-    currentEvent.start = $('#startDate').val();
-    currentEvent.end = $('#endDate').val();
+    currentEvent.start = moment($('#startDate').val());
+    currentEvent.end = moment($('#endDate').val());
     currentEvent.description = $('#eventDescription').val().toString();
 
     $('#calendar').fullCalendar('updateEvent', currentEvent);
@@ -115,7 +123,7 @@ function addUserEvent(event) {
         if (res.success === 'true') {
             addEvent(res.event);
             toastr["success"]('אירוע נוסף בהצלחה');
-            setTimeout(submitButton.prop('disabled', false), 300);
+            setTimeout($('#submitButton').prop('disabled', false), 300);
 
         } else
             toastr["error"]('שגיאה בהוספת אירוע');
@@ -124,7 +132,7 @@ function addUserEvent(event) {
         $("#createEventModal").modal('hide');
     });
 }
-// add event mode
+// add event - local
 function addEvent(event) {
     $("#createEventModal").modal('hide');
     $("#calendar").fullCalendar('renderEvent',
@@ -132,8 +140,8 @@ function addEvent(event) {
             id: event._id,
             title: event.title,
             start: moment(event.start),
-            end: event.end !== '' ? moment(event.end) : false,
-            allDay: event.end === '',
+            end: event.end !== null ? moment(event.end) : null,
+            allDay: event.end === null,
             description: event.description
         },
         true);
@@ -143,13 +151,12 @@ function addEvent(event) {
 
 // control onClick Event
 function onclickAddEvent() {
-    let submitButton = $('#submitButton');
     let endDate = $('#endDate');
-    submitButton.prop('disabled', true);
+    $('#submitButton').prop('disabled', true);
     let event = {
         title: $('#title').val(),
         start: moment($('#startDate').val()),
-        end: endDate.val() !== '' ? moment(endDate.val()) : '',
+        end: endDate.val() !== '' ? moment(endDate.val()) : null,
         description: $('#eventDescription').val().toString()
     };
     if (document.getElementById('titleModifyEvent').innerHTML === 'ערוך אירוע')
@@ -171,8 +178,8 @@ function addAllUserEvent() {
                         id: event._id,
                         title: event.title,
                         start: event.start,
-                        end: event.end !== null ? event.end : false,
-                        allDay: !(event.end !== null),
+                        end: event.end !== null ? moment(event.end) : null,
+                        allDay: event.end === null,
                         description: event.description
                     }
                 });
