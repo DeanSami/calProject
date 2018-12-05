@@ -3,7 +3,26 @@ $(document).ready(() => {
     $(".user-form").hide();
     let currentUrl = window.location.pathname.split('/');
     if (window.localStorage.getItem('username') && window.localStorage.getItem('token')) {
-        canActivate();
+        canActivate().then(res => {
+            if (res.success === 'true') {
+                setTimeout(() => {
+                    if (currentUrl[currentUrl.length - 1] === 'login.html' || currentUrl[currentUrl.length - 1] === 'register.html')
+                        window.location.assign('index.html');
+                    else {
+                        toastr["success"](res.message);
+                        loadCalendar();
+                    }
+                }, 2000);
+            }
+            else {
+                if (currentUrl[currentUrl.length - 1] !== 'login.html' && currentUrl[currentUrl.length - 1] !== 'register.html')
+                    window.location.assign('login.html');
+                else
+                    $("#loading").hide(1000);
+                $(".user-form").show(1000);
+            }
+        })
+            .catch(() => toastr["error"]('אין גישה לשרת'));
     }
     else {
         if (currentUrl[currentUrl.length - 1] === 'login.html' || currentUrl[currentUrl.length - 1] === 'register.html') {
@@ -17,51 +36,21 @@ $(document).ready(() => {
 
 
 function canActivate() {
-    let currentUrl = window.location.pathname.split('/');
-    setTimeout(() => {
-        let xhttp = new XMLHttpRequest(), method = "POST", url = "http://localhost:3000/calendar";
-        xhttp.open(method, url);
-        xhttp.setRequestHeader("Content-Type", "application/json");
-        xhttp.setRequestHeader("Access-Control-Allow-Origin", "*");
+    let xhttp = new XMLHttpRequest();
+    xhttp.open("POST", "http://localhost:3000/calendar");
+    xhttp.setRequestHeader("Content-Type", "application/json");
 
-        let userDetails = JSON.stringify({
-            username: window.localStorage.getItem('username'),
-            token: window.localStorage.getItem('token'),
-        });
-        xhttp.send(userDetails);
-
+    return new Promise((resolve, reject) => {
         xhttp.onreadystatechange = () => {
             if (xhttp.readyState === 4) {
-                if (xhttp.status === 200) {
-                    let response = JSON.parse(xhttp.responseText);
-                    if (response) {
-                        if (response.success === "true") {
-                            if (currentUrl[currentUrl.length - 1] === 'login.html' || currentUrl[currentUrl.length - 1] === 'register.html')
-                                window.location.assign('index.html');
-                            toastr["success"](response.message);
-                        }
-                        else {
-                            if (currentUrl[currentUrl.length - 1] !== 'login.html' && currentUrl[currentUrl.length - 1] !== 'register.html') {
-                                window.location.assign('login.html');
-                            }
-                            else {
-                                $("#loading").hide(1000);
-                                $(".user-form").show(1000);
-                            }
-                        }
-                    }
-                    else {
-                        if (currentUrl[currentUrl.length - 1] !== 'login.html' && currentUrl[currentUrl.length - 1] !== 'register.html') {
-                            window.location.assign('login.html');
-                        }
-                        else
-                            toastr["error"]('ארעה שגיאה');
-                    }
-                }
-                else
-                    toastr["error"]('ארעה שגיאה');
+                if (xhttp.status === 200)
+                    resolve(JSON.parse(xhttp.responseText));
+                reject(null);
             }
-        }
-    }, 500);
-
+        };
+        xhttp.send(JSON.stringify({
+            username: window.localStorage.getItem('username'),
+            token: window.localStorage.getItem('token')
+        }));
+    });
 }

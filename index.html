@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <title>Calendar</title>
+
     <!--jQuery-->
     <script src="lib/moment.min.js"></script>
     <script src="lib/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 
     <!-- toastr -->
     <link rel="stylesheet" href="node_modules/toastr/build/toastr.css">
     <script src="node_modules/toastr/build/toastr.min.js"></script>
 
-    <!--check can activate page-->
-    <script src="js/canActivate.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 
     <!--bootstrap-->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
@@ -25,13 +26,12 @@
     <script src="lib/he.js"></script>
 
 
-    <script src="js/apiRequest.js"></script>
     <script src="js/calendar.js"></script>
+    <script src="js/apiRequest.js"></script>
     <link rel="stylesheet" href="css/style.css">
-    <meta charset="UTF-8">
 
-
-    <title>Calendar</title>
+    <!--check can activate page-->
+    <script src="js/canActivate.js"></script>
 
 
 </head>
@@ -85,7 +85,7 @@
             </div>
             <div class="modal-footer">
                 <div class="form-group container">
-                    <button type="submit" class="btn btn-primary btn-block btn-lg" id="submitButton">צור אירוע</button>
+                    <button class="btn btn-primary btn-block btn-lg" onclick="onclickAddEvent()" id="submitButton" >צור אירוע</button>
                 </div>
                 <!--<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>-->
             </div>

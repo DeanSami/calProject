@@ -1,99 +1,67 @@
 $(document).ready(function () {
-    toastr.options = {
-        "closeButton": true,
-        "debug": false,
-        "newestOnTop": false,
-        "progressBar": false,
-        "positionClass": "toast-top-right",
-        "preventDuplicates": false,
-        "onclick": null,
-        "showDuration": "300",
-        "hideDuration": "1000",
-        "timeOut": "5000",
-        "extendedTimeOut": "1000",
-        "showEasing": "swing",
-        "hideEasing": "linear",
-        "showMethod": "fadeIn",
-        "hideMethod": "fadeOut",
-        "rtl": true
-    };
+    $('#submit_form').prop('disabled', true);
 });
+function recaptcha_callback () {
+    $('#submit_form').prop('disabled', false);
+}
 
 function login(username, password) {
-    if (username === '' || password === '')
-        toastr["error"]('יש למלא את כל השדות');
-    else {
         let xhttp = new XMLHttpRequest();
         xhttp.open("POST", "http://localhost:3000/login");
         xhttp.setRequestHeader("Content-Type", "application/json");
 
-        xhttp.send(JSON.stringify({
-            username: username,
-            password: password
-        }));
-
-        xhttp.onreadystatechange = () => {
-            if (xhttp.readyState === 4) {
-                if (xhttp.status === 200) {
-                    let response = JSON.parse(xhttp.responseText);
-                    if (response) {
-                        if (response.success === "true") {
-                            setTimeout(() => window.location.assign('index.html')
-                                , 2000);
-                            window.localStorage.setItem('username', response.username);
-                            window.localStorage.setItem('token', response.token);
-                            toastr["success"](response.message);
-                        }
-                        else {
-                            toastr["error"](response.message);
-                        }
-                    }
+        new Promise((resolve, reject) => {
+            xhttp.onreadystatechange = () => {
+                if (xhttp.readyState === 4) {
+                    if (xhttp.status === 200)
+                        resolve(JSON.parse(xhttp.responseText));
+                    reject(null);
                 }
-                else
-                    toastr["error"]('ארעה שגיאה');
+            };
+            xhttp.send(JSON.stringify({
+                username: username,
+                password: password
+            }));
+        }).then(res => {
+            if (res.success === 'true') {
+                window.localStorage.setItem('username', res.username);
+                window.localStorage.setItem('token', res.token);
+                toastr["success"](res.message);
+                window.location.assign('index.html')
             }
-        }
-    }
+            else {
+                toastr["error"](res.message);
+            }
+        }).catch(() => toastr["error"]('אין גישה לשרת'));
 }
 
 function register(data) {
-    if (data === undefined)
-        toastr["error"]('יש למלא את כל השדות');
-    else {
         let xhttp = new XMLHttpRequest();
         xhttp.open("POST", "http://localhost:3000/register");
         xhttp.setRequestHeader("Content-Type", "application/json");
 
-        xhttp.send(JSON.stringify({
-            username: data.username,
-            password: data.password,
-            password2: data.password2
-        }));
-
-        xhttp.onreadystatechange = () => {
-            if (xhttp.readyState === 4) {
-                if (xhttp.status === 200) {
-                    let response = JSON.parse(xhttp.responseText);
-                    if (response) {
-                        let response = JSON.parse(xhttp.responseText);
-                        if (response) {
-                            if (response.success === "true") {
-                                setTimeout(() => window.location.assign('index.html'), 2000);
-                                // window.localStorage.setItem('username',response.username);
-                                // window.localStorage.setItem('token',response.token);
-                                toastr["success"](response.message);
-                            }
-                            else {
-                                toastr["error"](response.message);
-                            }
-                        }
-                    }
+        new Promise((resolve, reject) => {
+            xhttp.onreadystatechange = () => {
+                if (xhttp.readyState === 4) {
+                    if (xhttp.status === 200)
+                        resolve(JSON.parse(xhttp.responseText));
+                    reject(null);
                 }
-                else
-                    toastr["error"]('ארעה שגיאה');
+            };
+            xhttp.send(JSON.stringify({
+                fullname: data.fullname,
+                password: data.password,
+                password2: data.password2,
+                username: data.username
+            }));
+        }).then(res => {
+            if (res.success === 'true') {
+                toastr["success"](res.message);
+                setTimeout(() => login(data.username,data.password), 2000);
             }
-        }
-    }
+            else
+                toastr["error"](res.message);
+        }).catch(() => toastr["error"]('אין גישה לשרת'));
 }
 
 function getUserEvents() {
@@ -117,6 +85,69 @@ function getUserEvents() {
             xhttp.send(JSON.stringify({
                 username: window.localStorage.getItem('username'),
                 token: window.localStorage.getItem('token'),
+            }));
+        });
+    }
+}
+
+function apiAddUserEvent(event) {
+    if (!event){
+        toastr["error"]('ארעה שגיאה');
+        return null;
+    } else {
+        let xhttp = new XMLHttpRequest();
+        xhttp.open("PUT", "http://localhost:3000/calendar");
+        xhttp.setRequestHeader("Content-Type", "application/json");
+
+        return new Promise((resolve,reject) => {
+            xhttp.onreadystatechange = () => {
+                if (xhttp.readyState === 4) {
+                    if (xhttp.status === 200){
+                            resolve(JSON.parse(xhttp.responseText));
+                    }
+                    else
+                        reject();
+                }
+            };
+
+            xhttp.send(JSON.stringify({
+                username: window.localStorage.getItem('username'),
+                token: window.localStorage.getItem('token'),
+                event: event
+            }));
+        });
+    }
+}
+
+function apiEditUserEvent(event) {
+    if (!event){
+        toastr["error"]('ארעה שגיאה');
+        return null;
+    } else {
+        let xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "http://localhost:3000/calendar/" + event._id);
+        xhttp.setRequestHeader("Content-Type", "application/json");
+
+        return new Promise((resolve,reject) => {
+            xhttp.onreadystatechange = () => {
+                if (xhttp.readyState === 4) {
+                    if (xhttp.status === 200){
+                        resolve(JSON.parse(xhttp.responseText));
+                    }
+                    else
+                        reject();
+                }
+            };
+            xhttp.send(JSON.stringify({
+                username: window.localStorage.getItem('username'),
+                token: window.localStorage.getItem('token'),
+                event:
+                    {
+                        title: event.title,
+                        start: currentEvent.start,
+                        end: event.end,
+                        description: event.description
+                    }
             }));
         });
     }
