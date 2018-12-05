@@ -142,8 +142,11 @@ module.exports = (app) => {
                 description: req.body.event.description,
                 owner: user.username
             });
-            let promise = await newEvent.save();
-            if (promise) response.success = "true";
+            let event = await newEvent.save();
+            if (event) {
+                response.event = event;
+                response.success = "true";
+            }
         }
         res.json(response);
     });
