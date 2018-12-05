@@ -174,9 +174,8 @@ module.exports = (app) => {
         let user = await User.findOne({ username: req.body.username, token: req.body.token });
         if (user) {
             let event = await Event.findOne({ _id: req.params.id });
-
             if (event) {
-                if (event.owner == user._id) {
+                if (event.owner == user.username) {
                     Event.findOneAndUpdate({ _id: req.params.id }, {
                         title: req.body.event.title,
                         start: req.body.event.start,
