@@ -141,13 +141,7 @@ function apiEditUserEvent(event) {
             xhttp.send(JSON.stringify({
                 username: window.localStorage.getItem('username'),
                 token: window.localStorage.getItem('token'),
-                event:
-                    {
-                        title: event.title,
-                        start: currentEvent.start,
-                        end: event.end,
-                        description: event.description
-                    }
+                event: event
             }));
         });
     }
