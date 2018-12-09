@@ -137,13 +137,21 @@ module.exports = (app) => {
         if (user) {
             let events = await GlobalEvent.find();
             if (events) {
-                response.events = [];
+                response.global_events = {};
                 response.success = "true";
                 response.permission = user.permission;
                 response.categories = config.getCategories();
                 response.places = config.getPlaces();
+                if (!response.global_events.places)
+                    response.global_events.places = {};
                 events.forEach((event) => {
-                    response.events.push(event);
+                    let place = event.place;
+                    let category = event.category;
+                    if (!response.global_events.places[place])
+                        response.global_events.places[place] = {};
+                    if (!response.global_events.places[place][category])
+                        response.global_events.places[place][category] = [];
+                    response.global_events.places[place][category].push(event);
                 });
                 response.message = 'הנך מועבר ליומן הגלובלי';
             }
