@@ -109,6 +109,7 @@ module.exports = (app) => {
         res.json(response);
     });
 
+    // Get all user global events
     app.post('/globalCal', async (req, res) => {
         let user = await User.findOne({ username: req.body.username, token: req.body.token });
         let response = {
