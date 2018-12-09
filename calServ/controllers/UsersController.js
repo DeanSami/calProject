@@ -161,7 +161,8 @@ module.exports = (app) => {
         if (user) {
             let event = await Event.findOne({ _id: req.params.id });
             if (event) {
-                if (event.owner == user._id) {
+                console.log(event);
+                if (event.owner == user.username) {
                     Event.deleteOne({ _id: req.params.id }).exec();
                     response.success = "true";
                 }
