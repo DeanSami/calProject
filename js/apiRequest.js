@@ -146,3 +146,30 @@ function apiEditUserEvent(event) {
         });
     }
 }
+
+function apiDeleteUserEvent(event) {
+    if (!event){
+        toastr["error"]('ארעה שגיאה');
+        return null;
+    } else {
+        let xhttp = new XMLHttpRequest();
+        xhttp.open("DELETE", "http://localhost:3000/calendar/" + event._id);
+        xhttp.setRequestHeader("Content-Type", "application/json");
+
+        return new Promise((resolve,reject) => {
+            xhttp.onreadystatechange = () => {
+                if (xhttp.readyState === 4) {
+                    if (xhttp.status === 200){
+                        resolve(JSON.parse(xhttp.responseText));
+                    }
+                    else
+                        reject();
+                }
+            };
+            xhttp.send(JSON.stringify({
+                username: window.localStorage.getItem('username'),
+                token: window.localStorage.getItem('token')
+            }));
+        });
+    }
+}

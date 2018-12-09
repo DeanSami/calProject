@@ -1,4 +1,4 @@
-let currentEvent, allDay = false;
+let currentEvent, allDay = false, acceptToDeleted = false;
 $(document).ready(function () {
     toastr.options = {
         "closeButton": true,
@@ -33,7 +33,7 @@ function loadCalendar() {
         navLinks: true, // can click day/week names to navigate views
         selectable: true,
         selectHelper: true,
-        select: function(startDate, endDate) {
+        select: function (startDate, endDate) {
             currentEvent = {
                 start: startDate,
                 end: endDate
@@ -42,14 +42,15 @@ function loadCalendar() {
             $('#createEventModal').modal('show');
             document.getElementById('titleModifyEvent').innerHTML = 'צור אירוע חדש';
             document.getElementById('submitButton').innerHTML = 'צור אירוע';
+            $('#deleteButton').hide();
             document.getElementById('startDate').value = startDate.format('HH:mm DD/MM/YYYY');
             document.getElementById('title').value = '';
             document.getElementById('eventDescription').value = '';
-            if(!allDay)
+            if (!allDay)
                 document.getElementById('endDate').value = endDate.format('HH:mm DD/MM/YYYY');
             allDay = false;
         },
-        dayClick: function() {
+        dayClick: function () {
             allDay = true;
             document.getElementById('endDate').value = '';
 
@@ -61,6 +62,7 @@ function loadCalendar() {
             $('#createEventModal').modal('show');
             document.getElementById('titleModifyEvent').innerHTML = 'ערוך אירוע';
             document.getElementById('submitButton').innerHTML = 'ערוך אירוע';
+            $('#deleteButton').show();
             document.getElementById('startDate').value = moment(event.start).format('HH:mm MM/DD/YYYY');
             document.getElementById('title').value = event.title.toString();
             document.getElementById('eventDescription').value = event.description;
@@ -71,13 +73,12 @@ function loadCalendar() {
 
         },
         editable: true,
-        eventResize: function(event) {
-        console.log('resize',event);
+        eventResize: function (event) {
             currentEvent = event;
             editUserEvent();
         },
         eventDrop: (event) => {
-            console.log('drop',event);
+            console.log('drop', event);
             currentEvent = event;
             // currentEvent.start = new Date(event.start);
             // currentEvent.end = currentEvent.end ? new Date(event.end) : null;
@@ -104,7 +105,7 @@ function editUserEvent() {
     let event =
         {
             _id: currentEvent._id,
-            title:  $('#title').val().toString(),
+            title: $('#title').val().toString(),
             start: new Date(currentEvent.start),
             end: new Date(currentEvent.end),
             allDay: currentEvent.end === null && moment(currentEvent.start).format('HH:mm') === '02:00',
@@ -128,9 +129,6 @@ function editEvent(event) {
     $("#createEventModal").modal('hide');
     currentEvent.title = event.title;
     currentEvent.description = event.description;
-    // currentEvent.start = moment(event.start);
-    // currentEvent.end = moment(event.end);
-    console.log('test edit', event);
     $('#calendar').fullCalendar('updateEvent', currentEvent);
 }
 
@@ -162,11 +160,10 @@ function addEvent(event) {
             description: event.description
         },
         true);
-    console.log('dor');
 }
 
 // control onClick Event
-function onclickAddEvent() {
+function onclickEvent() {
     let endDateEl = $('#endDate');
     let startDate = new Date(currentEvent.start);
     let endDate = endDateEl.val() !== '' ? new Date(currentEvent.end) : null;
@@ -181,6 +178,42 @@ function onclickAddEvent() {
         editUserEvent();
     if (document.getElementById('titleModifyEvent').innerHTML === 'צור אירוע חדש')
         addUserEvent(event);
+}
+
+//delete event
+function onclickDeleteEvent() {
+    $('#deleteButton').prop('disabled', true);
+
+    bootbox.confirm({
+        message: '<div style="text-align: center"> האם אתה בטוח שאתה רוצה למחוק את האירוע</div>',
+        size: "small",
+        animate: true,
+        buttons: {
+            confirm: {
+                label: 'אישור',
+                className: 'btn-success pull-right'
+            },
+            cancel: {
+                label: 'בטל',
+                className: 'btn-danger pull-right'
+            }
+        },
+        callback: result => {
+            if (result) {
+                apiDeleteUserEvent(currentEvent).then(res => {
+                    if (res.success === 'true') {
+                        toastr["success"]('אירוע נמחק בהצלחה');
+                        $('#calendar').fullCalendar('removeEvents', currentEvent._id);
+                    } else
+                        toastr["error"]('שגיאה במחיקת אירוע');
+                }).catch(() => {
+                    toastr["error"]('שגיאה במחיקת אירוע');
+                });
+                $("#createEventModal").modal('hide');
+            }
+            $('#deleteButton').prop('disabled', false);
+        }
+    });
 }
 
 function addAllUserEvent() {

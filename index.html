@@ -31,6 +31,7 @@
 
     <!--check can activate page-->
     <script src="js/canActivate.js"></script>
+    <script src="js/bootbox.min.js"></script>
 
 
 </head>
@@ -84,9 +85,9 @@
             </div>
             <div class="modal-footer">
                 <div class="form-group container">
-                    <button class="btn btn-primary btn-block btn-lg" onclick="onclickAddEvent()" id="submitButton" >צור אירוע</button>
+                    <button class="btn btn-primary btn-block" onclick="onclickEvent()" id="submitButton" ></button>
+                    <button class="btn btn-danger btn-block deleteButton" onclick="onclickDeleteEvent()" >מחק אירוע</button>
                 </div>
-                <!--<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>-->
             </div>
 
         </div>
@@ -95,3 +96,4 @@
 
 </body>
 </html>
+
