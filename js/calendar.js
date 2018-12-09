@@ -29,18 +29,24 @@ function loadCalendar() {
             left: 'month,agendaDay',
             lang: 'he'
         },
+        timeZone: 'local',
         navLinks: true, // can click day/week names to navigate views
         selectable: true,
         selectHelper: true,
         select: function(startDate, endDate) {
+            currentEvent = {
+                start: startDate,
+                end: endDate
+            };
+            console.log(currentEvent);
             $('#createEventModal').modal('show');
             document.getElementById('titleModifyEvent').innerHTML = 'צור אירוע חדש';
             document.getElementById('submitButton').innerHTML = 'צור אירוע';
-            document.getElementById('startDate').value = startDate.toDate().toDateString();
+            document.getElementById('startDate').value = startDate.format('HH:mm DD/MM/YYYY');
             document.getElementById('title').value = '';
             document.getElementById('eventDescription').value = '';
             if(!allDay)
-                document.getElementById('endDate').value = endDate.toDate().toDateString();
+                document.getElementById('endDate').value = endDate.format('HH:mm DD/MM/YYYY');
             allDay = false;
         },
         dayClick: function() {
@@ -50,21 +56,32 @@ function loadCalendar() {
         },
         eventClick: (event) => {
             currentEvent = event;
+            currentEvent.start = new Date(event.start);
+            currentEvent.end = currentEvent.end ? new Date(event.end) : null;
             $('#createEventModal').modal('show');
             document.getElementById('titleModifyEvent').innerHTML = 'ערוך אירוע';
             document.getElementById('submitButton').innerHTML = 'ערוך אירוע';
-            document.getElementById('startDate').value = event.start.toDate().toDateString();
+            document.getElementById('startDate').value = moment(event.start).format('HH:mm MM/DD/YYYY');
             document.getElementById('title').value = event.title.toString();
             document.getElementById('eventDescription').value = event.description;
             if (event.end)
-                document.getElementById('endDate').value = event.end.toDate().toDateString();
+                document.getElementById('endDate').value = moment(event.end).format('HH:mm MM/DD/YYYY');
             else
                 document.getElementById('endDate').value = '';
 
         },
         editable: true,
+        eventResize: function(event) {
+        console.log('resize',event);
+            currentEvent = event;
+            editUserEvent();
+        },
         eventDrop: (event) => {
-
+            console.log('drop',event);
+            currentEvent = event;
+            // currentEvent.start = new Date(event.start);
+            // currentEvent.end = currentEvent.end ? new Date(event.end) : null;
+            editUserEvent();
         },
         eventLimit: true, // allow "more" link when too many events
         eventRender: function (eventObj, $el) {
@@ -87,10 +104,10 @@ function editUserEvent() {
     let event =
         {
             _id: currentEvent._id,
-            title: $('#title').val().toString(),
-            start: currentEvent.start,
-            end: currentEvent.end ? currentEvent.end : null,
-            allDay: true,
+            title:  $('#title').val().toString(),
+            start: new Date(currentEvent.start),
+            end: new Date(currentEvent.end),
+            allDay: currentEvent.end === null && moment(currentEvent.start).format('HH:mm') === '02:00',
             description: $('#eventDescription').val().toString()
         };
     apiEditUserEvent(event).then(res => {
@@ -111,6 +128,9 @@ function editEvent(event) {
     $("#createEventModal").modal('hide');
     currentEvent.title = event.title;
     currentEvent.description = event.description;
+    // currentEvent.start = moment(event.start);
+    // currentEvent.end = moment(event.end);
+    console.log('test edit', event);
     $('#calendar').fullCalendar('updateEvent', currentEvent);
 }
 
@@ -148,8 +168,8 @@ function addEvent(event) {
 // control onClick Event
 function onclickAddEvent() {
     let endDateEl = $('#endDate');
-    let startDate = moment(new Date($('#startDate').val())).format('YYYY-MM-DD');
-    let endDate = endDateEl.val() !== '' ? moment(new Date(endDateEl.val())).format('YYYY-MM-DD') : null;
+    let startDate = new Date(currentEvent.start);
+    let endDate = endDateEl.val() !== '' ? new Date(currentEvent.end) : null;
     $('#submitButton').prop('disabled', true);
     let event = {
         title: $('#title').val(),
@@ -173,7 +193,7 @@ function addAllUserEvent() {
                         title: event.title,
                         start: event.start,
                         end: event.end !== null ? event.end : null,
-                        allDay: true,
+                        allDay: event.end === null && moment(event.start).format('HH:mm') === '02:00',
                         description: event.description
                     }
                 });
