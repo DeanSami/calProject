@@ -10,5 +10,11 @@ module.exports = {
     },
     getEnviromentPort: () => {
         return deployEnviroment.PORT;
+    },
+    getPlaces: () => {
+        return configValues.globalCal.places;
+    },
+    getCategories: () => {
+        return configValues.globalCal.categories;
     }
 }

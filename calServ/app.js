@@ -25,11 +25,19 @@ const AdminRoutes = require('./controllers/AdminController');
 /** Connect to DB */
 mongoose.connect(config.getDbConString(), { useNewUrlParser: true });
 
-/** */
+/** Initiate framework */
 const app = express();
+/** Configure app needs
+ * @PORT - the port that the application will listen for requests
+ * @bodyParser - all requests will go trough this middleware which will attach the body of the request to                   request object, parsed to be a json object
+ * @cors - for development time only, allow requests from all origins
+ * @UserRoutes - connect app to routes for users
+ * @SetupRoutes - connect app to routes for developers
+ * @EditorRoutes - connect app to routes for editors
+ * @AdminRoutes - connect app to routes for admins
+ */
 app.set('PORT', process.env.PORT || config.getEnviromentPort());
 
-// parse application/json
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -37,7 +45,7 @@ UserRoutes(app);
 SetupRoutes(app);
 EditorRoutes(app);
 AdminRoutes(app);
-
+/** Start listening with the configured server */
 app.listen(app.get('PORT'), () => {
     console.log('Server is listening on ' + app.get('PORT'));
 });

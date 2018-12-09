@@ -1,10 +1,30 @@
 const { check, validationResult } = require('express-validator/check');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
+const config = require('../config');
 
 const User = require('../models/User');
 const Event = require('../models/Event');
 const GlobalEvent = require('../models/GlobalEvent');
+
+function generateResponse(type, success, message, attachments) {
+    let response = {
+        success: success,
+        message: message
+    }
+    if (attachments) {
+        switch (type) {
+            case 'login':
+                    response.token = token;
+                    response.username = user.username;
+            case 'new_event':
+            case 'edit_event':
+            case 'delete_event':
+            case 'give_permission':
+            case 'delete_permissions':
+        }
+    }
+}
 
 module.exports = (app) => {
 
@@ -32,15 +52,13 @@ module.exports = (app) => {
                 else if (req.body.password == req.body.password2) {
                     // construct the response and create the new user
                     response.success = "true";
-                    let newUser = new User({
+                    let newUser = await User.create({
                         username: req.body.username,
                         password: req.body.password,
                         fullname: req.body.fullname
                     });
-                    response.message = "משתמש חדש נרשם";
-                    newUser.save((err) => {
-                        if (err) throw err;
-                    });
+                    if (newUser)
+                        response.message = "משתמש חדש נרשם";
                 } else {
                     response.message = "סיסמאות לא תואמות";
                 }
@@ -48,7 +66,8 @@ module.exports = (app) => {
                 response.message = errors.array()[0].msg;
             }
             res.json(response)
-        });
+        }
+    );
 
     //***********************************************************************************//
     //***********************************************************************************//
@@ -120,6 +139,8 @@ module.exports = (app) => {
             if (events) {
                 response.events = [];
                 response.success = "true";
+                response.categories = config.getCategories();
+                response.places = config.getPlaces();
                 events.forEach((event) => {
                     response.events.push(event);
                 });
@@ -161,7 +182,6 @@ module.exports = (app) => {
         if (user) {
             let event = await Event.findOne({ _id: req.params.id });
             if (event) {
-                console.log(event);
                 if (event.owner == user.username) {
                     Event.deleteOne({ _id: req.params.id }).exec();
                     response.success = "true";
