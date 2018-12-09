@@ -139,6 +139,7 @@ module.exports = (app) => {
             if (events) {
                 response.events = [];
                 response.success = "true";
+                response.permission = user.permission;
                 response.categories = config.getCategories();
                 response.places = config.getPlaces();
                 events.forEach((event) => {
