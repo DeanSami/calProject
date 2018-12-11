@@ -137,23 +137,53 @@ module.exports = (app) => {
         if (user) {
             let events = await GlobalEvent.find();
             if (events) {
-                response.global_events = {};
-                response.success = "true";
+
+                response.success = 'true';
+                response.globalEvents = []
+                events.forEach(event => {
+                    if (response.globalEvents.length == 0) {
+                        let newCategory = {
+                            categoryName: event.category,
+                            events: []
+                        };
+                        newCategory.events.push(event);
+                        response.globalEvents.push(newCategory);
+                    } else {
+                        let index = -1;
+                        for (let i = 0; i < response.globalEvents.length; i++) {
+                            if (response.globalEvents[i].categoryName == event.category) {
+                                response.globalEvents[i].events.push(event);
+                                index = i;
+                            }
+                        }
+                        if (index < 0) {
+                            let newCategory = {
+                                categoryName: event.category,
+                                events: []
+                            };
+                            newCategory.events.push(event);
+                            response.globalEvents.push(newCategory);
+                        }
+                    }
+                });
                 response.permission = user.permission;
                 response.categories = config.getCategories();
                 response.places = config.getPlaces();
-                if (!response.global_events.places)
-                    response.global_events.places = {};
-                events.forEach((event) => {
-                    let place = event.place;
-                    let category = event.category;
-                    if (!response.global_events.places[place])
-                        response.global_events.places[place] = {};
-                    if (!response.global_events.places[place][category])
-                        response.global_events.places[place][category] = [];
-                    response.global_events.places[place][category].push(event);
-                });
                 response.message = 'הנך מועבר ליומן הגלובלי';
+
+                // response.global_events = {};
+                // response.success = "true";
+                // if (!response.global_events.places)
+                //     response.global_events.places = {};
+                // events.forEach((event) => {
+                //     let place = event.place;
+                //     let category = event.category;
+                //     if (!response.global_events.places[place])
+                //         response.global_events.places[place] = {};
+                //     if (!response.global_events.places[place][category])
+                //         response.global_events.places[place][category] = [];
+                //     response.global_events.places[place][category].push(event);
+                // });
             }
         }
         res.json(response);
