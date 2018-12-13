@@ -122,6 +122,7 @@ module.exports = (app) => {
                 events.forEach((event) => {
                     response.events.push(event);
                 });
+                response.globalEvents = user.globalEvents;
                 response.message = 'הנך מועבר ליומן';
             }
         }
@@ -185,6 +186,39 @@ module.exports = (app) => {
                 //     response.global_events.places[place][category].push(event);
                 // });
             }
+        }
+        res.json(response);
+    });
+
+    app.post('/globalCal/pull/:id', async (req, res) => {
+        let response = {
+            success: 'false'
+        };
+        let user = await User.findOne({ username: req.body.username, token: req.body.token });
+        if (user) {
+            let event = await GlobalEvent.findById(req.params.id);
+            if (event) {
+                let exist = false;
+                for (let i = 0; i < user.globalEvents.length; i++) {
+                    if (req.params.id == user.globalEvents[i]._id) {
+                        exist = true;
+                    }
+                }
+                if (!exist) {
+                    user.globalEvents.push(event);
+                    let updatedUser = await user.save();
+                    if (updatedUser) {
+                        response.success = 'true';
+                        response.message = 'אירוע גלובלי נוסף בהצלחה ליומן אישי';
+                    }
+                } else {
+                    response.message = 'אירוע קיים כבר ביומן האישי';
+                }
+            } else {
+                response.message = 'שגיאה בבחירת אירוע';
+            }
+        } else {
+            response.message = 'שגיאה בהרשאות'
         }
         res.json(response);
     });
