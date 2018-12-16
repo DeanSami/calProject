@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Event = require('../models/Event');
 const RegisterRequest = require('../models/RegisterRequest');
 const Editor = require('../models/Editor');
+const GlobalEvent = require('../models/GlobalEvent');
 
 const usersData = require('./seedData/usersData');
 const eventsData = require('./seedData/eventData');
@@ -50,17 +51,20 @@ module.exports = (app) => {
         let eventsRemoved = await Event.deleteMany();
         let requestsRemoved = await RegisterRequest.deleteMany();
         let editorsRemoved = await Editor.deleteMany();
-        if (usersRemoved && eventsRemoved && requestsRemoved && editorsRemoved) {
+        let globalEventsRemoved = await GlobalEvent.deleteMany();
+        if (usersRemoved && eventsRemoved && requestsRemoved && editorsRemoved && globalEventsRemoved) {
             let users = await User.find();
             let events = await Event.find();
             let requests = await RegisterRequest.find();
             let editors = await Editor.find();
-            if (users && events && requests && editors) {
+            let globalEvents = await GlobalEvent.find();
+            if (users && events && requests && editors && globalEvents) {
                 response.success = "true";
                 response.users = users;
                 response.events = events;
                 response.registerRequests = requests;
                 response.editors = editors;
+                response.globalEvents = globalEvents;
             }
         }
         res.json(response);
