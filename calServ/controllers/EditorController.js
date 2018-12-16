@@ -14,7 +14,6 @@ module.exports = (app) => {
         if (user && editor) {
             if (editor.category.includes(req.body.event.category) &&
                 config.getCategories().includes(req.body.event.category)) {
-<<<<<<< HEAD
                 if (req.body.title && req.body.event.category && req.body.event.place) {
                     let new_global_event = await GlobalEvent.create({
                         title: req.body.event.title,
@@ -35,41 +34,18 @@ module.exports = (app) => {
                         success: 'false',
                         message: 'שדות חסרים'
                     };
-=======
-                let new_global_event = await GlobalEvent.create({
-                    title: req.body.event.title,
-                    start: req.body.event.start,
-                    end: req.body.event.end,
-                    description: req.body.event.description,
-                    postedBy: user.username,
-                    category: req.body.event.category,
-                    place: req.body.event.place
-                });
-                response = {
-                    success: 'true',
-                    message: 'אירוע גלובלי חדש נוצר',
-                    globalEvent: new_global_event
->>>>>>> db6e98e51a75210aa55d84bf21d1b7da58c8c73f
                 }
             } else {
                 response = {
                     success: 'false',
                     message: 'שגיאת קטגוריה',
-<<<<<<< HEAD
                 };
-=======
-                }
->>>>>>> db6e98e51a75210aa55d84bf21d1b7da58c8c73f
             }
         } else {
             response = {
                 success: 'false',
                 message: 'שגיאת הרשאות',
-<<<<<<< HEAD
             };
-=======
-            }
->>>>>>> db6e98e51a75210aa55d84bf21d1b7da58c8c73f
         }
         res.json(response);
     });
@@ -96,52 +72,31 @@ module.exports = (app) => {
                         response = {
                             success: 'true',
                             message: 'בקשת עריכה נשמרה בהצלחה'
-<<<<<<< HEAD
                         };
-=======
-                        }
->>>>>>> db6e98e51a75210aa55d84bf21d1b7da58c8c73f
                     } else {
                         response = {
                             success: 'false',
                             message: 'לא קיימת הרשאה לקטגוריה זו'
-<<<<<<< HEAD
                         };
-=======
-                        }
->>>>>>> db6e98e51a75210aa55d84bf21d1b7da58c8c73f
                     }
                 } else {
                     response = {
                         success: 'false',
                         message: 'שגיאת הרשאות'
-<<<<<<< HEAD
                     };
-=======
-                    }
->>>>>>> db6e98e51a75210aa55d84bf21d1b7da58c8c73f
                 }
             } else {
                 response = {
                     success: 'false',
                     message: 'לא נמצא אירוע'
-<<<<<<< HEAD
                 };
-=======
-                }
->>>>>>> db6e98e51a75210aa55d84bf21d1b7da58c8c73f
             }
         } else {
             response = {
                 success: 'false',
                 message: 'שגיאת משתמש'
-<<<<<<< HEAD
             };
-=======
-            }
->>>>>>> db6e98e51a75210aa55d84bf21d1b7da58c8c73f
         }
-        res.json(response);
     });
 
     app.delete('/globalCal/:id', async (req, res) => {
@@ -162,26 +117,17 @@ module.exports = (app) => {
                         response = {
                             success: 'true',
                             message: 'בקשת עריכה נשמרה בהצלחה'
-<<<<<<< HEAD
                         };
-=======
-                        }
->>>>>>> db6e98e51a75210aa55d84bf21d1b7da58c8c73f
                     } else {
                         response = {
                             success: 'true',
                             message: 'לא קיימת הרשאה לקטגוריה זו'
-<<<<<<< HEAD
                         };
-=======
-                        }
->>>>>>> db6e98e51a75210aa55d84bf21d1b7da58c8c73f
                     }
                 } else {
                     response = {
                         success: 'true',
                         message: 'שגיאת הרשאות'
-<<<<<<< HEAD
                     };
                 }
             } else {
@@ -273,21 +219,6 @@ module.exports = (app) => {
                 success: 'false',
                 message: 'שגיאת משתמש'
             };
-=======
-                    }
-                }
-            } else {
-                response = {
-                    success: 'true',
-                    message: 'לא נמצא אירוע'
-                }
-            }
-        } else {
-            response = {
-                success: 'true',
-                message: 'שגיאת משתמש'
-            }
->>>>>>> db6e98e51a75210aa55d84bf21d1b7da58c8c73f
         }
         res.json(response);
     });
