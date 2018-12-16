@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Calendar</title>
+    <title>Calendar-admin panel</title>
 
     <!--jQuery-->
     <script src="lib/moment.min.js"></script>
@@ -20,87 +20,77 @@
     <script src="node_modules/bootstrap/dist/js/bootstrap.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
-
     <!--fullcalendar-->
     <link rel="stylesheet" href="css/fullcalendar.min.css">
     <script src="js/fullcalendar.min.js"></script>
     <script src="http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery-ui.custom.min.js"></script>
     <script src="lib/he.js"></script>
 
-    <script src="js/calendar.js"></script>
     <script src="js/apiRequest.js"></script>
     <link rel="stylesheet" href="css/style.css">
 
     <!--check can activate page-->
     <script src="js/canActivate.js"></script>
+    <script src="js/adminRequest.js"></script>
     <script src="js/bootbox.min.js"></script>
-
-
 </head>
 <body>
 <div id="loading"></div>
 <div class="container">
-    <p class="text-primary loggedIn-user"><a class="text-dark">משתמש מחובר</a> <a href="login.html" onclick="signOut()" >התנתק</a></p>
-    <h1 class="text-center pb-4 text-primary"><u>יומן אישי</u></h1>
+    <p class="text-primary loggedIn-user"><a class="text-dark">משתמש מחובר</a> <a href="login.html" onclick="signOut()">התנתק</a>
+    </p>
+    <h1 class="text-center pb-4 text-primary"><u>מערכת ניהול מנהל</u></h1>
 </div>
 <div class="container main">
 
     <div class="menu p-2 col-3 d-none d-md-block">
-        <div id="accordion">
-            <div class="colors-events">
-                <i class="fa fa-circle global-event-color"></i>אירועים גלובליים
-                <br>
-                <i class="fa fa-circle event-color"></i>אירועים אישיים
+        <div class="list-group" role="tablist">
 
-            </div>
-            <div class="card">
-                <div class="card-header container" id="headingPermission" data-toggle="collapse"
-                     data-target="#permissionCollapse"
-                     aria-expanded="true" aria-controls="permissionCollapse">
-                    <h7 class="mb-0 text-primary text-center">
-                        מתן הרשאות
-                    </h7>
-                </div>
-
-                <div id="permissionCollapse" class="collapse" aria-labelledby="headingPermission"
-                     data-parent="#accordion">
-                    <div class="card-body">
-                        <label for="searchUser">חפש משתמש</label>
-                        <select id="searchUser" class="custom-select custom-select mb-2">
-                            <option selected>הכל</option>
-                        </select>
-
-                        <button class="btn btn-block" onclick="applyFilter()">חפש</button>
-                    </div>
-                </div>
-            </div>
-            <div class="card mt-3">
-                <div class="card-header container" id="headingCalendars" data-toggle="collapse"
-                     data-target="#calendarsCollapse"
-                     aria-expanded="true" aria-controls="calendarsCollapse">
-                    <h7 class="mb-0 text-primary text-center">
-                        יומנים זמינים
-                    </h7>
-                </div>
-
-                <div id="calendarsCollapse" class="collapse" aria-labelledby="headingCalendars"
-                     data-parent="#accordion">
-                    <div class="card-body">
-                        <label for="categoryFilter">חפש משתמש</label>
-                        <select id="categoryFilter" class="custom-select custom-select mb-2">
-                            <option selected>הכל</option>
-                        </select>
-
-                        <button class="btn btn-block" onclick="applyFilter()">סנן</button>
-                    </div>
-                </div>
+            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <a class="nav-link" id="v-pills-request-tab" data-toggle="pill" href="#v-pills-request" role="tab"
+                   aria-controls="v-pills-request" aria-selected="true"><i class="fa fa-key"
+                                                                           onclick="buildAdminRequestTable()"></i><span>בקשות מנהל</span></a>
+                <a class="nav-link" id="v-pills-search-tab" data-toggle="pill" href="#v-pills-search" role="tab"
+                   aria-controls="v-pills-search" aria-selected="false"><i class="fa fa-credit-card"></i><span>חיפוש משתמש</span></a>
             </div>
         </div>
-        <buttton class="btn btn-primary btn-block mt-3" onclick="window.location.assign('global.html')">
-            מעבר ליומן גלובלי
-        </buttton>
+
     </div>
-    <div id='calendar'></div>
+    <div id="bodyAdmin">
+        <div class="tab-content" id="v-pills-tabContent">
+            <div class="tab-pane fade" id="v-pills-request" role="tabpanel" aria-labelledby="v-pills-request-tab">
+                <div class="container table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">שם מלא</th>
+                            <th scope="col">ניסיון</th>
+                            <th scope="col">קטגוריות</th>
+                            <th scope="col">פעולות</th>
+                        </tr>
+                        </thead>
+                        <tbody id="registerRequest"></tbody>
+                    </table>
+                </div>
+                <template id="requestTemplate">
+                    <tr>
+                        <td scope="row"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </template>
+            </div>
+            <div class="tab-pane fade" id="v-pills-search" role="tabpanel" aria-labelledby="v-pills-search-tab">
+                חיפוש משתמשים
+            </div>
+        </div>
+    </div>
+
+</div>
+
 
 </div>
 
@@ -143,7 +133,7 @@
             <div id="modalBodyShow" class="modal-body">
                 <label for="titleShow" class="text-primary"><u>שם האירוע</u></label>
                 <p id="titleShow"></p>
-                <label for="eventDescriptionShow" class="text-primary" ><u>תיאור האירוע</u></label>
+                <label for="eventDescriptionShow" class="text-primary"><u>תיאור האירוע</u></label>
                 <p id="eventDescriptionShow"></p>
             </div>
 
