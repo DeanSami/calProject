@@ -97,6 +97,7 @@ module.exports = (app) => {
                 message: 'שגיאת משתמש'
             };
         }
+        res.json(response);
     });
 
     app.delete('/globalCal/:id', async (req, res) => {
