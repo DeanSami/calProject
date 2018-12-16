@@ -1,9 +1,6 @@
 $(document).ready(function () {
     $('#submit_form').prop('disabled', true);
 });
-function recaptcha_callback () {
-    $('#submit_form').prop('disabled', false);
-}
 
 function login(username, password) {
         let xhttp = new XMLHttpRequest();
@@ -52,7 +49,10 @@ function register(data) {
                 fullname: data.fullname,
                 password: data.password,
                 password2: data.password2,
-                username: data.username
+                username: data.username,
+                editor: data.editor,
+                category: data.category,
+                experience: data.experience
             }));
         }).then(res => {
             if (res.success === 'true') {
@@ -173,3 +173,4 @@ function apiDeleteUserEvent(event) {
         });
     }
 }
+

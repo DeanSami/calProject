@@ -1,4 +1,15 @@
+<<<<<<< HEAD
+let currentEvent, allDay = false, acceptToDeleted = false, globalEvents;
+=======
+<<<<<<< HEAD
+
+
+    $(document).ready(function() {
+    setTimeout(() => {
+        $('#calendar').fullCalendar({
+=======
 let currentEvent, allDay = false, acceptToDeleted = false;
+>>>>>>> b22c17ab2bf4610d0d0661a648d43a27928e3d22
 $(document).ready(function () {
     toastr.options = {
         "closeButton": true,
@@ -22,6 +33,7 @@ $(document).ready(function () {
 
 function loadCalendar() {
     $('#calendar').fullCalendar({
+>>>>>>> 0ca1cf2fbe17985f60e93bc770ab7bc29eca4664
         height: 650,
         header: {
             right: 'next,prev today',
@@ -38,8 +50,10 @@ function loadCalendar() {
                 start: startDate,
                 end: endDate
             };
-            console.log(currentEvent);
             $('#createEventModal').modal('show');
+            $('#modalBody').show();
+            $('#submitButton').show();
+            $('#modalBodyShow').hide();
             document.getElementById('titleModifyEvent').innerHTML = 'צור אירוע חדש';
             document.getElementById('submitButton').innerHTML = 'צור אירוע';
             $('#deleteButton').hide();
@@ -53,23 +67,35 @@ function loadCalendar() {
         dayClick: function () {
             allDay = true;
             document.getElementById('endDate').value = '';
-
         },
         eventClick: (event) => {
             currentEvent = event;
             currentEvent.start = new Date(event.start);
             currentEvent.end = currentEvent.end ? new Date(event.end) : null;
             $('#createEventModal').modal('show');
-            document.getElementById('titleModifyEvent').innerHTML = 'ערוך אירוע';
-            document.getElementById('submitButton').innerHTML = 'ערוך אירוע';
-            $('#deleteButton').show();
-            document.getElementById('startDate').value = moment(event.start).format('HH:mm MM/DD/YYYY');
-            document.getElementById('title').value = event.title.toString();
-            document.getElementById('eventDescription').value = event.description;
-            if (event.end)
-                document.getElementById('endDate').value = moment(event.end).format('HH:mm MM/DD/YYYY');
-            else
-                document.getElementById('endDate').value = '';
+            if (globalEvents.findIndex(el => el._id === event._id) >= 0) {
+                $('#modalBody').hide();
+                $('#submitButton').hide();
+                $('#modalBodyShow').show();
+                document.getElementById('titleModifyEvent').innerHTML = 'תצוגת אירוע גלובלי';
+                $('#titleShow').html(event.title.toString());
+                $('#eventDescriptionShow').html(event.description.toString());
+            }
+            else {
+                $('#modalBody').show();
+                $('#submitButton').show();
+                $('#modalBodyShow').hide();
+                document.getElementById('titleModifyEvent').innerHTML = 'ערוך אירוע';
+                document.getElementById('submitButton').innerHTML = 'ערוך אירוע';
+                $('#deleteButton').show();
+                document.getElementById('startDate').value = moment(event.start).format('HH:mm MM/DD/YYYY');
+                document.getElementById('title').value = event.title.toString();
+                document.getElementById('eventDescription').value = event.description;
+                if (event.end)
+                    document.getElementById('endDate').value = moment(event.end).format('HH:mm MM/DD/YYYY');
+                else
+                    document.getElementById('endDate').value = '';
+            }
 
         },
         editable: true,
@@ -87,6 +113,9 @@ function loadCalendar() {
         eventLimit: true, // allow "more" link when too many events
         eventRender: function (eventObj, $el) {
             $el.popover({
+                animation: true,
+                placement: 'top',
+                html: true,
                 title: eventObj.title,
                 content: eventObj.description,
                 trigger: 'hover',
@@ -180,9 +209,13 @@ function onclickEvent() {
         addUserEvent(event);
 }
 
+<<<<<<< HEAD
+    },1);
+=======
 //delete event
 function onclickDeleteEvent() {
     $('#deleteButton').prop('disabled', true);
+>>>>>>> 0ca1cf2fbe17985f60e93bc770ab7bc29eca4664
 
     bootbox.confirm({
         message: '<div style="text-align: center"> האם אתה בטוח שאתה רוצה למחוק את האירוע</div>',
@@ -231,6 +264,18 @@ function addAllUserEvent() {
                     }
                 });
                 $('#calendar').fullCalendar('addEventSource', events);
+                globalEvents = JSON.parse(res).globalEvents.map(event => {
+                    return {
+                        _id: event._id,
+                        title: event.title,
+                        start: event.start,
+                        end: event.end !== null ? event.end : null,
+                        allDay: event.end === null && moment(event.start).format('HH:mm') === '02:00',
+                        description: event.description,
+                        color: 'SandyBrown'
+                    }
+                });
+                $('#calendar').fullCalendar('addEventSource', globalEvents);
                 resolve();
             }
             else {
@@ -242,4 +287,9 @@ function addAllUserEvent() {
             reject();
         });
     });
+}
+
+function signOut() {
+    localStorage.removeItem('username');
+    localStorage.removeItem('token');
 }

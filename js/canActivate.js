@@ -1,6 +1,7 @@
 $(document).ready(() => {
     $("#loading").show(1000);
     $(".user-form").hide();
+    $(".main").hide();
     let currentUrl = window.location.pathname.split('/');
     if (window.localStorage.getItem('username') && window.localStorage.getItem('token')) {
         canActivate().then(res => {
@@ -10,9 +11,28 @@ $(document).ready(() => {
                         window.location.assign('index.html');
                     else {
                         toastr["success"](res.message);
-                        loadCalendar();
+                        switch(currentUrl[currentUrl.length - 1]) {
+                            case 'index.html':
+                                loadCalendar();
+                                break;
+                            case 'global.html':
+                                loadGlobalCalendar();
+                                break;
+                            case 'admin-panel.html':
+                                if(res.permission !== 'admin' && false)
+                                    alert('check');
+                                    // window.location.assign('index.html');
+                                else
+                                    buildAdminRequestTable();
+                                break;
+                            default:
+                                window.location.assign('login.html');
+                        }
+                        $("#loading").hide(1000);
+                        $(".user-form").show(1000);
+                        $(".main").show(1000);
                     }
-                }, 2000);
+                }, 500);
             }
             else {
                 if (currentUrl[currentUrl.length - 1] !== 'login.html' && currentUrl[currentUrl.length - 1] !== 'register.html')
@@ -20,6 +40,7 @@ $(document).ready(() => {
                 else
                     $("#loading").hide(1000);
                 $(".user-form").show(1000);
+                $(".main").show(1000);
             }
         })
             .catch(() => toastr["error"]('אין גישה לשרת'));
@@ -28,6 +49,7 @@ $(document).ready(() => {
         if (currentUrl[currentUrl.length - 1] === 'login.html' || currentUrl[currentUrl.length - 1] === 'register.html') {
             $("#loading").hide(1000);
             $(".user-form").show(1000);
+            $(".main").show(1000);
         }
         else
             window.location.assign('login.html');
