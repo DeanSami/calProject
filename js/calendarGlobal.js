@@ -1,5 +1,5 @@
 let currentEvent, currentEventPlace, currentEventCategory, acceptToDeleted = false;
-let GlobalEvent;
+let globalEvents, categories = [], categoryFilter = [];
 $(document).ready(function () {
     toastr.options = {
         "closeButton": true,
@@ -65,7 +65,7 @@ function loadGlobalCalendar() {
                 document.getElementById('endDate').value = moment(event.end).format('DD/MM/YYYY');
             else
                 document.getElementById('endDate').value = '';
-            this.globalEvents.globalEvents.forEach(category => category.events.forEach(el => {
+            globalEvents.globalEvents.forEach(category => category.events.forEach(el => {
                 if(el._id === event._id){
                     currentEventCategory = category.categoryName;
                     currentEventPlace = el.place;
@@ -99,7 +99,7 @@ function loadGlobalCalendar() {
     });
     addAllGlobalEvent().then(() => {
         $("#loading").hide();
-        if(this.globalEvents.permission !== 'editor' && this.globalEvents.permission !== 'admin'){
+        if(globalEvents.permission !== 'editor' && globalEvents.permission !== 'admin'){
             $('#calendar').fullCalendar('option', {
                 editable: false,
                 selectable: false,
@@ -109,7 +109,6 @@ function loadGlobalCalendar() {
                     $('.showEventName').html(event.title);
                     $('.showEventDescription').html(event.description);
                     $('#showGlobalEventModal').modal('show');
-
                 }
             });
         }
@@ -122,12 +121,14 @@ function setFilter(){
     let placeOptionList = document.getElementById('placeFilter').options;
     let categoryFilterDialog = document.getElementById('categoryFilterDialog').options;
     let placeFilterDialog = document.getElementById('placeFilterDialog').options;
-    this.globalEvents.globalEvents.forEach(category =>{
+    globalEvents.globalEvents.forEach(category =>{
         categoryOptionList.add(new Option(category.categoryName, category.categoryName, false));
-        categoryFilterDialog.add(new Option(category.categoryName, category.categoryName, false));
-    }
-    );
-    this.globalEvents.places.forEach(place => {
+    });
+    globalEvents.categories.forEach(category => {
+            categoryFilterDialog.add(new Option(category, category, false));
+            categories.push(category);
+        });
+    globalEvents.places.forEach(place => {
         placeOptionList.add(new Option(place, place, false));
         placeFilterDialog.add(new Option(place, place, false));
     }
@@ -139,8 +140,8 @@ function addAllGlobalEvent() {
     return new Promise((resolve, reject) => {
         getGlobalEvents().then((res) => {
             if (JSON.parse(res).success === "true") {
-                this.globalEvents = JSON.parse(res);
-                this.globalEvents.globalEvents.map(category => {
+                globalEvents = JSON.parse(res);
+                globalEvents.globalEvents.map(category => {
                     let events = category.events.map(event => {
                         return {
                             _id: event._id,
@@ -188,12 +189,12 @@ function applyFilter() {
                 let eventFilter = [];
 
                 if(categoryApply !== 'הכל') {
-                    let idx = this.globalEvents.globalEvents.findIndex(el => el.categoryName === categoryApply);
+                    let idx = globalEvents.globalEvents.findIndex(el => el.categoryName === categoryApply);
                     if (idx >= 0)
-                        this.globalEvents.globalEvents[idx].events.forEach(el => eventFilter.push(el));
+                        globalEvents.globalEvents[idx].events.forEach(el => eventFilter.push(el));
                 }
                 else {
-                    this.globalEvents.globalEvents.forEach(el => {
+                    globalEvents.globalEvents.forEach(el => {
                         el.events.forEach(event => eventFilter.push(event));
                     });
                 }
@@ -201,6 +202,7 @@ function applyFilter() {
                     eventFilter = eventFilter.filter(event => event.place === placeApply);
                 }
                 $('#calendar').fullCalendar('removeEventSources');
+                eventFilter.forEach(event => event.allDay= true);
                 $('#calendar').fullCalendar('addEventSource', eventFilter);
 
                 toastr["success"]('סינון בוצע');
@@ -238,6 +240,7 @@ function onclickEvent() {
         title: $('#title').val(),
         start: startDate,
         end: endDate,
+        allDay: true,
         description: $('#eventDescription').val().toString(),
         category: $('#categoryFilterDialog').val(),
         place:$('#placeFilterDialog').val()
@@ -256,6 +259,11 @@ function addEditorGlobalEvent(event) {
         } else
             toastr["error"](res.message);
         $('#submitButton').prop('disabled', false);
+        if(categories.findIndex(el => el === event.category) < 0){
+            document.getElementById('categoryFilter').options.add(new Option(event.category, event.category, false));
+            categories.push(event.category);
+        }
+        globalEvents.globalEvents.push(event);
     }).catch(() => {
         toastr["error"]('שגיאה בהוספת אירוע');
         $("#createEventModal").modal('hide');

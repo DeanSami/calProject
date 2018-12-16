@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    $('#submit_form').prop('disabled', true);
+    // $('#submit_form').prop('disabled', true);
 });
 
 function login(username, password) {
