@@ -21,6 +21,7 @@
     <script src="js/apiRequest.js"></script>
     <link rel="stylesheet" href="css/style.css">
     <meta charset="UTF-8">
+    <script src='https://www.google.com/recaptcha/api.js'></script>
     <title>calendar - register</title>
 </head>
 <body>
@@ -34,19 +35,19 @@
         <div class="form-group">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                <input type="text" class="form-control" name="username" placeholder="שם משתמש" required="required">
+                <input type="text" class="form-control" name="fullname" placeholder="שם מלא">
             </div>
         </div>
         <div class="form-group">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-paper-plane"></i></span>
-                <input type="email" class="form-control" name="email" placeholder="כתובת מייל" required="required">
+                <input type="username" class="form-control" name="username" placeholder="כתובת מייל">
             </div>
         </div>
         <div class="form-group">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                <input type="text" class="form-control" name="password" placeholder="סיסמה" required="required">
+                <input type="text" class="form-control" name="password" placeholder="סיסמה">
             </div>
         </div>
         <div class="form-group">
@@ -54,16 +55,21 @@
 				<span class="input-group-addon">
 					<i class="fa fa-lock"></i>
 				</span>
-                <input type="text" class="form-control" name="confirm_password" placeholder="אשר סיסמה" required="required">
+                <input type="text" class="form-control" name="confirm_password" placeholder="אשר סיסמה">
             </div>
         </div>
         <div class="form-group">
+            <div class="g-recaptcha" data-sitekey="6LdBDH8UAAAAAAaQkH_6v9fZE21VpD7Q4IpL3igJ"
+                 data-callback="recaptcha_callback"></div>
+        </div>
+        <div class="form-group">
             <button onclick="register({
+            fullname: fullname.value,
             username: username.value,
-            email: email.value,
             password: password.value,
             password2: confirm_password.value
-            })" class="btn btn-primary btn-block btn-lg" type="button">הירשם</button>
+            })" class="btn btn-primary btn-block btn-lg" id="submit_form" type="button">הירשם
+            </button>
         </div>
     </form>
 </div>

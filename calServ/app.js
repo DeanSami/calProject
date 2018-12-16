@@ -12,9 +12,9 @@ const AdminRoutes = require('./controllers/AdminController');
 mongoose.connect(config.getDbConString(), { useNewUrlParser: true });
 
 const app = express();
+
 app.set('PORT', process.env.PORT || config.getEnviromentPort());
 
-// parse application/json
 app.use(bodyParser.json());
 app.use(cors());
 

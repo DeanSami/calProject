@@ -37,7 +37,7 @@ body {
     width: 390px;
     margin: 0 auto;
     padding: 30px 0;
-    display: none;
+    display: none
 }
 .user-form h2 {
     color: #636363;
@@ -76,17 +76,24 @@ body {
     border-width: 0 0 1px 0;
     padding-left: 5px;
 }
-.form-group .btn {
-    font-size: 16px;
-    font-weight: bold;
-    background: #19aa8d;
-    border-radius: 3px;
-    border: none;
-    min-width: 140px;
+.form-group {
+    display: flex;
+    justify-content: space-between;
+}
+.btn {
     outline: none !important;
+    flex: 1 1 auto;
+    margin: 2px!important;
+}
+.modal-footer {
+
+}
+.deleteButton{
+    flex: 0 0 auto;
+    max-width: 100px;
 }
 .form-group .btn:hover, .user-form .btn:focus {
-    background: #179b81;
+    /*background: #179b81;*/
 }
 .user-form a {
     color: #19aa8d;

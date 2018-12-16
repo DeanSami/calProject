@@ -1,10 +1,30 @@
 const { check, validationResult } = require('express-validator/check');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
+const config = require('../config');
 
 const User = require('../models/User');
 const Event = require('../models/Event');
 const GlobalEvent = require('../models/GlobalEvent');
+
+function generateResponse(type, success, message, attachments) {
+    let response = {
+        success: success,
+        message: message
+    }
+    if (attachments) {
+        switch (type) {
+            case 'login':
+                    response.token = token;
+                    response.username = user.username;
+            case 'new_event':
+            case 'edit_event':
+            case 'delete_event':
+            case 'give_permission':
+            case 'delete_permissions':
+        }
+    }
+}
 
 module.exports = (app) => {
 
@@ -32,15 +52,13 @@ module.exports = (app) => {
                 else if (req.body.password == req.body.password2) {
                     // construct the response and create the new user
                     response.success = "true";
-                    let newUser = new User({
+                    let newUser = await User.create({
                         username: req.body.username,
                         password: req.body.password,
                         fullname: req.body.fullname
                     });
-                    response.message = "משתמש חדש נרשם";
-                    newUser.save((err) => {
-                        if (err) throw err;
-                    });
+                    if (newUser)
+                        response.message = "משתמש חדש נרשם";
                 } else {
                     response.message = "סיסמאות לא תואמות";
                 }
@@ -48,7 +66,8 @@ module.exports = (app) => {
                 response.message = errors.array()[0].msg;
             }
             res.json(response)
-        });
+        }
+    );
 
     //***********************************************************************************//
     //***********************************************************************************//
@@ -103,12 +122,14 @@ module.exports = (app) => {
                 events.forEach((event) => {
                     response.events.push(event);
                 });
+                response.globalEvents = user.globalEvents;
                 response.message = 'הנך מועבר ליומן';
             }
         }
         res.json(response);
     });
 
+    // Get all user global events
     app.post('/globalCal', async (req, res) => {
         let user = await User.findOne({ username: req.body.username, token: req.body.token });
         let response = {
@@ -117,13 +138,87 @@ module.exports = (app) => {
         if (user) {
             let events = await GlobalEvent.find();
             if (events) {
-                response.events = [];
-                response.success = "true";
-                events.forEach((event) => {
-                    response.events.push(event);
+
+                response.success = 'true';
+                response.globalEvents = []
+                events.forEach(event => {
+                    if (response.globalEvents.length == 0) {
+                        let newCategory = {
+                            categoryName: event.category,
+                            events: []
+                        };
+                        newCategory.events.push(event);
+                        response.globalEvents.push(newCategory);
+                    } else {
+                        let index = -1;
+                        for (let i = 0; i < response.globalEvents.length; i++) {
+                            if (response.globalEvents[i].categoryName == event.category) {
+                                response.globalEvents[i].events.push(event);
+                                index = i;
+                            }
+                        }
+                        if (index < 0) {
+                            let newCategory = {
+                                categoryName: event.category,
+                                events: []
+                            };
+                            newCategory.events.push(event);
+                            response.globalEvents.push(newCategory);
+                        }
+                    }
                 });
+                response.permission = user.permission;
+                response.categories = config.getCategories();
+                response.places = config.getPlaces();
                 response.message = 'הנך מועבר ליומן הגלובלי';
+
+                // response.global_events = {};
+                // response.success = "true";
+                // if (!response.global_events.places)
+                //     response.global_events.places = {};
+                // events.forEach((event) => {
+                //     let place = event.place;
+                //     let category = event.category;
+                //     if (!response.global_events.places[place])
+                //         response.global_events.places[place] = {};
+                //     if (!response.global_events.places[place][category])
+                //         response.global_events.places[place][category] = [];
+                //     response.global_events.places[place][category].push(event);
+                // });
             }
+        }
+        res.json(response);
+    });
+
+    app.post('/globalCal/pull/:id', async (req, res) => {
+        let response = {
+            success: 'false'
+        };
+        let user = await User.findOne({ username: req.body.username, token: req.body.token });
+        if (user) {
+            let event = await GlobalEvent.findById(req.params.id);
+            if (event) {
+                let exist = false;
+                for (let i = 0; i < user.globalEvents.length; i++) {
+                    if (req.params.id == user.globalEvents[i]._id) {
+                        exist = true;
+                    }
+                }
+                if (!exist) {
+                    user.globalEvents.push(event);
+                    let updatedUser = await user.save();
+                    if (updatedUser) {
+                        response.success = 'true';
+                        response.message = 'אירוע גלובלי נוסף בהצלחה ליומן אישי';
+                    }
+                } else {
+                    response.message = 'אירוע קיים כבר ביומן האישי';
+                }
+            } else {
+                response.message = 'שגיאה בבחירת אירוע';
+            }
+        } else {
+            response.message = 'שגיאה בהרשאות'
         }
         res.json(response);
     });
@@ -136,14 +231,17 @@ module.exports = (app) => {
         let user = await User.findOne({ username: req.body.username, token: req.body.token });
         if (user) {
             let newEvent = new Event({
-                eventName: req.body.eventName,
-                eventStart: req.body.eventStart,
-                eventEnd: req.body.eventEnd,
-                eventDetails: req.body.eventDetails,
+                title: req.body.event.title,
+                start: req.body.event.start,
+                end: req.body.event.end,
+                description: req.body.event.description,
                 owner: user.username
             });
-            let promise = await newEvent.save();
-            if (promise) response.success = "true";
+            let event = await newEvent.save();
+            if (event) {
+                response.event = event;
+                response.success = "true";
+            }
         }
         res.json(response);
     });
@@ -157,7 +255,7 @@ module.exports = (app) => {
         if (user) {
             let event = await Event.findOne({ _id: req.params.id });
             if (event) {
-                if (event.owner == user._id) {
+                if (event.owner == user.username) {
                     Event.deleteOne({ _id: req.params.id }).exec();
                     response.success = "true";
                 }
@@ -174,14 +272,13 @@ module.exports = (app) => {
         let user = await User.findOne({ username: req.body.username, token: req.body.token });
         if (user) {
             let event = await Event.findOne({ _id: req.params.id });
-
             if (event) {
-                if (event.owner == user._id) {
+                if (event.owner == user.username) {
                     Event.findOneAndUpdate({ _id: req.params.id }, {
-                        eventName: req.body.event.eventName,
-                        eventStart: req.body.event.eventStart,
-                        eventEnd: req.body.event.eventEnd,
-                        eventDetails: req.body.event.eventDetails
+                        title: req.body.event.title,
+                        start: req.body.event.start,
+                        end: req.body.event.end,
+                        description: req.body.event.description
                     }).exec();
                     response.success = "true";
                 }

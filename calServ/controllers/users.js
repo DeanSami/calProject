@@ -128,9 +128,9 @@ UsersRouter.post('/calendar', async (req, res) => {
     let user = await User.findOne({username: req.body.username, token: req.body.token});
     if (user) {
         let newEvent = new Event({
-            eventName: req.body.eventName,
-            eventStart: req.body.eventStart,
-            eventEnd: req.body.eventEnd,
+            title: req.body.title,
+            start: req.body.start,
+            end: req.body.end,
             eventDetails: req.body.eventDetails,
             owner: user._id
         });
@@ -170,9 +170,9 @@ UsersRouter.post('/calendar/:id', async (req, res) => {
         if (event) {
             if (event.owner == user._id) {
                 Event.findOneAndUpdate({_id: req.params.id}, {
-                eventName: req.body.event.eventName,
-                eventStart: req.body.event.eventStart,
-                eventEnd: req.body.event.eventEnd,
+                title: req.body.event.title,
+                start: req.body.event.start,
+                end: req.body.event.end,
                 eventDetails: req.body.event.eventDetails
                 }).exec();
                 response.success = "true";

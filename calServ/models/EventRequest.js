@@ -2,10 +2,14 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 // User Schema
-let GlobalEventSchema = new Schema({
+let EventRequestSchema = new Schema({
+    _id: {
+        type: String,
+        required: true
+    },
     title: {
         type: String,
-        require: true
+        required: true
     },
     start: {
         type: Date, 
@@ -25,23 +29,41 @@ let GlobalEventSchema = new Schema({
     },
     postedBy: {
         type: String,
-        required: true
+        required: false
     },
     category: {
         type: String,
-        required: true
+        required: false
     },
     place: {
         type: String,
-        required: true
+        required: false
     },
     editedLastBy: {
         type: String,
         default: null,
         required: false
+    },
+    update: {
+        type: Boolean,
+        required: false,
+        default: false
+    },
+    delete: {
+        type: Boolean,
+        required: false,
+        default: false
+    },
+    reason: {
+        type: String,
+        required: true
+    },
+    editorRequesting: {
+        type: String,
+        required: true
     }
 });
 
-let GlobalEvent = mongoose.model('GlobalEvent', GlobalEventSchema);
+let EventRequest = mongoose.model('EventRequest', EventRequestSchema);
 
-module.exports = GlobalEvent;
+module.exports = EventRequest;
