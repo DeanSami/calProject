@@ -45,7 +45,7 @@ module.exports = (app) => {
                     let request;
                     request = await RegisterRequest.findById(req.params.id);
                     if (request) {
-                        await User.findOne({ username: request.username });
+                        approved_user = await User.findOne({ username: request.username });
                         if (approved_user) {
                             approved_user.permission = 'editor'
                             await approved_user.save();
