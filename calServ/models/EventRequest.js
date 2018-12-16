@@ -3,17 +3,16 @@ const Schema = mongoose.Schema;
 
 // User Schema
 let EventRequestSchema = new Schema({
-    _id: {
+    event_id: {
         type: String,
         required: true
     },
     title: {
         type: String,
-        required: true
+        required: false
     },
     start: {
         type: Date, 
-        default: Date.now(),
         required: false
     },
     end: {

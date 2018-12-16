@@ -6,311 +6,364 @@ const config = require('../config');
 const User = require('../models/User');
 const Event = require('../models/Event');
 const GlobalEvent = require('../models/GlobalEvent');
-
-function generateResponse(type, success, message, attachments) {
-    let response = {
-        success: success,
-        message: message
-    }
-    if (attachments) {
-        switch (type) {
-            case 'login':
-                    response.token = token;
-                    response.username = user.username;
-            case 'new_event':
-            case 'edit_event':
-            case 'delete_event':
-            case 'give_permission':
-            case 'delete_permissions':
-        }
-    }
-}
+const RegisterRequest = require('../models/RegisterRequest');
 
 module.exports = (app) => {
 
-    //***********************************************************************************//
-    //***********************************************************************************//
-    //***************************          REGISTRATION      ****************************//
-    //***********************************************************************************//
-    //***********************************************************************************//
     app.post('/register',
         check('username').isEmail().withMessage('שם משתמש חייב להיות מייל תקני'),
         check('password').isLength({ min: 6 }).withMessage('סיסמא חייבת להיות לפחות באורך 6'),
         async (req, res) => {
-            let response = {
-                success: "false"
-            }
-            // check validation errors
+
+            let response = {};
+
             const errors = validationResult(req);
+
             if (errors.isEmpty()) {
-                // check if username doesnt exist in DB
+
                 const user = await User.findOne({ username: req.body.username });
                 if (user) {
-                    response.message = "משתמש כבר רשום";
-                }
-                // check if passwords match
-                else if (req.body.password == req.body.password2) {
-                    // construct the response and create the new user
-                    response.success = "true";
-                    let newUser = await User.create({
+                    response = {
+                        success: 'false',
+                        message: 'משתמש כבר רשום'
+                    }
+                } else if (req.body.password == req.body.password2) {
+                    await User.create({
                         username: req.body.username,
                         password: req.body.password,
                         fullname: req.body.fullname
                     });
-                    if (newUser)
-                        response.message = "משתמש חדש נרשם";
+                    if (req.body.editor) {
+                        await RegisterRequest.create({
+                            username: req.body.username,
+                            password: req.body.password,
+                            fullname: req.body.fullname,
+                            category: req.body.category,
+                            experience: req.body.experience
+                        });
+                        response = {
+                            success: 'true',
+                            message: 'מעביר לדף ראשי, בקשה להיות עורך תוכן נרשמה במערכת וממתינה לאישור מנהל'
+                        }
+                    } else {
+                        response = {
+                            success: 'true',
+                            message: 'מעביר לדף ראשי'
+                        }
+                    }
                 } else {
-                    response.message = "סיסמאות לא תואמות";
+                    response = {
+                        success: 'false',
+                        message: 'סיסמאות לא תואמות'
+                    }
                 }
             } else {
-                response.message = errors.array()[0].msg;
+                response = {
+                    success: 'false',
+                    message: errors.array()[0].msg
+                }
             }
             res.json(response)
         }
     );
 
-    //***********************************************************************************//
-    //***********************************************************************************//
-    //***************************            Login           ****************************//
-    //***********************************************************************************//
-    //***********************************************************************************//
     app.post('/login', async (req, res) => {
-        let response = {
-            success: "false"
-        };
-        // check if a user with the given username exists in DB
+
+        let response = {};
+
         const user = await User.findOne({ username: req.body.username });
+
         if (user) {
-            // check if passwords match between input and DB
+
             if (req.body.password == user.password) {
-                // create a token
+
                 let cert = fs.readFileSync('private.key');
                 let token = await jwt.sign({ username: user.username, loggedInAt: Date.now().toString() }, cert, { algorithm: 'RS256', expiresIn: '1h' });
-                if (token) {
-                    // push login log and tell the requester user has logged in
-                    user.loggedInAt.push(Date.now());
-                    user.token = token;
-                    response.token = token;
-                    response.username = user.username;
-                    response.success = "true";
-                    response.message = "משתמש התחבר"
-                    user.save((err) => {
-                        if (err) throw err;
-                    });
-                } else {
-                    response.message = "שגיאה ביצירת מפתח";
+
+                user.loggedInAt.push(Date.now());
+                user.token = token;
+                await user.save();
+                let msg = 'ברוך הבא, ';
+                msg += user.username;
+                response = {
+                    success: 'true',
+                    message: msg,
+                    username: user.username,
+                    token: token,
+                    permission: user.permission
                 }
             } else {
-                response.message = "סיסמאות לא תואמות";
+                response = {
+                    success: 'false',
+                    message: 'סיסמאות לא תואמות'
+                }
             }
-        } else response.message = "לא נמצא משתמש";
-
-        res.json(response);
-    });
-
-    // CAL POST - returns all events of requesting user
-    app.post('/calendar', async (req, res) => {
-        let user = await User.findOne({ username: req.body.username, token: req.body.token });
-        let response = {
-            success: "false"
-        };
-        if (user) {
-            let events = await Event.find().where('owner').equals(user.username).exec();
-            if (events) {
-                response.events = [];
-                response.success = "true";
-                events.forEach((event) => {
-                    response.events.push(event);
-                });
-                response.globalEvents = user.globalEvents;
-                response.message = 'הנך מועבר ליומן';
+        } else {
+            response = {
+                success: 'false',
+                message: 'לא נמצא אימייל'
             }
         }
         res.json(response);
     });
 
-    // Get all user global events
-    app.post('/globalCal', async (req, res) => {
+    app.post('/calendar', async (req, res) => {
+        let response = {};
+
         let user = await User.findOne({ username: req.body.username, token: req.body.token });
-        let response = {
-            success: "false"
-        };
+        if (user) {
+
+            let events = await Event.find().where('owner').equals(user.username).exec();
+            let user_events = [];
+            events.forEach((event) => {
+                user_events.push(event);
+            });
+
+            response = {
+                success: 'true',
+                message: 'הנך מועבר ליומן',
+                events: user_events,
+                globalEvents: user.globalEvents
+            }
+        } else {
+            response = {
+                success: 'false',
+                message: 'שגיאת משתמש'
+            }
+        }
+        res.json(response);
+    });
+
+    app.post('/globalCal', async (req, res) => {
+        let response = {};
+        let user = await User.findOne({ username: req.body.username, token: req.body.token });
         if (user) {
             let events = await GlobalEvent.find();
-            if (events) {
-
-                response.success = 'true';
-                response.globalEvents = []
-                events.forEach(event => {
-                    if (response.globalEvents.length == 0) {
-                        let newCategory = {
-                            categoryName: event.category,
-                            events: []
-                        };
-                        newCategory.events.push(event);
-                        response.globalEvents.push(newCategory);
-                    } else {
-                        let index = -1;
-                        for (let i = 0; i < response.globalEvents.length; i++) {
-                            if (response.globalEvents[i].categoryName == event.category) {
-                                response.globalEvents[i].events.push(event);
-                                index = i;
-                            }
-                        }
-                        if (index < 0) {
-                            let newCategory = {
-                                categoryName: event.category,
-                                events: []
-                            };
-                            newCategory.events.push(event);
-                            response.globalEvents.push(newCategory);
-                        }
+            let global_events = []
+            events.forEach(event => {
+                let index = -1;
+                for (let i = 0; i < global_events.length; i++) {
+                    if (global_events[i].categoryName == event.category) {
+                        global_events[i].events.push(event);
+                        index = i;
                     }
-                });
-                response.permission = user.permission;
-                response.categories = config.getCategories();
-                response.places = config.getPlaces();
-                response.message = 'הנך מועבר ליומן הגלובלי';
-
-                // response.global_events = {};
-                // response.success = "true";
-                // if (!response.global_events.places)
-                //     response.global_events.places = {};
-                // events.forEach((event) => {
-                //     let place = event.place;
-                //     let category = event.category;
-                //     if (!response.global_events.places[place])
-                //         response.global_events.places[place] = {};
-                //     if (!response.global_events.places[place][category])
-                //         response.global_events.places[place][category] = [];
-                //     response.global_events.places[place][category].push(event);
-                // });
-            }
+                }
+                if (index < 0) {
+                    let new_category = {
+                        categoryName: event.category,
+                        events: []
+                    };
+                    new_category.events.push(event);
+                    global_events.push(new_category);
+                }
+            });
+            response = {
+                success: 'true',
+                message: 'הנך מועבר ליומן הגלובלי',
+                globalEvents: global_events,
+                permission: user.permission,
+                categories: config.getCategories(),
+                places: config.getPlaces()
+            };
+        } else {
+            response = {
+                success: 'false',
+                message: 'שגיאת משתמש'
+            };
         }
         res.json(response);
     });
 
     app.post('/globalCal/pull/:id', async (req, res) => {
-        let response = {
-            success: 'false'
-        };
+        let response = {};
         let user = await User.findOne({ username: req.body.username, token: req.body.token });
         if (user) {
             let event = await GlobalEvent.findById(req.params.id);
             if (event) {
                 let exist = false;
-                for (let i = 0; i < user.globalEvents.length; i++) {
-                    if (req.params.id == user.globalEvents[i]._id) {
+                user.globalEvents.forEach((event) => {
+                    if (req.params.id == event._id) {
                         exist = true;
                     }
-                }
+                });
                 if (!exist) {
                     user.globalEvents.push(event);
-                    let updatedUser = await user.save();
-                    if (updatedUser) {
-                        response.success = 'true';
-                        response.message = 'אירוע גלובלי נוסף בהצלחה ליומן אישי';
+                    await user.save();
+                    response = {
+                        success: 'true',
+                        message: 'אירוע גלובלי נוסף בהצלחה ליומן אישי'
                     }
                 } else {
-                    response.message = 'אירוע קיים כבר ביומן האישי';
+                    response = {
+                        success: 'false',
+                        message: 'אירוע קיים כבר ביומן האישי'
+                    }
                 }
             } else {
-                response.message = 'שגיאה בבחירת אירוע';
+                response = {
+                    success: 'false',
+                    message: 'שגיאה בבחירת אירוע'
+                }
             }
         } else {
-            response.message = 'שגיאה בהרשאות'
+            response = {
+                success: 'false',
+                message: 'שגיאה בהרשאות'
+            }
         }
         res.json(response);
     });
 
-    // USER ADD EVENT
     app.put('/calendar', async (req, res) => {
-        let response = {
-            success: "false"
-        };
+        let response = {};
         let user = await User.findOne({ username: req.body.username, token: req.body.token });
         if (user) {
-            let newEvent = new Event({
+            let event = await Event.create({
                 title: req.body.event.title,
                 start: req.body.event.start,
                 end: req.body.event.end,
                 description: req.body.event.description,
                 owner: user.username
             });
-            let event = await newEvent.save();
-            if (event) {
-                response.event = event;
-                response.success = "true";
+            response = {
+                success: 'true',
+                message: 'אירוע נוצר בהצלחה',
+                event: event
+            }
+        } else {
+            response = {
+                success: 'false',
+                message: 'שגיאת משתמש'
             }
         }
         res.json(response);
     });
 
-    // USER DELETE EVENT
     app.delete('/calendar/:id', async (req, res) => {
-        let response = {
-            success: "false"
-        };
+        let response = {};
         let user = await User.findOne({ username: req.body.username, token: req.body.token });
         if (user) {
             let event = await Event.findOne({ _id: req.params.id });
             if (event) {
                 if (event.owner == user.username) {
-                    Event.deleteOne({ _id: req.params.id }).exec();
-                    response.success = "true";
+                    await Event.deleteOne({ _id: req.params.id });
+                    response = {
+                        success: 'true',
+                        message: 'אירוע נמחק בהצלחה'
+                    };
                 }
+            } else {
+                response = {
+                    success: 'false',
+                    message: 'שגיאה במציאת אירוע'
+                };
             }
+        } else {
+            response = {
+                success: 'false',
+                message: 'שגיאת משתמש'
+            };
         }
         res.json(response);
     });
 
-    // USER UPDATE EVENT
     app.post('/calendar/:id', async (req, res) => {
-        let response = {
-            success: "false"
-        }
+        let response = {};
         let user = await User.findOne({ username: req.body.username, token: req.body.token });
         if (user) {
             let event = await Event.findOne({ _id: req.params.id });
             if (event) {
                 if (event.owner == user.username) {
-                    Event.findOneAndUpdate({ _id: req.params.id }, {
+                    let updated_event = await Event.findOneAndUpdate({ _id: req.params.id }, {
                         title: req.body.event.title,
                         start: req.body.event.start,
                         end: req.body.event.end,
                         description: req.body.event.description
-                    }).exec();
-                    response.success = "true";
+                    });
+                    response = {
+                        success: 'true',
+                        message: 'אירוע עודכן בהצלחה', 
+                        event: updated_event
+                    };
+                } else {
+                    response = {
+                        success: 'false',
+                        message: 'שגיאת הרשאה'
+                    };
                 }
+            } else {
+                response = {
+                    success: 'false',
+                    message: 'שגיאה בבחירת אירוע'
+                };
             }
+        } else {
+            response = {
+                success: 'false',
+                message: 'שגיאת משתמש'
+            };
         }
         res.json(response);
     });
 
-    // USER GIVE PERMISSIONS
     app.post('/givepermissions', async (req, res) => {
-        let response = {
-            success: "false"
-        };
+        let response = {};
         let user = await User.findOne({ username: req.body.username, token: req.body.token });
         if (user) {
-            user.iPermit.push(req.body.permitedUserID);
-            user.save();
-            response.success = "true";
+            let permited = await User.findOne( { username: req.body.permitedUserName });
+            if (permited) {
+                user.iPermit.push(permited._id);
+                await user.save();
+                response = {
+                    success: 'true',
+                    message: 'הרשאה ניתנה בהצלחה'
+                }
+            } else {
+                response = {
+                    success: 'false',
+                    message: 'משתמש לא נמצא'
+                }
+            }
+        } else {
+            response = {
+                success: 'false',
+                message: 'שגיאת משתמש'
+            }
         }
         res.json(response);
     });
 
     app.delete('/removepermission/:id', async (req, res) => {
-        let response = {
-            success: "false"
-        };
+        let response = {};
         let user = await User.findOne({ username: req.body.username, token: req.body.token });
         if (user) {
-            let index = user.iPermit.indexOf(req.params.id);
-            user.iPermit.splice(index, 1);
-            user.save();
-            response.success = "true";
+            let permited = await User.findOne({ _id: req.params.id });
+            if (permited) {
+                let index = user.iPermit.indexOf(permited._id);
+                if (index >= 0) {
+                    user.iPermit.splice(index, 1);
+                    await user.save();
+                    response = {
+                        success: 'true',
+                        message: 'הרשאה הוסרה בהצלחה'
+                    }
+                } else {
+                    response = {
+                        success: 'false',
+                        message: 'משתמש לא נמצא ברשימת מורשים'
+                    }
+                }
+            } else {
+                response = {
+                    success: 'false',
+                    message: 'שגיאה במציאת משתמש מורשה'
+                }
+            }
+        } else {
+            response = {
+                success: 'false',
+                message: 'שגיאת משתמש'
+            }
         }
         res.json(response);
     });
