@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calendar-admin panel</title>
+
+    <!--jQuery-->
+    <script src="lib/moment.min.js"></script>
+    <script src="lib/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+
+    <!-- toastr -->
+    <link rel="stylesheet" href="node_modules/toastr/build/toastr.css">
+    <script src="node_modules/toastr/build/toastr.min.js"></script>
+
+
+    <!--bootstrap-->
+    <link rel="stylesheet" href="https://cdn.rtlcss.com/bootstrap/v4.0.0/css/bootstrap.min.css"
+          integrity="sha384-P4uhUIGk/q1gaD/NdgkBIl3a6QywJjlsFJFk7SPRdruoGddvRVSwv5qFnvZ73cpz" crossorigin="anonymous">
+    <script src="node_modules/bootstrap/dist/js/bootstrap.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!--fullcalendar-->
+    <link rel="stylesheet" href="css/fullcalendar.min.css">
+    <script src="js/fullcalendar.min.js"></script>
+    <script src="http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery-ui.custom.min.js"></script>
+    <script src="lib/he.js"></script>
+
+    <script src="js/apiRequest.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+
+    <!--check can activate page-->
+    <script src="js/canActivate.js"></script>
+    <script src="js/adminRequest.js"></script>
+    <script src="js/bootbox.min.js"></script>
+</head>
+<body>
+<div id="loading"></div>
+<div class="container">
+    <p class="text-primary loggedIn-user"><a class="text-dark">משתמש מחובר</a> <a href="login.html" onclick="signOut()">התנתק</a>
+    </p>
+    <h1 class="text-center pb-4 text-primary"><u>מערכת ניהול מנהל</u></h1>
+</div>
+<div class="container main">
+
+    <div class="menu p-2 col-3 d-none d-md-block">
+        <div class="list-group" role="tablist">
+
+            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <a class="nav-link" id="v-pills-request-tab" data-toggle="pill" href="#v-pills-request" role="tab"
+                   aria-controls="v-pills-request" aria-selected="true"><i class="fa fa-key"
+                                                                           onclick="buildAdminRequestTable()"></i><span>בקשות מנהל</span></a>
+                <a class="nav-link" id="v-pills-search-tab" data-toggle="pill" href="#v-pills-search" role="tab"
+                   aria-controls="v-pills-search" aria-selected="false"><i class="fa fa-credit-card"></i><span>חיפוש משתמש</span></a>
+            </div>
+        </div>
+
+    </div>
+    <div id="bodyAdmin">
+        <div class="tab-content" id="v-pills-tabContent">
+            <div class="tab-pane fade" id="v-pills-request" role="tabpanel" aria-labelledby="v-pills-request-tab">
+                <div class="container table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">שם מלא</th>
+                            <th scope="col">ניסיון</th>
+                            <th scope="col">קטגוריות</th>
+                            <th scope="col">פעולות</th>
+                        </tr>
+                        </thead>
+                        <tbody id="registerRequest"></tbody>
+                    </table>
+                </div>
+                <template id="requestTemplate">
+                    <tr>
+                        <td scope="row"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </template>
+            </div>
+            <div class="tab-pane fade" id="v-pills-search" role="tabpanel" aria-labelledby="v-pills-search-tab">
+                חיפוש משתמשים
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+</div>
+
+
+<div id="createEventModal" class="modal fade show">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span> <span
+                        class="sr-only">close</span></button>
+            </div>
+            <h4 class="new-event-title" id="titleModifyEvent"></h4>
+
+            <div id="modalBody" class="modal-body">
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="title" placeholder="שם אירוע"
+                               required="required">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group date">
+                        <input type="text" class="form-control" id="startDate" placeholder="" required="required"
+                               disabled>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group date">
+                        <input type="text" class="form-control" id="endDate" placeholder="" disabled>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group date">
+                        <textarea class="form-control" type="text" rows="4" placeholder="פרטי אירוע"
+                                  id="eventDescription"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div id="modalBodyShow" class="modal-body">
+                <label for="titleShow" class="text-primary"><u>שם האירוע</u></label>
+                <p id="titleShow"></p>
+                <label for="eventDescriptionShow" class="text-primary"><u>תיאור האירוע</u></label>
+                <p id="eventDescriptionShow"></p>
+            </div>
+
+            <div class="modal-footer">
+                <div class="form-group container">
+                    <button class="btn btn-primary btn-block" onclick="onclickEvent()" id="submitButton"></button>
+                    <button class="btn btn-danger btn-block deleteButton" onclick="onclickDeleteEvent()"
+                            id="deleteButton">מחק אירוע
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
