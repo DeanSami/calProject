@@ -1,4 +1,15 @@
+<<<<<<< HEAD
 let currentEvent, allDay = false, acceptToDeleted = false, globalEvents;
+=======
+<<<<<<< HEAD
+
+
+    $(document).ready(function() {
+    setTimeout(() => {
+        $('#calendar').fullCalendar({
+=======
+let currentEvent, allDay = false, acceptToDeleted = false;
+>>>>>>> b22c17ab2bf4610d0d0661a648d43a27928e3d22
 $(document).ready(function () {
     toastr.options = {
         "closeButton": true,
@@ -22,6 +33,7 @@ $(document).ready(function () {
 
 function loadCalendar() {
     $('#calendar').fullCalendar({
+>>>>>>> 0ca1cf2fbe17985f60e93bc770ab7bc29eca4664
         height: 650,
         header: {
             right: 'next,prev today',
@@ -197,9 +209,13 @@ function onclickEvent() {
         addUserEvent(event);
 }
 
+<<<<<<< HEAD
+    },1);
+=======
 //delete event
 function onclickDeleteEvent() {
     $('#deleteButton').prop('disabled', true);
+>>>>>>> 0ca1cf2fbe17985f60e93bc770ab7bc29eca4664
 
     bootbox.confirm({
         message: '<div style="text-align: center"> האם אתה בטוח שאתה רוצה למחוק את האירוע</div>',
