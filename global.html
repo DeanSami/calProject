@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calendar</title>
+
+    <!--jQuery-->
+    <script src="lib/moment.min.js"></script>
+    <script src="lib/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+
+    <!-- toastr -->
+    <link rel="stylesheet" href="node_modules/toastr/build/toastr.css">
+    <script src="node_modules/toastr/build/toastr.min.js"></script>
+
+
+    <!--bootstrap-->
+    <link rel="stylesheet" href="https://cdn.rtlcss.com/bootstrap/v4.0.0/css/bootstrap.min.css"
+          integrity="sha384-P4uhUIGk/q1gaD/NdgkBIl3a6QywJjlsFJFk7SPRdruoGddvRVSwv5qFnvZ73cpz" crossorigin="anonymous">
+    <script src="node_modules/bootstrap/dist/js/bootstrap.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!--fullcalendar-->
+    <link rel="stylesheet" href="css/fullcalendar.min.css">
+    <script src="js/fullcalendar.min.js"></script>
+    <script src="http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery-ui.custom.min.js"></script>
+    <script src="lib/he.js"></script>
+
+    <script src="js/calendarGlobal.js"></script>
+    <script src="js/apiGlobalRequest.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+
+    <!--check can activate page-->
+    <script src="js/canActivate.js"></script>
+    <script src="js/bootbox.min.js"></script>
+
+
+</head>
+<body>
+<div id="loading"></div>
+<div class="container">
+    <p class="text-primary loggedIn-user"><a class="text-dark">משתמש מחובר</a> <a href="login.html" onclick="signOut()" >התנתק</a></p>
+    <h1 class="text-center pb-4 text-primary"><u>יומן גלובלי</u></h1>
+</div>
+<div class="container main">
+
+    <div class="menu p-2 col-3 d-none d-md-block">
+        <div id="accordion">
+            <div class="colors-events">
+                <i class="fa fa-circle global-event-color"></i>אירועים גלובליים
+                <br>
+                <i class="fa fa-circle event-color"></i>אירועים אישיים
+
+            </div>
+            <div class="card">
+                <div class="card-header container" id="headingFilter" data-toggle="collapse" data-target="#filterCollapse"
+                     aria-expanded="true" aria-controls="filterCollapse">
+                    <h7 class="mb-0 text-primary text-center">
+                        סינון אירועים
+                    </h7>
+                </div>
+
+                <div id="filterCollapse" class="collapse" aria-labelledby="headingFilter" data-parent="#accordion">
+                    <div class="card-body">
+                        <label for="categoryFilter">חפש משתמש</label>
+                        <select id="categoryFilter" class="custom-select custom-select mb-2">
+                            <option selected>הכל</option>
+                        </select>
+                        <label for="placeFilter">מקום</label>
+                        <select id="placeFilter" class="custom-select custom-select mb-2">
+                            <option selected>הכל</option>
+                        </select>
+
+                        <button class="btn btn-block" onclick="applyFilter()">סנן</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <buttton class="btn btn-primary btn-block mt-3" onclick="window.location.assign('index.html')">חזור ליומן אישי
+        </buttton>
+    </div>
+    <div id='calendar'></div>
+
+</div>
+<div id="createEventModal" class="modal fade show">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span>
+                    <span
+                            class="sr-only">close</span></button>
+            </div>
+            <h4 class="new-event-title" id="titleModifyEvent"></h4>
+
+            <div id="modalBody" class="modal-body">
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="title" placeholder="שם אירוע"
+                               required="required">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group date">
+                        <input type="text" class="form-control" id="startDate" placeholder="" required="required"
+                               disabled>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group date">
+                        <input type="text" class="form-control" id="endDate" placeholder="" disabled>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group date">
+                        <textarea class="form-control" type="text" rows="4" placeholder="פרטי אירוע"
+                                  id="eventDescription"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+
+                    <div class="form-right-select col-6 pl-2">
+                        <label for="categoryFilterDialog">קטגוריה</label>
+                        <select id="categoryFilterDialog" class="custom-select custom-select mb-2">
+                            <option selected>הכל</option>
+                        </select>
+                    </div>
+                    <div class="form-left-select col-6">
+                        <label for="placeFilterDialog">מקום</label>
+                        <select id="placeFilterDialog" class="custom-select custom-select mb-2>">
+                            <option selected>הכל</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <div class="form-group container">
+                    <button class="btn btn-primary btn-block pl-2" onclick="onclickEvent()" id="submitButton"></button>
+                    <button class="btn btn-danger btn-block deleteButton" onclick="onclickDeleteEvent()"
+                            id="deleteButton">מחק אירוע
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div id="showGlobalEventModal" class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventTitleModal"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="eventBodyModal">
+                <h5 class="font-weight-bold text-primary"><u class="showEventName"></u></h5>
+                <div class="showEventDescription"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="userPullEvent()">הוסף ליומן אישי</button>
+                <button type="button" class="btn btn-secondary closeButton" data-dismiss="modal">סגור</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

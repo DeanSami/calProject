@@ -1,4 +1,6 @@
-$(document).ready(function() {
+
+
+    $(document).ready(function() {
     setTimeout(() => {
         $('#calendar').fullCalendar({
         height: 650,
@@ -124,6 +126,6 @@ $(document).ready(function() {
     }
     $("#loading").hide();
 
-    },3000);
+    },1);
 
 });
