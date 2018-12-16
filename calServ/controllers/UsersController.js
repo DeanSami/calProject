@@ -275,11 +275,6 @@ module.exports = (app) => {
                         message: 'שגיאה במציאת אירוע'
                     };
                 }
-            } else {
-                response = {
-                    success: 'false',
-                    message: 'שגיאה במציאת אירוע'
-                };
             }
         } else {
             response = {
