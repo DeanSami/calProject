@@ -1,0 +1,44 @@
+POST - localhost:3000/register
+REQUEST - username, password, password2, fullname, editor, category, experience
+RESPONSE - success, message
+
+POST - localhost:3000/login
+REQUEST - username, password
+RESPONSE - success, message, username, token, permission
+
+POST - localhost:3000/calendar
+REQUEST - username, token
+RESPONSE - success, message, events, globalEvents
+
+POST - localhost:3000/globalCal
+REQUEST - username, token
+RESPONSE - success, message, globalEvents, permission, categories, places
+
+POST - localhost:3000/globalCal/pull/:id
+URL Params - id
+REQUEST - username, token
+RESPONSE - success, message
+
+PUT - localhost:3000/calendar
+REQUEST - username, token, title, start, end, description, owner
+RESPONSE - success, message, event
+
+DELETE - localhost:3000/calendar/:id
+URL Params - id
+REQUEST - username, token
+RESPONSE - success, message
+
+POST - localhost:3000/calendar/:id
+URL Params - id
+REQUEST - username, token, title, start, end, description
+RESPONSE - success, message, event
+
+POST - localhost:3000/givepermissions
+REQUEST - username, token, permitedUserName
+RESPONSE - success, message
+
+DELETE - localhost:3000/removepermission/:id
+URL Params - id
+REQUEST - username, token
+RESPONSE - success, message
+

@@ -3,9 +3,14 @@ const Schema = mongoose.Schema;
 
 // User Schema
 let EventSchema = new Schema({
+    type: {
+        type: String,
+        default: 'personal',
+        required: false
+    },
     title: {
         type: String,
-        require: true
+        required: true
     },
     start: {
         type: Date,
@@ -14,7 +19,7 @@ let EventSchema = new Schema({
     },
     end: {
         type: Date,
-        default: "",
+        default: '',
         required: false
     },
     description: {

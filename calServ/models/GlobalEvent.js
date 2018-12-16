@@ -3,6 +3,11 @@ const Schema = mongoose.Schema;
 
 // User Schema
 let GlobalEventSchema = new Schema({
+    type: {
+        type: String,
+        default: 'global',
+        required: false
+    },
     title: {
         type: String,
         require: true
