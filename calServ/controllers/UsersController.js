@@ -328,13 +328,28 @@ module.exports = (app) => {
         let response = {};
         let user = await User.findOne({ username: req.body.username, token: req.body.token });
         if (user) {
-            let permited = await User.findOne({ username: req.body.permitedUserName });
+            let permited = await User.findOne({ username: req.body.permiteduname });
             if (permited) {
-                user.iPermit.push(permited._id);
-                await user.save();
-                response = {
-                    success: 'true',
-                    message: 'הרשאה ניתנה בהצלחה'
+                let is_permited = false;
+                user.iPermit.forEach(permited_id => {
+                    if (permited_id.equals(permited._id)) {
+                        is_permited = !is_permited
+                    }
+                });
+                if (!is_permited) {
+                    user.iPermit.push(permited._id);
+                    permited.theyPermit.push(user._id);
+                    await permited.save();
+                    await user.save();
+                    response = {
+                        success: 'true',
+                        message: 'הרשאה ניתנה בהצלחה'
+                    }
+                } else {
+                    response = {
+                        success: 'false',
+                        message: 'למשתמש זה כבר קיימת הרשאה'
+                    }
                 }
             } else {
                 response = {
@@ -355,11 +370,16 @@ module.exports = (app) => {
         let response = {};
         let user = await User.findOne({ username: req.body.username, token: req.body.token });
         if (user) {
-            let permited = await User.findOne({ _id: req.params.id });
+            let permited = await User.find({_id: req.params.id}).catch(() => {});
             if (permited) {
-                let index = user.iPermit.indexOf(permited._id);
-                if (index >= 0) {
-                    user.iPermit.splice(index, 1);
+                let permited_index = -1;
+                user.iPermit.forEach((permited_id, index) => {
+                    if (permited_id.equals(permited._id)) {
+                        permited_index = index;
+                    }
+                });
+                if (permited_index >= 0) {
+                    user.iPermit.splice(permited_index, 1);
                     await user.save();
                     response = {
                         success: 'true',
@@ -374,7 +394,7 @@ module.exports = (app) => {
             } else {
                 response = {
                     success: 'false',
-                    message: 'שגיאה במציאת משתמש מורשה'
+                    message: 'שגיאה במציאת משתמש'
                 }
             }
         } else {
