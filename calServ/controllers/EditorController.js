@@ -66,17 +66,19 @@ module.exports = (app) => {
                 let global_event = await GlobalEvent.findById({ _id: req.params.id });
                 if (global_event) {
                     if (user.permission == 'admin') {
-                        global_event.title = req.body.event.title;
-                        global_event.start = req.body.event.start;
-                        global_event.end = req.body.event.end;
-                        global_event.description = req.body.event.description;
-                        global_event.category = req.body.event.category;
-                        global_event.place = req.body.event.place;
-                        await global_event.save();
+                         await GlobalEvent.findOneAndUpdate({ _id: global_event._id}, {
+                            title: req.body.event.title,
+                            start: req.body.event.start,
+                            end: req.body.event.end,
+                            description: req.body.event.description,
+                            category: req.body.event.category,
+                            place: req.body.event.place
+                        });
+                        let updated_global_event = await GlobalEvent.findOne({ _id: global_event._id});
                         response = {
                             success: 'true',
                             message: 'אירוע נערך',
-                            globalEvent: global_event
+                            event: updated_global_event
                         }
                     } else if (editor.category.includes(global_event.category)) {
                         await EventRequest.create({
