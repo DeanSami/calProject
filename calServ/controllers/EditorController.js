@@ -80,26 +80,33 @@ module.exports = (app) => {
                             message: 'אירוע נערך',
                             event: updated_global_event
                         }
-                    } else if (editor.category.includes(global_event.category)) {
-                        await EventRequest.create({
-                            event_id: global_event._id,
-                            title: req.body.event.title,
-                            start: req.body.event.start,
-                            end: req.body.event.end,
-                            description: req.body.event.description,
-                            update: true,
-                            reason: req.body.reason,
-                            editorRequesting: editor.username
-                        });
-                        response = {
-                            success: 'true',
-                            message: 'בקשת עריכה נשמרה בהצלחה'
-                        };
+                    } else if (req.body.reason) {
+                        if (editor.category.includes(global_event.category) ) {
+                            await EventRequest.create({
+                                event_id: global_event._id,
+                                title: req.body.event.title,
+                                start: req.body.event.start,
+                                end: req.body.event.end,
+                                description: req.body.event.description,
+                                update: true,
+                                reason: req.body.reason,
+                                editorRequesting: editor.username
+                            });
+                            response = {
+                                success: 'true',
+                                message: 'בקשת עריכה נשמרה בהצלחה'
+                            };
+                        } else {
+                            response = {
+                                success: 'false',
+                                message: 'לא קיימת הרשאה לקטגוריה זו'
+                            };
+                        }
                     } else {
                         response = {
                             success: 'false',
-                            message: 'לא קיימת הרשאה לקטגוריה זו'
-                        };
+                            message: 'אנא ספק סיבה לעריכה'
+                        }
                     }
                 } else {
                     response = {
