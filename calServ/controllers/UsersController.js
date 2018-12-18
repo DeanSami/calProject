@@ -292,16 +292,15 @@ module.exports = (app) => {
             let event = await Event.findOne({ _id: req.params.id });
             if (event) {
                 if (event.owner == user.username) {
-                    let updated_event = await Event.findOneAndUpdate({ _id: req.params.id }, {
-                        title: req.body.event.title,
-                        start: req.body.event.start,
-                        end: req.body.event.end,
-                        description: req.body.event.description
-                    });
+                    if (req.body.event.title) event.title = req.body.event.title;
+                    if (req.body.event.start) event.start = req.body.event.start;
+                    if (req.body.event.end) event.end = req.body.event.end;
+                    if (req.body.event.description) event.description = req.body.event.description;
+                    await event.save();
                     response = {
                         success: 'true',
                         message: 'אירוע עודכן בהצלחה',
-                        event: updated_event
+                        event: event
                     };
                 } else {
                     response = {
