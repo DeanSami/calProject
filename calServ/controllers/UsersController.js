@@ -145,6 +145,42 @@ module.exports = (app) => {
         res.json(response);
     });
 
+    app.post('/calendar/:permited_uname', async (req, res) => {
+        let response = {};
+
+        let user_editing = await User.findOne({ username: req.body.username, token: req.body.token });
+        let user_permiting = await User.findOne( {username: req.params.permited_uname});
+        if (user_permiting && user_editing) {
+            if (user_editing.theyPermit.indexOf(user_permiting._id) >= 0 && user_permiting.iPermit.indexOf(user_editing._id) >= 0) {
+                let events = await Event.find().where('owner').equals(user_permiting.username).exec();
+                let user_events = [];
+                events.forEach((event) => {
+                    user_events.push(event);
+                });
+                let theyPermit = [];
+                for (let i = 0; i < user_editing.theyPermit.length; i++) {
+                    user_that_permited = await User.findOne( { _id: user_editing.theyPermit[i] } );
+                    if (user_that_permited) {
+                        theyPermit.push(user_that_permited.username);
+                    }
+                }
+                response = {
+                    success: 'true',
+                    message: 'הנך מועבר ליומן',
+                    events: user_events,
+                    globalEvents: user_permiting.globalEvents,
+                    theyPermit: theyPermit
+                }
+            } else {
+                response = {
+                    success: 'false',
+                    message: 'שגיאת משתמש'
+                }
+            }
+        }
+        res.json(response);
+    });
+
     app.post('/globalCal', async (req, res) => {
         let response = {};
         let user = await User.findOne({ username: req.body.username, token: req.body.token });
@@ -245,6 +281,34 @@ module.exports = (app) => {
             response = {
                 success: 'false',
                 message: 'שגיאת משתמש'
+            }
+        }
+        res.json(response);
+    });
+
+    app.put('/calendar/:permited_uname', async (req, res) => {
+        let response = {};
+        let user_editing = await User.findOne({ username: req.body.username, token: req.body.token });
+        let user_permiting = await User.findOne( {username: req.params.permited_uname});
+        if (user_permiting && user_editing) {
+            if (user_editing.theyPermit.indexOf(user_permiting._id) >= 0 && user_permiting.iPermit.indexOf(user_editing._id) >= 0) {
+                let event = await Event.create({
+                    title: req.body.event.title,
+                    start: req.body.event.start,
+                    end: req.body.event.end,
+                    description: req.body.event.description,
+                    owner: user_permiting.username
+                });
+                response = {
+                    success: 'true',
+                    message: 'אירוע נוצר בהצלחה',
+                    event: event
+                }
+            } else {
+                response = {
+                    success: 'false',
+                    message: 'שגיאת משתמש'
+                }
             }
         }
         res.json(response);
