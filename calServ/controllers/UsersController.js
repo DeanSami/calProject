@@ -122,12 +122,19 @@ module.exports = (app) => {
             events.forEach((event) => {
                 user_events.push(event);
             });
-
+            let theyPermit = [];
+            for (let i = 0; i < user.theyPermit.length; i++) {
+                permited_user = await User.findOne( { _id: user.theyPermit[i] } );
+                if (permited_user) {
+                    theyPermit.push(permited_user.username);
+                }
+            }
             response = {
                 success: 'true',
                 message: 'הנך מועבר ליומן',
                 events: user_events,
-                globalEvents: user.globalEvents
+                globalEvents: user.globalEvents,
+                theyPermit: theyPermit
             }
         } else {
             response = {
