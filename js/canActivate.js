@@ -1,7 +1,7 @@
 $(document).ready(() => {
     $("#loading").show(1000);
     $(".user-form").hide();
-    $(".main").hide();
+    $(".loadingHide").show();
     let currentUrl = window.location.pathname.split('/');
     if (window.localStorage.getItem('username') && window.localStorage.getItem('token')) {
         canActivate().then(res => {
@@ -10,46 +10,63 @@ $(document).ready(() => {
                     if (currentUrl[currentUrl.length - 1] === 'login.html' || currentUrl[currentUrl.length - 1] === 'register.html')
                         window.location.assign('index.html');
                     else {
-                        toastr["success"](res.message);
+                        let currentUserDiv = $('.currentUser');
+                        switch (res.permission) {
+                            case 'user':
+                                currentUserDiv.html('משתמש מחובר');
+                                break;
+                            case 'editor':
+                                currentUserDiv.html('עורך תוכן מחובר');
+                                break;
+                            case 'admin':
+                                currentUserDiv.html('<a href="admin-panel.html" alt="פאנל ניהול מנהל">מנהל</a> מחובר');
+
+                                break;
+                        }
                         switch(currentUrl[currentUrl.length - 1]) {
                             case 'index.html':
-                                loadCalendar();
+                                loadCalendar().then(() => closeLoading()).catch(() => window.location.assign('/404'));
                                 break;
                             case 'global.html':
-                                loadGlobalCalendar();
+                                loadGlobalCalendar().then(() => closeLoading()).catch(() => window.location.assign('/404'));
                                 break;
                             case 'admin-panel.html':
-                                if(res.permission !== 'admin' && false)
-                                    alert('check');
-                                    // window.location.assign('index.html');
-                                else
+                                if(res.permission !== 'admin')
+                                    window.location.assign('index.html');
+                                else{
                                     buildAdminRequestTable();
+                                    buildUserTable();
+                                    closeLoading();
+                                }
                                 break;
                             default:
                                 window.location.assign('login.html');
                         }
-                        $("#loading").hide(1000);
-                        $(".user-form").show(1000);
-                        $(".main").show(1000);
+                        // $("#loading").hide(1000);
+                        // $(".user-form").show(1000);
+                        // $(".main").show(1000);
                     }
-                }, 500);
+                }, 100);
             }
             else {
                 if (currentUrl[currentUrl.length - 1] !== 'login.html' && currentUrl[currentUrl.length - 1] !== 'register.html')
                     window.location.assign('login.html');
-                else
+                else {
                     $("#loading").hide(1000);
+                }
                 $(".user-form").show(1000);
-                $(".main").show(1000);
+                $(".loadingHide").hide(1000);
             }
         })
             .catch(() => toastr["error"]('אין גישה לשרת'));
     }
     else {
         if (currentUrl[currentUrl.length - 1] === 'login.html' || currentUrl[currentUrl.length - 1] === 'register.html') {
+            if(currentUrl[currentUrl.length - 1] === 'register.html')
+                setRegisterCategory();
             $("#loading").hide(1000);
             $(".user-form").show(1000);
-            $(".main").show(1000);
+            $(".loadingHide").hide(1000);
         }
         else
             window.location.assign('login.html');
@@ -59,14 +76,15 @@ $(document).ready(() => {
 
 function canActivate() {
     let xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "http://localhost:3000/calendar");
+    xhttp.open("POST", "http://localhost:3000/canActivate");
     xhttp.setRequestHeader("Content-Type", "application/json");
 
     return new Promise((resolve, reject) => {
         xhttp.onreadystatechange = () => {
             if (xhttp.readyState === 4) {
                 if (xhttp.status === 200)
-                    resolve(JSON.parse(xhttp.responseText));
+                    console.log(xhttp.responseText);
+                resolve(JSON.parse(xhttp.responseText));
                 reject(null);
             }
         };
@@ -75,4 +93,10 @@ function canActivate() {
             token: window.localStorage.getItem('token')
         }));
     });
+}
+
+function closeLoading() {
+    $("#loading").hide(1000);
+    $(".user-form").show(1000);
+    $(".loadingHide").hide(1000);
 }

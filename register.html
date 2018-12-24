@@ -1,32 +1,35 @@
 <!DOCTYPE html>
 <head>
+    <meta charset="UTF-8">
+    <title>calendar - register</title>
+
     <!--jQuery-->
-    <script src="lib/jquery.min.js"></script>
-    <script src="lib/moment.min.js"></script>
+    <script src="lib/jquery/moment.min.js"></script>
+    <script src="lib/jquery/jquery.min.js"></script>
+    <script src="lib/jquery/popper.min.js"></script>
 
     <!-- toastr -->
-    <link rel="stylesheet" href="node_modules/toastr/build/toastr.css">
-    <script src="node_modules/toastr/build/toastr.min.js"></script>
+    <link rel="stylesheet" href="lib/toastr/toastr.min.css">
+    <script src="lib/toastr/toastr.min.js"></script>
 
-    <!--check can activate page-->
-    <script src="js/canActivate.js"></script>
-
-    <!--bootstrap + icons-->
-    <link rel="stylesheet" href="https://cdn.rtlcss.com/bootstrap/v4.0.0/css/bootstrap.min.css"
-          integrity="sha384-P4uhUIGk/q1gaD/NdgkBIl3a6QywJjlsFJFk7SPRdruoGddvRVSwv5qFnvZ73cpz" crossorigin="anonymous">
-    <script src="node_modules/bootstrap/dist/js/bootstrap.js"></script>
+    <!--bootstrap-->
+    <link rel="stylesheet" href="lib/bootstrap/bootstrap.min.css" crossorigin="anonymous">
+    <script src="lib/bootstrap/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <!--calendar includes-->
     <script src="js/apiRequest.js"></script>
     <link rel="stylesheet" href="css/style.css">
-    <meta charset="UTF-8">
     <script src='https://www.google.com/recaptcha/api.js'></script>
-    <title>calendar - register</title>
+
+    <!--check can activate page-->
+    <script src="js/canActivate.js"></script>
 </head>
 <body>
 
-<div id="loading"></div>
+<div class="loadingHide">
+    <div id="loading"></div>
+</div>
 
 <div class="user-form">
     <form>
@@ -58,13 +61,21 @@
                 <input type="text" class="form-control" name="confirm_password" placeholder="אשר סיסמה">
             </div>
         </div>
-            <input type="checkbox"onclick="PopDetails()" id="checkEditor" name="checkEditor">
+            <input type="checkbox" onclick="PopDetailsEditor()" id="checkEditor" name="checkEditor">
         <label class="text-primary" >הירשם כעורך תוכן</label>
         <div class="form-group editorDetails" >
+
+            <!--<div class="input-group">-->
+                <!--<span class="input-group-addon"><i class="fa fa-user"></i></span>-->
+                <!--<input type="text" class="form-control" name="category" placeholder="קטגוריה">-->
+            <!--</div>-->
+
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                <input type="text" class="form-control" name="category" placeholder="קטגוריה">
+                <select id="categoryRegisterSelect" class="custom-select custom-select form-control" name="category">
+                </select>
             </div>
+
         </div>
         <div  class="form-group editorDetails">
             <div class="input-group">
@@ -73,19 +84,6 @@
             </div>
         </div>
         <div class="form-group">
-            <script>
-                function recaptcha_callback() {
-                    $('#submit_form').prop('disabled', false);
-                }
-                function PopDetails(){
-                    if(!document.getElementById("checkEditor").checked){
-                        $(".editorDetails").hide();}
-
-                    else {
-                        $(".editorDetails").show();
-                    }
-                }
-            </script>
             <div class="g-recaptcha" data-sitekey="6LdBDH8UAAAAAAaQkH_6v9fZE21VpD7Q4IpL3igJ"
                  data-callback="recaptcha_callback"></div>
         </div>
@@ -95,10 +93,10 @@
             username: username.value,
             password: password.value,
             password2: confirm_password.value,
-            editor: checkEditor.value === 'on' ? 'true' : false,
+            editor: document.getElementById('checkEditor').checked,
             category: category.value,
             experience: experience.value
-            })" class="btn btn-primary btn-block btn-lg" id="submit_form" type="button">הירשם
+            })" class="btn btn-primary btn-block btn-lg" id="submit_form" type="button" disabled>הירשם
             </button>
         </div>
         <p class="text-right">כבר רשום?<a href="login.html" class="text-primary" >התחבר עכשיו!</a></p>
