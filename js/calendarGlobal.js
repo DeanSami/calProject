@@ -114,6 +114,8 @@ function loadGlobalCalendar() {
                         currentEvent = event;
                         $('.showEventName').html(event.title);
                         $('.showEventDescription').html(event.description);
+                        $('.showEventsLocation').html(event.category);
+                        $('.showEventsCategory').html(event.place);
                         $('#showGlobalEventModal').modal('show');
                     }
                 });

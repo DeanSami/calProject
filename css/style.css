@@ -284,3 +284,7 @@ body {
 .ui-draggable, .ui-droppable {
     background-position: top;
 }
+
+.descriptionShowDialog {
+    display: flex;
+}

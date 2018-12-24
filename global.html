@@ -151,7 +151,8 @@
                                 id="deleteButton">מחק אירוע
                         </button>
                     </div>
-                    <button id="user-pull-event" type="button" class="btn btn-primary btn-block" onclick="userPullEvent()">הוסף ליומן אישי
+                    <button id="user-pull-event" type="button" class="btn btn-primary btn-block"
+                            onclick="userPullEvent()">הוסף ליומן אישי
                     </button>
                 </div>
             </div>
@@ -169,13 +170,26 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body" id="eventBodyModal">
-                <h5 class="font-weight-bold text-primary"><u class="showEventName"></u></h5>
+            <div class="modal-body pt-0" id="eventBodyModal">
+                <h5 class="font-weight-bold text-primary text-center"><u class="showEventName"></u></h5>
+                <label class="text-primary mb-0"><u>תיאור</u></label>
                 <div class="showEventDescription"></div>
+                <div class="descriptionShowDialog pt-3">
+                    <div class="flex-column col-6">
+                        <label class="text-primary mb-0"><u>קטגוריה</u></label>
+                        <div class="showEventsLocation"></div>
+                    </div>
+                    <div class="flex-column col-6">
+                        <label class="text-primary mb-0"><u>מקום</u></label>
+                        <div class="showEventsCategory"></div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onclick="userPullEvent()">הוסף ליומן אישי</button>
-                <button type="button" class="btn btn-secondary closeButton" data-dismiss="modal">סגור</button>
+                <div class="descriptionShowDialog">
+                    <button type="button" class="btn btn-primary mr-2" onclick="userPullEvent()">הוסף ליומן אישי</button>
+                    <button type="button" class="btn btn-secondary closeButton" data-dismiss="modal">סגור</button>
+                </div>
             </div>
         </div>
     </div>
