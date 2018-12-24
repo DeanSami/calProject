@@ -42,7 +42,8 @@ module.exports = (app) => {
                 events: user_events,
                 globalEvents: global_events,
                 theyPermit: they_permit,
-                permission: user.permission
+                permission: user.permission,
+                loggedInAt: user.loggedInAt
             };
 
         } else {
