@@ -8,6 +8,11 @@ let EventSchema = new Schema({
         default: 'personal',
         required: false
     },
+    allDay: {
+        type: Boolean,
+        default: true,
+        required: false
+    },
     title: {
         type: String,
         required: true
