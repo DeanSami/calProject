@@ -1,44 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>Calendar-admin panel</title>
 
     <!--jQuery-->
-    <script src="lib/moment.min.js"></script>
-    <script src="lib/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="lib/jquery/moment.min.js"></script>
+    <script src="lib/jquery/jquery.min.js"></script>
+    <script src="lib/jquery/popper.min.js"></script>
 
     <!-- toastr -->
-    <link rel="stylesheet" href="node_modules/toastr/build/toastr.css">
-    <script src="node_modules/toastr/build/toastr.min.js"></script>
-
+    <link rel="stylesheet" href="lib/toastr/toastr.min.css">
+    <script src="lib/toastr/toastr.min.js"></script>
 
     <!--bootstrap-->
-    <link rel="stylesheet" href="https://cdn.rtlcss.com/bootstrap/v4.0.0/css/bootstrap.min.css"
-          integrity="sha384-P4uhUIGk/q1gaD/NdgkBIl3a6QywJjlsFJFk7SPRdruoGddvRVSwv5qFnvZ73cpz" crossorigin="anonymous">
-    <script src="node_modules/bootstrap/dist/js/bootstrap.js"></script>
+    <link rel="stylesheet" href="lib/bootstrap/bootstrap.min.css" crossorigin="anonymous">
+    <script src="lib/bootstrap/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
-    <!--fullcalendar-->
-    <link rel="stylesheet" href="css/fullcalendar.min.css">
-    <script src="js/fullcalendar.min.js"></script>
-    <script src="http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery-ui.custom.min.js"></script>
-    <script src="lib/he.js"></script>
+    <!--bootBox-->
+    <script src="lib/bootbox/bootbox.min.js"></script>
 
-    <script src="js/apiRequest.js"></script>
+    <!--calendar includes-->
     <link rel="stylesheet" href="css/style.css">
+    <script src="js/adminRequest.js"></script>
 
     <!--check can activate page-->
     <script src="js/canActivate.js"></script>
-    <script src="js/adminRequest.js"></script>
-    <script src="js/bootbox.min.js"></script>
 </head>
 <body>
-<div id="loading"></div>
+<div class="loadingHide">
+    <div id="loading"></div>
+</div>
 <div class="container">
-    <p class="text-primary loggedIn-user"><a class="text-dark">משתמש מחובר</a> <a href="login.html" onclick="signOut()">התנתק</a>
-    </p>
+    <p class="text-primary loggedIn-user"><a class="text-dark currentUser"></a> <a href="login.html"
+                                                                                   onclick="signOut()">התנתק</a></p>
     <h1 class="text-center pb-4 text-primary"><u>מערכת ניהול מנהל</u></h1>
 </div>
 <div class="container main">
@@ -49,9 +45,14 @@
             <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                 <a class="nav-link" id="v-pills-request-tab" data-toggle="pill" href="#v-pills-request" role="tab"
                    aria-controls="v-pills-request" aria-selected="true"><i class="fa fa-key"
-                                                                           onclick="buildAdminRequestTable()"></i><span>בקשות מנהל</span></a>
+                                                                           onclick="buildAdminRequestTable()"></i><span>בקשות הרשמה</span></a>
+                <a class="nav-link" id="v-pills-event-request-tab" data-toggle="pill" href="#v-pills-event-request"
+                   role="tab"
+                   aria-controls="v-pills-event-request" aria-selected="true"><i class="fa fa-key"
+                                                                                 onclick="buildAdminRequestTable()"></i><span>בקשות אירועים</span></a>
                 <a class="nav-link" id="v-pills-search-tab" data-toggle="pill" href="#v-pills-search" role="tab"
-                   aria-controls="v-pills-search" aria-selected="false"><i class="fa fa-credit-card"></i><span>חיפוש משתמש</span></a>
+                   aria-controls="v-pills-search" aria-selected="false"><i class="fa fa-credit-card"
+                                                                           onclick="buildUserTable();"></i><span>חיפוש משתמש</span></a>
             </div>
         </div>
 
@@ -59,89 +60,155 @@
     <div id="bodyAdmin">
         <div class="tab-content" id="v-pills-tabContent">
             <div class="tab-pane fade" id="v-pills-request" role="tabpanel" aria-labelledby="v-pills-request-tab">
-                <div class="container table-responsive">
-                    <table class="table table-striped">
-                        <thead>
+                <div class="container">
+                    <div id="searchRegisterRequest">
+                        <label for="searchRegisterRequestInput">טקסט לחיפוש</label>
+                        <div class="actUserFilter">
+                            <input type="text" id="searchRegisterRequestInput" class="form-control mr-2"
+                                   name="searchRegisterRequestInput">
+                            <button class="btn mr-2" onclick="filterRegisterTable(searchRegisterRequestInput.value)">חפש
+                            </button>
+                            <button class="btn" onclick="filterRegisterTable('.')">הצג הכל</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper-scroll-y mt-3">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">שם מלא</th>
+                                <th scope="col">ניסיון</th>
+                                <th scope="col">קטגוריות</th>
+                                <th scope="col">פעולות</th>
+                            </tr>
+                            </thead>
+                            <tbody id="registerRequest"></tbody>
+                        </table>
+                    </div>
+                    <template id="requestTemplate">
                         <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">שם מלא</th>
-                            <th scope="col">ניסיון</th>
-                            <th scope="col">קטגוריות</th>
-                            <th scope="col">פעולות</th>
+                            <td scope="row"></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
                         </tr>
-                        </thead>
-                        <tbody id="registerRequest"></tbody>
-                    </table>
+                    </template>
                 </div>
-                <template id="requestTemplate">
-                    <tr>
-                        <td scope="row"></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </template>
             </div>
+
+            <div class="tab-pane fade" id="v-pills-event-request" role="tabpanel"
+                 aria-labelledby="v-pills-event-request-tab">
+                <div class="container">
+                    <div id="searchEventRequest">
+                        <label for="searchEventRequestInput">טקסט לחיפוש</label>
+                        <div class="actUserFilter">
+                            <input type="text" id="searchEventRequestInput" class="form-control mr-2"
+                                   name="searchEventRequestInput">
+                            <button class="btn mr-2" onclick="filterEventTable(searchEventRequestInput.value)">חפש
+                            </button>
+                            <button class="btn" onclick="filterEventTable('.')">הצג הכל</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper-scroll-y mt-3">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">שם</th>
+                                <th scope="col">סוג הבקשה</th>
+                                <th scope="col">תאריך</th>
+                                <th scope="col">סיבה</th>
+                                <th scope="col">פעולות</th>
+                            </tr>
+                            </thead>
+                            <tbody id="eventRequest"></tbody>
+                        </table>
+                    </div>
+                    <template id="eventRequestTemplate">
+                        <tr>
+                            <td scope="row"></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </template>
+                </div>
+            </div>
+
+
             <div class="tab-pane fade" id="v-pills-search" role="tabpanel" aria-labelledby="v-pills-search-tab">
-                חיפוש משתמשים
+                <div class="container">
+                    <div id="searchUser">
+                        <label for="searchUserInput">טקסט לחיפוש</label>
+                        <div class="actUserFilter">
+                            <input type="text" id="searchUserInput" class="form-control mr-2" name="searchUserInput">
+                            <button class="btn mr-2" onclick="filterUserTable(searchUserInput.value)">חפש</button>
+                            <button class="btn" onclick="filterUserTable('.')">הצג הכל</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper-scroll-y mt-3">
+                        <table id="user-table" class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">שם מלא</th>
+                                <th scope="col">תאריך רישום</th>
+                                <th scope="col">אימייל</th>
+                                <th scope="col">פעולות</th>
+                            </tr>
+                            </thead>
+                            <tbody id="usersRequest"></tbody>
+                        </table>
+                        <template id="usersTemplate">
+                            <tr>
+                                <td scope="row"></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </template>
+                    </div>
+                </div>
+
             </div>
+
+
         </div>
     </div>
 
 </div>
 
-
-</div>
-
-
-<div id="createEventModal" class="modal fade show">
+<div id="editUserModal" class="modal fade show">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span> <span
                         class="sr-only">close</span></button>
             </div>
-            <h4 class="new-event-title" id="titleModifyEvent"></h4>
+            <h4 class="new-event-title" id="title-edit-user"></h4>
 
             <div id="modalBody" class="modal-body">
                 <div class="form-group">
                     <div class="input-group">
-                        <input type="text" class="form-control" id="title" placeholder="שם אירוע"
-                               required="required">
+                        <input type="text" class="form-control" id="full-name-edit-user" placeholder="שם משתמש">
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="input-group date">
-                        <input type="text" class="form-control" id="startDate" placeholder="" required="required"
-                               disabled>
+                        <input type="text" class="form-control" id="password-edit-user" placeholder="סיסמה">
                     </div>
                 </div>
-                <div class="form-group">
-                    <div class="input-group date">
-                        <input type="text" class="form-control" id="endDate" placeholder="" disabled>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="input-group date">
-                        <textarea class="form-control" type="text" rows="4" placeholder="פרטי אירוע"
-                                  id="eventDescription"></textarea>
-                    </div>
-                </div>
-            </div>
 
-            <div id="modalBodyShow" class="modal-body">
-                <label for="titleShow" class="text-primary"><u>שם האירוע</u></label>
-                <p id="titleShow"></p>
-                <label for="eventDescriptionShow" class="text-primary"><u>תיאור האירוע</u></label>
-                <p id="eventDescriptionShow"></p>
             </div>
 
             <div class="modal-footer">
                 <div class="form-group container">
-                    <button class="btn btn-primary btn-block" onclick="onclickEvent()" id="submitButton"></button>
-                    <button class="btn btn-danger btn-block deleteButton" onclick="onclickDeleteEvent()"
-                            id="deleteButton">מחק אירוע
+                    <button class="btn btn-danger btn-block" onclick="editUser()"
+                            id="deleteButton">ערוך משתמש
                     </button>
                 </div>
             </div>

@@ -1,45 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>Calendar</title>
 
     <!--jQuery-->
-    <script src="lib/moment.min.js"></script>
-    <script src="lib/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="lib/jquery/moment.min.js"></script>
+    <script src="lib/jquery/jquery.min.js"></script>
+    <script src="lib/jquery/popper.min.js"></script>
 
     <!-- toastr -->
-    <link rel="stylesheet" href="node_modules/toastr/build/toastr.css">
-    <script src="node_modules/toastr/build/toastr.min.js"></script>
-
+    <link rel="stylesheet" href="lib/toastr/toastr.min.css">
+    <script src="lib/toastr/toastr.min.js"></script>
 
     <!--bootstrap-->
-    <link rel="stylesheet" href="https://cdn.rtlcss.com/bootstrap/v4.0.0/css/bootstrap.min.css"
-          integrity="sha384-P4uhUIGk/q1gaD/NdgkBIl3a6QywJjlsFJFk7SPRdruoGddvRVSwv5qFnvZ73cpz" crossorigin="anonymous">
-    <script src="node_modules/bootstrap/dist/js/bootstrap.js"></script>
+    <link rel="stylesheet" href="lib/bootstrap/bootstrap.min.css" crossorigin="anonymous">
+    <script src="lib/bootstrap/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <!--fullcalendar-->
-    <link rel="stylesheet" href="css/fullcalendar.min.css">
-    <script src="js/fullcalendar.min.js"></script>
-    <script src="http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery-ui.custom.min.js"></script>
-    <script src="lib/he.js"></script>
+    <link rel="stylesheet" href="lib/fullcalendar/fullcalendar.min.css">
+    <script src="lib/fullcalendar/fullcalendar.min.js"></script>
+    <script src="lib/jquery/jquery-ui.custom.min.js"></script>
+    <script src="lib/fullcalendar/he.js"></script>
 
+    <!--bootBox-->
+    <script src="lib/bootbox/bootbox.min.js"></script>
+
+    <!--calendar includes-->
     <script src="js/calendarGlobal.js"></script>
     <script src="js/apiGlobalRequest.js"></script>
     <link rel="stylesheet" href="css/style.css">
 
     <!--check can activate page-->
     <script src="js/canActivate.js"></script>
-    <script src="js/bootbox.min.js"></script>
 
 
 </head>
 <body>
-<div id="loading"></div>
+<div class="loadingHide">
+    <div id="loading"></div>
+</div>
 <div class="container">
-    <p class="text-primary loggedIn-user"><a class="text-dark">משתמש מחובר</a> <a href="login.html" onclick="signOut()" >התנתק</a></p>
+    <p class="text-primary loggedIn-user"><a class="text-dark currentUser"></a> <a href="login.html"
+                                                                                   onclick="signOut()">התנתק</a></p>
     <h1 class="text-center pb-4 text-primary"><u>יומן גלובלי</u></h1>
 </div>
 <div class="container main">
@@ -53,7 +57,8 @@
 
             </div>
             <div class="card">
-                <div class="card-header container" id="headingFilter" data-toggle="collapse" data-target="#filterCollapse"
+                <div class="card-header container" id="headingFilter" data-toggle="collapse"
+                     data-target="#filterCollapse"
                      aria-expanded="true" aria-controls="filterCollapse">
                     <h7 class="mb-0 text-primary text-center">
                         סינון אירועים
@@ -117,27 +122,36 @@
                     </div>
                 </div>
                 <div class="form-group">
-
                     <div class="form-right-select col-6 pl-2">
                         <label for="categoryFilterDialog">קטגוריה</label>
                         <select id="categoryFilterDialog" class="custom-select custom-select mb-2">
-                            <option selected>הכל</option>
                         </select>
                     </div>
                     <div class="form-left-select col-6">
                         <label for="placeFilterDialog">מקום</label>
                         <select id="placeFilterDialog" class="custom-select custom-select mb-2>">
-                            <option selected>הכל</option>
                         </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="reason">
+                        <label for="reasonEdit">סיבת עריכה</label>
+                        <textarea class="form-control" type="text" rows="4" placeholder="טקסט..."
+                                  id="reasonEdit"></textarea>
                     </div>
                 </div>
 
             </div>
             <div class="modal-footer">
-                <div class="form-group container">
-                    <button class="btn btn-primary btn-block pl-2" onclick="onclickEvent()" id="submitButton"></button>
-                    <button class="btn btn-danger btn-block deleteButton" onclick="onclickDeleteEvent()"
-                            id="deleteButton">מחק אירוע
+                <div class="form-group act-editor-group">
+                    <div class="act-editor">
+                        <button class="btn btn-primary btn-block pl-2" onclick="onclickEvent()"
+                                id="submitButton"></button>
+                        <button class="btn btn-danger btn-block deleteButton" onclick="onclickDeleteEvent()"
+                                id="deleteButton">מחק אירוע
+                        </button>
+                    </div>
+                    <button id="user-pull-event" type="button" class="btn btn-primary btn-block" onclick="userPullEvent()">הוסף ליומן אישי
                     </button>
                 </div>
             </div>

@@ -1,56 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>Calendar</title>
 
     <!--jQuery-->
-    <script src="lib/moment.min.js"></script>
-    <script src="lib/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="lib/jquery/moment.min.js"></script>
+    <!--<script src="lib/jquery/jquery.min.js"></script>-->
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="lib/jquery/popper.min.js"></script>
+    <!--<script src="lib/jquery/jquery-ui.custom.min.js"></script>-->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
     <!-- toastr -->
-    <link rel="stylesheet" href="node_modules/toastr/build/toastr.css">
-    <script src="node_modules/toastr/build/toastr.min.js"></script>
-
+    <link rel="stylesheet" href="lib/toastr/toastr.min.css">
+    <script src="lib/toastr/toastr.min.js"></script>
 
     <!--bootstrap-->
-    <link rel="stylesheet" href="https://cdn.rtlcss.com/bootstrap/v4.0.0/css/bootstrap.min.css"
-          integrity="sha384-P4uhUIGk/q1gaD/NdgkBIl3a6QywJjlsFJFk7SPRdruoGddvRVSwv5qFnvZ73cpz" crossorigin="anonymous">
-    <script src="node_modules/bootstrap/dist/js/bootstrap.js"></script>
+    <link rel="stylesheet" href="lib/bootstrap/bootstrap.min.css" crossorigin="anonymous">
+    <script src="lib/bootstrap/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
-
     <!--fullcalendar-->
-    <link rel="stylesheet" href="css/fullcalendar.min.css">
-    <script src="js/fullcalendar.min.js"></script>
-    <script src="http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery-ui.custom.min.js"></script>
-    <script src="lib/he.js"></script>
+    <link rel="stylesheet" href="lib/fullcalendar/fullcalendar.min.css">
+    <script src="lib/fullcalendar/fullcalendar.min.js"></script>
+    <script src="lib/fullcalendar/he.js"></script>
 
+    <!--bootBox-->
+    <script src="lib/bootbox/bootbox.min.js"></script>
+
+    <!--calendar includes-->
     <script src="js/calendar.js"></script>
     <script src="js/apiRequest.js"></script>
     <link rel="stylesheet" href="css/style.css">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.0/jspdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/2.3.5/jspdf.plugin.autotable.js"></script>
+    <script src="lib/jspdf.customfonts.min.js"></script>
+
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.40/pdfmake.min.js"></script>-->
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.40/vfs_fonts.js"></script>-->
+
+    <!--<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">-->
+    <!--<script src="https://code.jquery.com/jquery-1.12.4.js"></script>-->
+    <!--<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>-->
+
     <!--check can activate page-->
     <script src="js/canActivate.js"></script>
-    <script src="js/bootbox.min.js"></script>
-
 
 </head>
 <body>
-<div id="loading"></div>
+<div class="loadingHide">
+    <div id="loading"></div>
+</div>
 <div class="container">
-    <p class="text-primary loggedIn-user"><a class="text-dark">משתמש מחובר</a> <a href="login.html" onclick="signOut()" >התנתק</a></p>
+    <p class="text-primary loggedIn-user"><a class="text-dark currentUser"></a> <a href="login.html"
+                                                                                   onclick="signOut()">התנתק</a></p>
     <h1 class="text-center pb-4 text-primary"><u>יומן אישי</u></h1>
 </div>
 <div class="container main">
 
     <div class="menu p-2 col-3 d-none d-md-block">
         <div id="accordion">
-            <div class="colors-events">
-                <i class="fa fa-circle global-event-color"></i>אירועים גלובליים
-                <br>
-                <i class="fa fa-circle event-color"></i>אירועים אישיים
+            <div class="colors-events" id="colorEventsNav">
+
+                <i class="fa fa-circle global-event-color">אירועים גלובליים</i>
+                <i class="fa fa-circle event-color">אירועים אישיים</i>
 
             </div>
             <div class="card">
@@ -58,19 +74,19 @@
                      data-target="#permissionCollapse"
                      aria-expanded="true" aria-controls="permissionCollapse">
                     <h7 class="mb-0 text-primary text-center">
-                        מתן הרשאות
+                        ניהול הרשאות ליומן
                     </h7>
                 </div>
 
                 <div id="permissionCollapse" class="collapse" aria-labelledby="headingPermission"
                      data-parent="#accordion">
                     <div class="card-body">
-                        <label for="searchUser">חפש משתמש</label>
-                        <select id="searchUser" class="custom-select custom-select mb-2">
-                            <option selected>הכל</option>
-                        </select>
-
-                        <button class="btn btn-block" onclick="applyFilter()">חפש</button>
+                        <div class="pb-2">
+                            <label for="givePermissions">שם משתמש</label>
+                            <input type="text" id="givePermissions" class="form-control">
+                        </div>
+                        <button class="btn btn-block" onclick="givePermissions()">הוסף הרשאות</button>
+                        <button class="btn btn-block" onclick="removePermissions()">הסר הרשאות</button>
                     </div>
                 </div>
             </div>
@@ -86,22 +102,63 @@
                 <div id="calendarsCollapse" class="collapse" aria-labelledby="headingCalendars"
                      data-parent="#accordion">
                     <div class="card-body">
-                        <label for="categoryFilter">חפש משתמש</label>
-                        <select id="categoryFilter" class="custom-select custom-select mb-2">
-                            <option selected>הכל</option>
-                        </select>
 
-                        <button class="btn btn-block" onclick="applyFilter()">סנן</button>
+                        <div>
+                            <label for="theyPermit">רשימת משתמשים</label>
+                            <select id="theyPermit" class="custom-select custom-select mb-2">
+                                <option>בחר משתמש</option>
+                            </select>
+                            <label for="colorEvent">בחר צבע</label>
+                            <input type="color" id="colorEvent" name="colorEvent"
+                                   value="#e66465">
+                        </div>
+
+                        <button class="btn btn-block" onclick="addPermissionEvents()">הוסף</button>
                     </div>
                 </div>
             </div>
+
+
+            <div class="card mt-3">
+                <div class="card-header container" id="ReportsCard" data-toggle="collapse"
+                     data-target="#reportsCollapse"
+                     aria-expanded="true" aria-controls="reportsCollapse">
+                    <h7 class="mb-0 text-primary text-center">
+                        דוחות
+                    </h7>
+                </div>
+
+                <div id="reportsCollapse" class="collapse" aria-labelledby="headingCalendars"
+                     data-parent="#accordion">
+                    <div class="card-body">
+
+                        <div>
+                            <label for="startDateReports">תאריך התחלה</label>
+                            <input type="text" id="startDateReports" class="form-control" >
+                            <label for="endDateReports">תאריך סיום</label>
+                            <input type="text" id="endDateReports" class="form-control" >
+                            <label for="reportSelect">דוחות</label>
+                            <select id="reportSelect" class="custom-select custom-select mb-2">
+                                <option>בחר דוח</option>
+                                <option>התחברויות</option>
+                                <option>אירועים גלובליים</option>
+                                <option>אירועים אישיים</option>
+                            </select>
+                        </div>
+
+                        <button class="btn btn-block" onclick="reportEvents()">הנפק</button>
+                    </div>
+                </div>
+            </div>
+
+
         </div>
         <buttton class="btn btn-primary btn-block mt-3" onclick="window.location.assign('global.html')">
             מעבר ליומן גלובלי
         </buttton>
+
     </div>
     <div id='calendar'></div>
-
 </div>
 
 
@@ -138,12 +195,18 @@
                                   id="eventDescription"></textarea>
                     </div>
                 </div>
+                <div class="form-group toWhere">
+                    <label for="theyPermitDialog">לאן להוסיף?</label>
+                    <select id="theyPermitDialog" class="custom-select custom-select mb-2">
+                        <option>יומן אישי</option>
+                    </select>
+                </div>
             </div>
 
             <div id="modalBodyShow" class="modal-body">
                 <label for="titleShow" class="text-primary"><u>שם האירוע</u></label>
                 <p id="titleShow"></p>
-                <label for="eventDescriptionShow" class="text-primary" ><u>תיאור האירוע</u></label>
+                <label for="eventDescriptionShow" class="text-primary"><u>תיאור האירוע</u></label>
                 <p id="eventDescriptionShow"></p>
             </div>
 
