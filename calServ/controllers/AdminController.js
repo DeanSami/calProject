@@ -2,17 +2,21 @@ const User = require('../models/User');
 const Editor = require('../models/Editor');
 const RegisterRequest = require('../models/RegisterRequest');
 const EventRequest = require('../models/EventRequest');
+const GlobalEvent = require('../models/GlobalEvent');
 
 module.exports = (app) => {
 
     app.post('/admin/requests', async (req, res) => {
+
         let response = {};
-        let user = await User.findOne({ username: req.body.username, token: req.body.token });
+
+        const { username, token }   = req.body,
+                user                = await User.findOne({ username: username, token: token });
         if (user) {
             if (user.permission == 'admin') {
 
-                let register_requests = await RegisterRequest.find();
-                let event_requests = await EventRequest.find();
+                const   register_requests   = await RegisterRequest.find(),
+                        event_requests      = await EventRequest.find();
 
                 response = {
                     success: 'true',
@@ -22,95 +26,338 @@ module.exports = (app) => {
                 }
 
             } else {
+
                 response = {
                     success: 'false',
                     message: 'הרשאות חסרות'
-                }
+                };
+
             }
         } else {
+
             response = {
                 success: 'false',
                 message: 'שגיאת נתוני משתמש'
-            }
+            };
+
         }
+
         res.json(response);
+
     });
 
     app.post('/admin/requests/:id', async (req, res) => {
-        let response = {};
-        let user = await User.findOne({ username: req.body.username, token: req.body.token });
+
+        let response = {},
+            request;
+
+        const { username, token, approve }  = req.body,
+                user                        = await User.findOne({ username: username, token: token }),
+                request_id                  = req.params.id;
+
         if (user) {
             if (user.permission == 'admin') {
-                if (req.body.approve == 'true') {
-                    let request;
-                    request = await RegisterRequest.findById(req.params.id);
+                if (approve == 'true') {
+
+                    request = await RegisterRequest.findById(request_id);
+
                     if (request) {
-                        approved_user = await User.findOne({ username: request.username });
+
+                        let approved_user = await User.findOne({ username: request.username });
+
                         if (approved_user) {
-                            approved_user.permission = 'editor'
+
+                            approved_user.permission = 'editor';
+
                             await approved_user.save();
+
                         }
+
                         await Editor.create({
                             username: request.username,
                             category: request.category
                         });
-                        await RegisterRequest.deleteOne({ _id: req.params.id });
+    
+                        await RegisterRequest.deleteOne({ _id: request_id });
+
                         response = {
                             success: 'true',
                             message: 'בקשה אושרה, ומשתמש הפך לעורך תוכן'
-                        }
+                        };
+
                     } else {
-                        request = await EventRequest.findById(req.params.id);
+
+                        request = await EventRequest.findById(request_id);
+
                         if (request) {
-                            if (request.update) {
-                                await GlobalEvent.findByIdAndUpdate(request.event_id, {
-                                    title: request.title,
-                                    start: request.start,
-                                    end: request.end,
-                                    description: request.description,
-                                    category: request.category,
-                                    place: request.place,
-                                    editedLastBy: request.editorRequesting
+
+                            const { event_id, title, start, end, description, allDay, category, place, update } = request,
+                                    editedLastBy = request.editorRequesting;
+
+                            if (update) {
+
+                                await GlobalEvent.findByIdAndUpdate(event_id, {
+                                    title: title,
+                                    allDay: allDay,
+                                    start: start,
+                                    end: end,
+                                    description: description,
+                                    category: category,
+                                    place: place,
+                                    editedLastBy: editedLastBy
                                 });
-                                await EventRequest.deleteOne({ _id: req.params.id });
+
+                                await EventRequest.deleteOne({ _id: request_id });
+                                
                                 response = {
                                     success: 'true',
                                     message: 'עריכת אירוע גלובלי אושר ועבר ליומן הגלובלי'
-                                }
+                                };
+                                
                             } else {
-                                await GlobalEvent.findByIdAndDelete(request.event_id);
+                                
+                                await GlobalEvent.findByIdAndDelete(event_id);
+
+                                await EventRequest.deleteMany({ event_id: event_id });
+
                                 response = {
                                     success: 'true',
                                     message: 'מחיקת אירוע גלובלי אושרה'
-                                }
+                                };
+
                             }
                         } else {
+
                             response = {
-                                success: 'true',
+                                success: 'false',
                                 message: 'שגיאה במציאת הבקשה'
-                            }
+                            };
+
                         }
                     }
                 } else {
-                    await RegisterRequest.deleteOne({ _id: req.params.id });
-                    await EventRequest.deleteOne({ _id: req.params.id });
+
+                    await RegisterRequest.deleteOne({ _id: request_id });
+                    await EventRequest.deleteOne({ _id: request_id });
+
                     response = {
                         success: 'true',
                         message: 'הבקשה נשללה'
-                    }
+                    };
+
                 }
             } else {
+
                 response = {
                     success: 'false',
                     message: 'הרשאות חסרות'
-                }
+                };
+
             }
         } else {
+
             response = {
                 success: 'false',
                 message: 'שגיאה במציאת משתמש'
-            }
+            };
+
         }
+
+        res.json(response);
+
+    });
+
+    app.post('/admin/getusers', async (req, res) => {
+
+        let response = {};
+
+        const { username, token }   = req.body,
+                user                = await User.findOne( { username: username, token: token });
+
+        if (user) {
+            if (user.permission == 'admin') {
+
+                const users = await User.find();
+
+                response = {
+                    success: 'true',
+                    users: users
+                };
+
+            } else {
+
+                response = {
+                    success: 'false',
+                    message: 'חסרות הרשאות'
+                };
+
+            }
+        } else {
+
+            response = {
+                success: 'false',
+                message: 'שגיאת משתמש'
+            };
+
+        }
+
+        res.json(response);
+
+    });
+
+    app.post('/admin/getuser/:username_to_fetch', async (req, res) => {
+        
+        let response = {};
+
+        const { username, token }   = req.body,
+                user                = await User.findOne( { username: username, token: token }),
+                username_to_fetch                  = req.params.username_to_fetch;
+
+        if (user) {
+            if (user.permission == 'admin') {
+
+                const user = await User.findOne( { username: username_to_fetch });
+
+                if (user) {
+                    response = {
+                        success: 'true',
+                        user: user
+                    };
+                    
+                } else {
+
+                    response = {
+                        success: 'false',
+                        message: 'שגיאה במציאת משתמש'
+                    };
+
+                }
+
+            } else {
+
+                response = {
+                    success: 'false',
+                    message: 'חסרות הרשאות'
+                };
+
+            }
+        } else {
+
+            response = {
+                success: 'false',
+                message: 'שגיאת משתמש'
+            };
+
+        }
+
+        res.json(response);
+
+    });
+
+    app.post('/admin/updateuser/:username_to_edit', async (req, res) => {
+        
+        let response = {};
+
+        const { username, token, edit_info }   = req.body,
+                { password, fullname } = edit_info;
+                user                = await User.findOne( { username: username, token: token }),
+                username_to_edit                  = req.params.username_to_edit;
+
+        if (user) {
+            if (user.permission == 'admin') {
+
+                const user = await User.findOne( { username: username_to_edit });
+
+                if (user) {
+
+                    if (password) user.password = password;
+                    if (fullname) user.fullname = fullname;
+
+                    await user.save();
+
+                    response = {
+                        success: 'true',
+                        message: 'משתמש נערך בהצלחה'
+                    };
+                    
+                } else {
+
+                    response = {
+                        success: 'false',
+                        message: 'שגיאה במציאת משתמש'
+                    };
+
+                }
+
+            } else {
+
+                response = {
+                    success: 'false',
+                    message: 'חסרות הרשאות'
+                };
+
+            }
+        } else {
+
+            response = {
+                success: 'false',
+                message: 'שגיאת משתמש'
+            };
+
+        }
+
+        res.json(response);
+
+    });
+
+    app.delete('/admin/deleteuser/:username_to_delete', async (req, res) => {
+        let response = {};
+        
+        const { username, token }   = req.body;
+                user                = await User.findOne( { username: username, token: token }),
+                username_to_delete  = req.params.username_to_delete;
+        
+        let     user_to_delete      = await User.findOne( { username: username_to_delete } );
+
+        if (user) {
+            if (user.permission == 'admin') {
+
+                if (user_to_delete) {
+
+                    await User.deleteOne( { username: username_to_delete });
+
+                    response = {
+                        success: 'true',
+                        message: 'משתמש נמחק בהצלחה'
+                    };
+                    
+                } else {
+
+                    response = {
+                        success: 'false',
+                        message: 'שגיאה במציאת משתמש'
+                    };
+
+                }
+
+            } else {
+
+                response = {
+                    success: 'false',
+                    message: 'חסרות הרשאות'
+                };
+
+            }
+        } else {
+
+            response = {
+                success: 'false',
+                message: 'שגיאת משתמש'
+            };
+
+        }
+
         res.json(response);
     });
+
 }

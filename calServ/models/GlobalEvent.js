@@ -8,6 +8,11 @@ let GlobalEventSchema = new Schema({
         default: 'global',
         required: false
     },
+    allDay: {
+        type: Boolean,
+        default: true,
+        required: false
+    },
     title: {
         type: String,
         require: true

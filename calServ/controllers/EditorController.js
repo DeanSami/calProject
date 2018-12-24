@@ -8,261 +8,501 @@ const config = require('../config');
 module.exports = (app) => {
 
     app.put('/globalCal', async (req, res) => {
-        let response = {};
-        let user = await User.findOne({ username: req.body.username, token: req.body.token });
-        let editor = await Editor.findOne({ username: req.body.username });
-        if (user || editor) {
-            if (user.permission == 'editor' || user.permission == 'admin') {
-                if ((user.permission == 'admin' || editor.category.includes(req.body.event.category)) &&
-                    config.getCategories().includes(req.body.event.category)) {
-                    if (req.body.event.title && req.body.event.category && req.body.event.place) {
-                        let new_global_event = await GlobalEvent.create({
-                            title: req.body.event.title,
-                            start: req.body.event.start,
-                            end: req.body.event.end,
-                            description: req.body.event.description,
-                            postedBy: user.username,
-                            category: req.body.event.category,
-                            place: req.body.event.place
-                        });
-                        response = {
-                            success: 'true',
-                            message: 'אירוע גלובלי חדש נוצר',
-                            globalEvent: new_global_event
-                        };
-                    } else {
-                        response = {
-                            success: 'false',
-                            message: 'שדות חסרים'
-                        };
-                    }
-                } else {
-                    response = {
-                        success: 'false',
-                        message: 'שגיאת קטגוריה',
-                    };
-                }
-            } else {
-                response = {
-                    success: 'false',
-                    message: 'שגיאת הרשאות',
-                };
-            }
-        } else {
-            response = {
-                success: 'false',
-                message: 'שגיאת משתמש'
-            };
-        }
-        res.json(response);
-    });
 
-    app.post('/globalCal/:id', async (req, res) => {
         let response = {};
-        let user = await User.findOne({ username: req.body.username, token: req.body.token });
+
+        const { username, token } = req.body,
+            user = await User.findOne({ username: username, token: token });
+
+        let { event } = req.body;
+
         if (user) {
-            let editor = await Editor.findOne({ username: user.username });
-            if (editor || user.permission == 'admin') {
-                let global_event = await GlobalEvent.findById({ _id: req.params.id });
-                if (global_event) {
-                    if (user.permission == 'admin') {
-                         await GlobalEvent.findOneAndUpdate({ _id: global_event._id}, {
-                            title: req.body.event.title,
-                            start: req.body.event.start,
-                            end: req.body.event.end,
-                            description: req.body.event.description,
-                            category: req.body.event.category,
-                            place: req.body.event.place
-                        });
-                        let updated_global_event = await GlobalEvent.findOne({ _id: global_event._id});
-                        response = {
-                            success: 'true',
-                            message: 'אירוע נערך',
-                            event: updated_global_event
-                        }
-                    } else if (req.body.reason) {
-                        if (editor.category.includes(global_event.category) ) {
-                            await EventRequest.create({
-                                event_id: global_event._id,
-                                title: req.body.event.title,
-                                start: req.body.event.start,
-                                end: req.body.event.end,
-                                description: req.body.event.description,
-                                update: true,
-                                reason: req.body.reason,
-                                editorRequesting: editor.username
-                            });
-                            response = {
-                                success: 'true',
-                                message: 'בקשת עריכה נשמרה בהצלחה'
-                            };
+
+            event.postedBy = username;
+
+            if (user.permission == 'admin') {
+                if (event.place) {
+                    if (event.category) {
+                        if (event.title) {
+                            if (config.getCategories().includes(event.category)) {
+                                if (config.getPlaces().includes(event.place)) {
+                                    const new_global_event = await GlobalEvent.create(event);
+            
+                                    response = {
+                                        success: 'true',
+                                        message: 'אירוע נוצר בהצלחה',
+                                        globalEvent: new_global_event
+                                    };
+            
+                                } else {
+            
+                                    response = {
+                                        success: 'false',
+                                        message: 'אנא בחר מיקום חוקי'
+                                    };
+            
+                                }
+                            } else {
+            
+                                response = {
+                                    success: 'false',
+                                    message: 'אנא בחר קטגוריה חוקית'
+                                };
+            
+                            }
                         } else {
+
                             response = {
                                 success: 'false',
-                                message: 'לא קיימת הרשאה לקטגוריה זו'
+                                message: 'אנא ספק כותרת'
                             };
+
                         }
                     } else {
+
                         response = {
                             success: 'false',
-                            message: 'אנא ספק סיבה לעריכה'
-                        }
+                            message: 'אנא ספק קטגוריה'
+                        };
+
                     }
                 } else {
+
+                    response = {
+                        success: 'false',
+                        message: 'אנא ספק מיקום'
+                    };
+
+                }
+                
+            } else {
+
+                const editor = await Editor.findOne({ username: username });
+
+                if (editor) {
+                    if (editor.category.includes(event.category)) {
+
+                        if (event.place) {
+                            if (event.category) {
+                                if (event.title) {
+                                    if (config.getCategories().includes(event.category)) {
+                                        if (config.getPlaces().includes(event.place)) {
+
+                                            const new_global_event = await GlobalEvent.create(event);
+
+                                            response = {
+                                                success: 'true',
+                                                message: 'אירוע נוצר בהצלחה',
+                                                globalEvent: new_global_event
+                                            };
+
+                                        } else {
+
+                                            response = {
+                                                success: 'false',
+                                                message: 'אנא בחר מיקום חוקי'
+                                            };
+
+                                        }
+                                    } else {
+
+                                        response = {
+                                            success: 'false',
+                                            message: 'אנא בחר קטגוריה חוקית'
+                                        };
+
+                                    }
+                                } else {
+
+                                    response = {
+                                        success: 'false',
+                                        message: 'אנא ספק כותרת'
+                                    };
+
+                                }
+                            } else {
+
+                                response = {
+                                    success: 'false',
+                                    message: 'אנא ספק קטגוריה'
+                                };
+
+                            }
+                        } else {
+
+                            response = {
+                                success: 'false',
+                                message: 'אנא ספק מיקום'
+                            };
+                            
+                        }
+                    } else {
+
+                        response = {
+                            success: 'false',
+                            message: 'לא קיימת הרשאה לקטגוריה זו'
+                        };
+
+                    }
+                } else {
+
                     response = {
                         success: 'false',
                         message: 'שגיאת הרשאות'
                     };
                 }
-            } else {
-                response = {
-                    success: 'false',
-                    message: 'שגיאת משתמש'
-                };
             }
         } else {
+
             response = {
                 success: 'false',
-                message: 'לא נמצא אירוע'
+                message: 'שגיאת משתמש'
             };
+
         }
+
         res.json(response);
+
+    });
+
+    app.post('/globalCal/:id', async (req, res) => {
+
+        let response = {};
+
+        const { username, token, event, reason } = req.body,
+            { title, start, end, description, category, place } = event,
+            user = await User.findOne({ username: username, token: token }),
+            id = req.params.id;
+
+        if (user) {
+
+            const editor = await Editor.findOne({ username: username });
+
+            if (editor || user.permission == 'admin') {
+
+                let global_event_to_update = await GlobalEvent.findById({ _id: id });
+
+                if (global_event_to_update) {
+                    if (user.permission == 'admin') {
+
+                        if (title) global_event_to_update.title = title;
+                        if (start) global_event_to_update.start = start;
+                        if (end) global_event_to_update.start = start;
+                        if (description) global_event_to_update.description = description;
+                        if (category) global_event_to_update.category = category;
+                        if (place) global_event_to_update.place = place;
+
+                        await global_event_to_update.save();
+
+                        await EventRequest.deleteMany({ event_id: id });
+
+                        response = {
+                            success: 'true',
+                            message: 'אירוע נערך',
+                            event: global_event_to_update
+                        };
+
+                    } else if (reason) {
+
+                        const request_already_exists = await EventRequest.findOne({ event_id: id });
+
+                        if (request_already_exists) {
+
+                            response = {
+                                success: 'false',
+                                message: 'בקשה עריכה לאירוע זה כבר קיימת'
+                            };
+
+                        } else {
+                            if (editor.category.includes(global_event_to_update.category)) {
+
+                                const event_request = await EventRequest.create({
+                                    event_id: global_event_to_update._id,
+                                    title: title,
+                                    start: start,
+                                    end: end,
+                                    description: description,
+                                    update: true,
+                                    reason: reason,
+                                    editorRequesting: username
+                                });
+
+                                response = {
+                                    success: 'true',
+                                    message: 'בקשת עריכה נשמרה בהצלחה',
+                                    request: event_request
+                                };
+
+                            } else {
+
+                                response = {
+                                    success: 'false',
+                                    message: 'לא קיימת הרשאה לקטגוריה זו'
+                                };
+
+                            }
+                        }
+
+                    } else {
+
+                        response = {
+                            success: 'false',
+                            message: 'אנא ספק סיבה לעריכה'
+                        };
+
+                    }
+                } else {
+
+                    response = {
+                        success: 'false',
+                        message: 'לא נמצא אירוע'
+                    };
+
+                }
+            } else {
+
+                response = {
+                    success: 'false',
+                    message: 'שגיאת הרשאות'
+                };
+
+            }
+        } else {
+
+            response = {
+                success: 'false',
+                message: 'שגיאת משתמש'
+            };
+
+        }
+
+        res.json(response);
+
     });
 
     app.delete('/globalCal/:id', async (req, res) => {
+
         let response = {};
-        let user = await User.findOne({ username: req.body.username, token: req.body.token });
+
+        const { username, token, reason } = req.body;
+            user = await User.findOne({ username: username, token: token }),
+            id = req.params.id;
+
         if (user) {
-            let editor = await Editor.findOne({ username: user.username });
+
+            let editor = await Editor.findOne({ username: username });
+
             if (editor || user.permission == 'admin') {
-                let global_event = await GlobalEvent.findById({ _id: req.params.id });
-                if (global_event) {
+
+                const global_event_to_delete = await GlobalEvent.findById({ _id: id });
+
+                if (global_event_to_delete) {
                     if (user.permission == 'admin') {
-                        await global_event.remove();
+
+                        await global_event_to_delete.remove();
+
+                        await EventRequest.deleteMany({ event_id: id });
+
                         response = {
                             success: 'true',
                             message: 'אירוע נמחק בהצלחה'
                         };
-                    } else if (editor.category.includes(global_event.category)) {
-                        await EventRequest.create({
-                            event_id: global_event._id,
-                            delete: true,
-                            reason: req.body.reason,
-                            editorRequesting: editor.username
-                        });
-                        response = {
-                            success: 'true',
-                            message: 'בקשת עריכה נשמרה בהצלחה'
-                        };
+
+                    } else if (editor.category.includes(global_event_to_delete.category)) {
+                        const { id, title, start, end, description } = global_event_to_delete;
+                        if (reason) {
+
+                            const request_already_exists = await EventRequest.findOne({ event_id: id });
+
+                            if (request_already_exists) {
+
+                                response = {
+                                    success: 'false',
+                                    message: 'בקשה עריכה לאירוע זה כבר קיימת'
+                                };
+
+                            } else {
+
+                                const event_request = await EventRequest.create({
+                                    event_id: id,
+                                    event_title: title,
+                                    start: start,
+                                    end: end,
+                                    description: description,
+                                    delete: true,
+                                    reason: reason,
+                                    editorRequesting: editor.username
+                                });
+
+                                response = {
+                                    success: 'true',
+                                    message: 'בקשת עריכה נשמרה בהצלחה',
+                                    request: event_request
+                                };
+                            }
+                        } else {
+
+                            response = {
+                                success: 'false',
+                                message: 'אנא ספק סיבה למחיקה'
+                            };
+
+                        }
                     } else {
+
                         response = {
                             success: 'false',
                             message: 'לא קיימת הרשאה לקטגוריה זו'
                         };
-                    }
-                    if (user.permission == 'admin') {
-                        await GlobalEvent.findByIdAndDelete(global_event._id);
-                        response = {
-                            success: 'true',
-                            message: 'אירוע נמחק בהצלחה'
-                        };
+
                     }
                 } else {
+
                     response = {
-                        success: 'true',
+                        success: 'false',
                         message: 'לא נמצא אירוע'
                     };
+
                 }
             } else {
+
                 response = {
                     success: 'true',
                     message: 'שגיאת הרשאות'
                 };
+
             }
         } else {
+
             response = {
                 success: 'true',
                 message: 'שגיאת משתמש'
             };
+
         }
+
         res.json(response);
+
     });
 
     app.put('/category/:category_name', async (req, res) => {
+
         let response = {};
-        let user = await User.findOne({ username: req.body.username, token: req.body.token });
+
+        const { username, token } = req.body,
+            category_name = req.params.category_name,
+            user = await User.findOne({ username: username, token: token });
+
         if (user && user.permission == 'editor') {
-            let editor = await Editor.findOne({ username: user.username });
+
+            let editor = await Editor.findOne({ username: username });
+
             if (editor) {
+
                 let category_index = -1;
+
                 editor.category.forEach((category, index) => {
-                    if (category == req.params.category_name) {
+                    if (category == category_name) {
                         category_index = index;
                     }
                 });
+
                 if (category_index < 0) {
-                    editor.category.push(req.params.category_name);
+
+                    editor.category.push(category_name);
+
                     response = {
                         success: 'true',
                         message: 'קטגוריה נוספה'
                     };
+
                 } else {
+
                     response = {
                         success: 'false',
                         message: 'קטגוריה כבר קיימת'
                     };
+
                 }
             } else {
+
                 response = {
                     success: 'false',
                     message: 'שגיאת הרשאות'
                 };
+
             }
         } else {
+
             response = {
                 success: 'false',
                 message: 'שגיאת משתמש'
             };
+
         }
+
         res.json(response);
+
     });
 
     app.delete('/category/:category_name', async (req, res) => {
+
         let response = {};
-        let user = await User.findOne({ username: req.body.username, token: req.body.token });
+
+        const { username, token } = req.body,
+            category_name = req.params.category_name,
+            user = await User.findOne({ username: username, token: token });
+
         if (user && user.permission == 'editor') {
-            let editor = await Editor.findOne({ username: user.username });
+
+            let editor = await Editor.findOne({ username: username });
+
             if (editor) {
+
                 let category_index = -1;
+
                 editor.category.forEach((category, index) => {
-                    if (category == req.params.category_name) {
+                    if (category == category_name) {
                         category_index = index;
                     }
                 });
+
                 if (category_index >= 0) {
                     editor.category.splice(category_index, 1);
+
+                    await editor.save();
+
                     response = {
                         success: 'true',
                         message: 'קטגוריה הוסרה'
                     };
+
                 } else {
+
                     response = {
                         success: 'false',
                         message: 'שגיאה בבחירת קטגוריה'
                     };
+
                 }
             } else {
+
                 response = {
                     success: 'false',
                     message: 'שגיאת הרשאות'
                 };
+
             }
         } else {
+
             response = {
                 success: 'false',
                 message: 'שגיאת משתמש'
             };
+
         }
+
         res.json(response);
+
     });
 }

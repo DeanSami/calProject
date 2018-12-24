@@ -3,6 +3,7 @@ const Event = require('../models/Event');
 const RegisterRequest = require('../models/RegisterRequest');
 const Editor = require('../models/Editor');
 const GlobalEvent = require('../models/GlobalEvent');
+const EventRequest = require('../models/EventRequest');
 
 const usersData = require('./seedData/usersData');
 const eventsData = require('./seedData/eventData');
@@ -47,24 +48,27 @@ module.exports = (app) => {
         let response = {
             success: "false"
         }
-        let usersRemoved = await User.deleteMany();
-        let eventsRemoved = await Event.deleteMany();
-        let requestsRemoved = await RegisterRequest.deleteMany();
-        let editorsRemoved = await Editor.deleteMany();
-        let globalEventsRemoved = await GlobalEvent.deleteMany();
-        if (usersRemoved && eventsRemoved && requestsRemoved && editorsRemoved && globalEventsRemoved) {
+        let users_removed = await User.deleteMany();
+        let events_removed = await Event.deleteMany();
+        let register_requests_removed = await RegisterRequest.deleteMany();
+        let event_requests_removed = await EventRequest.deleteMany();
+        let editors_removed = await Editor.deleteMany();
+        let global_events_removed = await GlobalEvent.deleteMany();
+        if (users_removed && events_removed && register_requests_removed && editors_removed && global_events_removed && event_requests_removed) {
             let users = await User.find();
             let events = await Event.find();
-            let requests = await RegisterRequest.find();
+            let register_requests = await RegisterRequest.find();
             let editors = await Editor.find();
-            let globalEvents = await GlobalEvent.find();
-            if (users && events && requests && editors && globalEvents) {
+            let global_events = await GlobalEvent.find();
+            let event_requests = await EventRequest.find();
+            if (users && events && register_requests && editors && global_events && event_requests) {
                 response.success = "true";
                 response.users = users;
                 response.events = events;
-                response.registerRequests = requests;
+                response.register_requests = register_requests;
+                response.event_requests = event_requests
                 response.editors = editors;
-                response.globalEvents = globalEvents;
+                response.global_events = global_events;
             }
         }
         res.json(response);
