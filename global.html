@@ -6,8 +6,10 @@
 
     <!--jQuery-->
     <script src="lib/jquery/moment.min.js"></script>
-    <script src="lib/jquery/jquery.min.js"></script>
+    <script src="lib/jquery/jquery-1.12.4.js"></script>
     <script src="lib/jquery/popper.min.js"></script>
+    <link rel="stylesheet" href="lib/jquery/jquery-ui.css">
+    <script src="lib/jquery/jquery-ui.min.js"></script>
 
     <!-- toastr -->
     <link rel="stylesheet" href="lib/toastr/toastr.min.css">
@@ -21,7 +23,6 @@
     <!--fullcalendar-->
     <link rel="stylesheet" href="lib/fullcalendar/fullcalendar.min.css">
     <script src="lib/fullcalendar/fullcalendar.min.js"></script>
-    <script src="lib/jquery/jquery-ui.custom.min.js"></script>
     <script src="lib/fullcalendar/he.js"></script>
 
     <!--bootBox-->
@@ -80,6 +81,39 @@
                     </div>
                 </div>
             </div>
+
+            <div class="card mt-3" id="editorReports">
+                <div class="card-header container" id="ReportsCard" data-toggle="collapse"
+                     data-target="#reportsCollapse"
+                     aria-expanded="true" aria-controls="reportsCollapse">
+                    <h7 class="mb-0 text-primary text-center">
+                        דוחות עורך תוכן
+                    </h7>
+                </div>
+
+                <div id="reportsCollapse" class="collapse" aria-labelledby="headingCalendars"
+                     data-parent="#accordion">
+                    <div class="card-body">
+
+                        <div>
+                            <label for="startDateReports">תאריך התחלה</label>
+                            <input type="text" id="startDateReports" class="form-control">
+                            <label for="endDateReports">תאריך סיום</label>
+                            <input type="text" id="endDateReports" class="form-control">
+                            <label for="reportSelect">דוחות</label>
+                            <select id="reportSelect" class="custom-select custom-select mb-2">
+                                <option>בחר דוח</option>
+                                <option>התחברויות</option>
+                                <option>אירועים גלובליים</option>
+                                <option>אירועים אישיים</option>
+                            </select>
+                        </div>
+
+                        <button class="btn btn-block" onclick="reportEvents()">הנפק</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
         <buttton class="btn btn-primary btn-block mt-3" onclick="window.location.assign('index.html')">חזור ליומן אישי
         </buttton>
@@ -187,14 +221,15 @@
             </div>
             <div class="modal-footer">
                 <div class="descriptionShowDialog">
-                    <button type="button" class="btn btn-primary mr-2" onclick="userPullEvent()">הוסף ליומן אישי</button>
+                    <button type="button" class="btn btn-primary mr-2" onclick="userPullEvent()">הוסף ליומן אישי
+                    </button>
                     <button type="button" class="btn btn-secondary closeButton" data-dismiss="modal">סגור</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
+<iframe name="print_frame" width="0" height="0" frameborder="0" src="about:blank"></iframe>
 </body>
 </html>
 

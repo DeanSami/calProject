@@ -437,3 +437,125 @@ function signOut() {
     localStorage.removeItem('username');
     localStorage.removeItem('token');
 }
+
+function reports() {
+    $(() => $('#startDateReports').datepicker());
+    $(() => $('#endDateReports').datepicker());
+}
+
+function adminReports() {
+    let eventReports = [], columnReportsTable = [];
+    let start = $('#startDateReports').val();
+    let end = $('#endDateReports').val();
+    if(start !== '')
+        start = start.split('/')[1] + '/' + start.split('/')[0] + '/' + start.split('/')[2];
+    if(end !== '')
+        end = end.split('/')[1] + '/' + end.split('/')[0] + '/' + end.split('/')[2];
+    switch ($('#reportSelect').val()) {
+        case 'דוח משתמשים':
+            columnReportsTable = ["#", "שם מלא", "שם משתמש", "תאריך הרשמה", "סוג משתמש"];
+            users.forEach((user) => {
+                if (user.permission === 'user' && (start === '' || end === '') || moment(user.registeredAt) >= moment(start) && moment(user.registeredAt) <= moment(end)) {
+                    eventReports.push(
+                        [user.fullname, user.username, moment(user.registeredAt).format('DD/MM/YYYY'), user.permission]
+                    );
+                }
+            });
+            exportTableService(columnReportsTable, eventReports, 'דוח משתמשים', start, end);
+            break;
+        case 'דוח עורכי תוכן':
+            columnReportsTable = ["#", "שם מלא", "שם משתמש", "תאריך הרשמה", "סוג משתמש"];
+            users.forEach((user) => {
+                if (user.permission === 'editor' && (start === '' || end === '') || moment(user.registeredAt) >= moment(start) && moment(user.registeredAt) <= moment(end)) {
+                    eventReports.push(
+                        [user.fullname, user.username, moment(user.registeredAt).format('DD/MM/YYYY'), user.permission]
+                    );
+                }
+            });
+            exportTableService(columnReportsTable, eventReports, 'דוח עורכי תוכן', start, end);
+            break;
+        case 'דוח אירועים גלובליים':
+            getGlobalEvents().then(res => {
+                columnReportsTable = ["#", "שם האירוע", "תאריך התחלה", "תאריך סיום", "קטגוריה", "מקום", "מפרסם"];
+                res.globalEvents.forEach((category) => {
+                    category.events.forEach(event => {
+                        if ((start === '' || end === '') || moment(event.start) >= moment(start) && moment(event.start) <= moment(end)) {
+                            eventReports.push(
+                                [event.title, moment(event.start).format('DD/MM/YYYY'), moment(event.end).format('DD/MM/YYYY'), event.category, event.place, event.postedBy]
+                            );
+                        }
+                    });
+                });
+                exportTableService(columnReportsTable, eventReports, 'דוח אירועים גלובליים', start, end);
+            }).catch(() => toastr['error']('שגיאה בקבלת נתונים'));
+            break;
+        default:
+            toastr['error']('אנא בחר דוח מהרשימה');
+    }
+}
+
+function exportTableService(column, row, title, start, end) {
+    let time = (start === '' || end === '') ? 'הכל' : moment(start).format('DD/MM/YYYY') + ' - ' + moment(end).format('DD/MM/YYYY') ;
+    let table = `
+    <style>
+        h2 {
+        text-align: center;
+        }
+        h3 {
+        text-align: center;
+        }
+        table {
+          border-collapse: collapse;
+          width: 100%;
+        }
+        
+        th, td {
+          text-align: center;
+          padding: 8px;
+        }
+    </style>
+    <h2>${title}</h2>
+    <h3>${time}</h3>
+
+    <table dir="rtl">
+        <tr>
+    `;
+    column.forEach(col => table += `<th> ${col} </th>`);
+    table += `</tr>`;
+    row.forEach((row, index) => {
+        table += `<tr><td>${index + 1}</td>`;
+        row.forEach((rowText) => table += `<th> ${rowText} </th>`);
+        table += `</tr>`;
+    });
+    table += `</table>`;
+
+    window.frames["print_frame"].document.body.innerHTML = table;
+    window.frames["print_frame"].window.focus();
+    window.frames["print_frame"].window.print();
+}
+
+function getGlobalEvents() {
+    if (!window.localStorage.getItem('username')) {
+        toastr["error"]('ארעה שגיאה');
+        return null;
+    }
+    else {
+        let xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "http://localhost:3000/globalCal");
+        xhttp.setRequestHeader("Content-Type", "application/json");
+
+        return new Promise((resolve, reject) => {
+            xhttp.onreadystatechange = () => {
+                if (xhttp.readyState === 4) {
+                    if (xhttp.status === 200)
+                        resolve(JSON.parse(xhttp.responseText));
+                    reject();
+                }
+            };
+            xhttp.send(JSON.stringify({
+                username: window.localStorage.getItem('username'),
+                token: window.localStorage.getItem('token'),
+            }));
+        });
+    }
+}

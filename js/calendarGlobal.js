@@ -85,7 +85,6 @@ function loadGlobalCalendar() {
                 editUserEvent();
             },
             eventDrop: (event) => {
-                console.log('drop', event);
                 currentEvent = event;
                 // currentEvent.start = new Date(event.start);
                 // currentEvent.end = currentEvent.end ? new Date(event.end) : null;
@@ -106,6 +105,7 @@ function loadGlobalCalendar() {
         addAllGlobalEvent().then(() => {
             $("#loading").hide();
             if (resEvents.permission !== 'editor' && resEvents.permission !== 'admin') {
+                $('#editorReports').hide();
                 $('#calendar').fullCalendar('option', {
                     editable: false,
                     selectable: false,
@@ -374,7 +374,7 @@ function onclickDeleteEvent() {
                         toastr["success"](res.message);
                         $("#createEventModal").modal('hide');
                         $('#deleteButton').prop('disabled', false);
-                        if(resEvents.permission === 'admin')
+                        if (resEvents.permission === 'admin')
                             $('#calendar').fullCalendar('removeEvents', currentEvent._id);
                     } else {
                         toastr["error"](res.message);
@@ -400,3 +400,97 @@ function editGlobalEvent(event) {
     currentEvent.place = event.place;
     $('#calendar').fullCalendar('updateEvent', currentEvent);
 }
+
+function reportEvents() {
+    if (resEvents.permission !== 'editor' && resEvents.permission !== 'admin') {
+        toastr['error']('אין הרשאות לפעולה זו');
+    }
+    else {
+        let eventReports = [], columnReportsTable = [];
+        let start = $('#startDateReports').val();
+        let end = $('#endDateReports').val();
+        if (start !== '')
+            start = start.split('/')[1] + '/' + start.split('/')[0] + '/' + start.split('/')[2];
+        if (end !== '')
+            end = end.split('/')[1] + '/' + end.split('/')[0] + '/' + end.split('/')[2];
+        switch ($('#reportSelect').val()) {
+            case 'התחברויות':
+                columnReportsTable = ["#", "תאריך", "שעה"];
+                loggedInAt.forEach((log) => {
+                    if ((start === '' || end === '') || moment(log) >= moment(start) && moment(log) <= moment(end)) {
+                        eventReports.push(
+                            [moment(log).format('DD/MM/YYYY'), moment(log).format('HH:mm')]
+                        );
+                    }
+                });
+                exportTableService(columnReportsTable, eventReports, 'דוח התחברויות', start, end);
+                break;
+            case 'אירועים גלובליים':
+                columnReportsTable = ["#", "שם האירוע", "תאריך התחלה", "תאריך סיום"];
+                globalEvents.forEach((event) => {
+                    if ((start === '' || end === '') || moment(event.start) >= moment(start) && moment(event.start) <= moment(end)) {
+                        eventReports.push(
+                            [event.title, moment(event.start).format('DD/MM/YYYY'), moment(event.end).format('DD/MM/YYYY')]
+                        );
+                    }
+                });
+                exportTableService(columnReportsTable, eventReports, 'דוח אירועים גלובליים', start, end);
+                break;
+            case 'אירועים אישיים':
+                columnReportsTable = ["#", "שם האירוע", "תאריך התחלה", "תאריך סיום"];
+                events.forEach((event) => {
+                    if ((start === '' || end === '') || moment(event.start) >= moment(start) && moment(event.start) <= moment(end)) {
+                        eventReports.push(
+                            [event.title, moment(event.start).format('DD/MM/YYYY'), moment(event.end).format('DD/MM/YYYY')]
+                        );
+                    }
+                });
+                exportTableService(columnReportsTable, eventReports, 'דוח אירועים אישיים', start, end);
+                break;
+            default:
+                toastr['error']('אנא בחר דוח מהרשימה');
+        }
+    }
+}
+
+function exportTableService(column, row, title, start, end) {
+    let time = (start === '' || end === '') ? 'הכל' : moment(start).format('DD/MM/YYYY') + ' - ' + moment(end).format('DD/MM/YYYY');
+    let table = `
+    <style>
+        h2 {
+        text-align: center;
+        }
+        h3 {
+        text-align: center;
+        }
+        table {
+          border-collapse: collapse;
+          width: 100%;
+        }
+        
+        th, td {
+          text-align: center;
+          padding: 8px;
+        }
+    </style>
+    <h2>${title}</h2>
+    <h3>${time}</h3>
+
+    <table dir="rtl">
+        <tr>
+    `;
+    column.forEach(col => table += `<th> ${col} </th>`);
+    table += `</tr>`;
+    row.forEach((row, index) => {
+        table += `<tr><td>${index + 1}</td>`;
+        row.forEach((rowText) => table += `<th> ${rowText} </th>`);
+        table += `</tr>`;
+    });
+    table += `</table>`;
+
+    window.frames["print_frame"].document.body.innerHTML = table;
+    window.frames["print_frame"].window.focus();
+    window.frames["print_frame"].window.print();
+}
+
+

@@ -1,4 +1,4 @@
-let currentEvent, allDay = false, acceptToDeleted = false, globalEvents, events;
+let currentEvent, allDay = false, globalEvents, events, loggedInAt;
 let colorEvents = [], eventPermited = [];
 $(document).ready(function () {
     toastr.options = {
@@ -97,7 +97,6 @@ function loadCalendar() {
                 editUserEvent();
             },
             eventDrop: (event) => {
-                console.log('drop', event);
                 currentEvent = event;
                 // currentEvent.start = new Date(event.start);
                 // currentEvent.end = currentEvent.end ? new Date(event.end) : null;
@@ -105,7 +104,6 @@ function loadCalendar() {
             },
             eventLimit: true, // allow "more" link when too many events
             // eventRender: function (eventObj, $el) {
-            //     console.log(eventObj, $el);
             //     $el.popover({
             //         animation: true,
             //         placement: 'top',
@@ -261,6 +259,7 @@ function addAllUserEvent() {
     return new Promise((resolve, reject) => {
         getUserEvents().then((res) => {
             if (JSON.parse(res).success === "true") {
+                loggedInAt = JSON.parse(res).loggedInAt;
                 events = JSON.parse(res).events.map(event => {
                     return {
                         _id: event._id,
@@ -271,7 +270,6 @@ function addAllUserEvent() {
                         description: event.description
                     }
                 });
-                console.log(res);
                 $('#calendar').fullCalendar('addEventSource', events);
                 globalEvents = JSON.parse(res).globalEvents.map(event => {
                     return {
@@ -442,42 +440,57 @@ function reportEvents() {
     let eventReports = [], columnReportsTable = [];
     let start = $('#startDateReports').val();
     let end = $('#endDateReports').val();
-    start = start.split('/')[1] + '/' + start.split('/')[0] + '/' + start.split('/')[2];
-    end = end.split('/')[1] + '/' + end.split('/')[0] + '/' + end.split('/')[2];
+    if(start !== '')
+        start = start.split('/')[1] + '/' + start.split('/')[0] + '/' + start.split('/')[2];
+    if(end !== '')
+        end = end.split('/')[1] + '/' + end.split('/')[0] + '/' + end.split('/')[2];
     switch($('#reportSelect').val()){
         case 'התחברויות':
+            columnReportsTable = ["#", "תאריך", "שעה"];
+            loggedInAt.forEach((log) => {
+                if ((start === '' || end === '') || moment(log) >= moment(start) && moment(log) <= moment(end)) {
+                    eventReports.push(
+                        [moment(log).format('DD/MM/YYYY'), moment(log).format('HH:mm')]
+                    );
+                }
+            });
+            exportTableService(columnReportsTable, eventReports, 'דוח התחברויות', start, end);
             break;
         case 'אירועים גלובליים':
             columnReportsTable = ["#", "שם האירוע", "תאריך התחלה", "תאריך סיום"];
             globalEvents.forEach((event) => {
-                if (moment(event.start) >= moment(start) && moment(event.start) <= moment(end)) {
+                if ((start === '' || end === '') || moment(event.start) >= moment(start) && moment(event.start) <= moment(end)) {
                     eventReports.push(
                         [event.title, moment(event.start).format('DD/MM/YYYY'), moment(event.end).format('DD/MM/YYYY')]
                     );
                 }
             });
-            exportTableService(columnReportsTable, eventReports, 'דוח אירועים גלובליים');
+            exportTableService(columnReportsTable, eventReports, 'דוח אירועים גלובליים', start, end);
             break;
         case 'אירועים אישיים':
             columnReportsTable = ["#", "שם האירוע", "תאריך התחלה", "תאריך סיום"];
             events.forEach((event) => {
-                if (moment(event.start) >= moment(start) && moment(event.start) <= moment(end)) {
+                if ((start === '' || end === '') || moment(event.start) >= moment(start) && moment(event.start) <= moment(end)) {
                     eventReports.push(
                         [event.title, moment(event.start).format('DD/MM/YYYY'), moment(event.end).format('DD/MM/YYYY')]
                     );
                 }
             });
-            exportTableService(columnReportsTable, eventReports, 'דוח אירועים אישיים');
+            exportTableService(columnReportsTable, eventReports, 'דוח אירועים אישיים', start, end);
             break;
         default:
             toastr['error']('אנא בחר דוח מהרשימה');
     }
 }
 
-function exportTableService(column, row, title) {
+function exportTableService(column, row, title, start, end) {
+    let time = (start === '' || end === '') ? 'הכל' : moment(start).format('DD/MM/YYYY') + ' - ' + moment(end).format('DD/MM/YYYY') ;
     let table = `
     <style>
         h2 {
+        text-align: center;
+        }
+        h3 {
         text-align: center;
         }
         table {
@@ -491,15 +504,16 @@ function exportTableService(column, row, title) {
         }
     </style>
     <h2>${title}</h2>
+    <h3>${time}</h3>
 
     <table dir="rtl">
         <tr>
     `;
     column.forEach(col => table += `<th> ${col} </th>`);
     table += `</tr>`;
-    row.forEach((row,index) => {
-        table += `<tr><td>${index}</td>`;
-        row.forEach((rowtext) => table += `<th> ${rowtext} </th>`);
+    row.forEach((row, index) => {
+        table += `<tr><td>${index + 1}</td>`;
+        row.forEach((rowText) => table += `<th> ${rowText} </th>`);
         table += `</tr>`;
     });
     table += `</table>`;

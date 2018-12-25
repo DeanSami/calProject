@@ -6,8 +6,10 @@
 
     <!--jQuery-->
     <script src="lib/jquery/moment.min.js"></script>
-    <script src="lib/jquery/jquery.min.js"></script>
+    <script src="lib/jquery/jquery-1.12.4.js"></script>
     <script src="lib/jquery/popper.min.js"></script>
+    <link rel="stylesheet" href="lib/jquery/jquery-ui.css">
+    <script src="lib/jquery/jquery-ui.min.js"></script>
 
     <!-- toastr -->
     <link rel="stylesheet" href="lib/toastr/toastr.min.css">
@@ -18,8 +20,14 @@
     <script src="lib/bootstrap/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
+    <!--fullcalendar-->
+    <link rel="stylesheet" href="lib/fullcalendar/fullcalendar.min.css">
+    <script src="lib/fullcalendar/fullcalendar.min.js"></script>
+    <script src="lib/fullcalendar/he.js"></script>
+
     <!--bootBox-->
     <script src="lib/bootbox/bootbox.min.js"></script>
+
 
     <!--calendar includes-->
     <link rel="stylesheet" href="css/style.css">
@@ -44,15 +52,20 @@
 
             <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                 <a class="nav-link" id="v-pills-request-tab" data-toggle="pill" href="#v-pills-request" role="tab"
-                   aria-controls="v-pills-request" aria-selected="true"><i class="fa fa-key"
-                                                                           onclick="buildAdminRequestTable()"></i><span>בקשות הרשמה</span></a>
+                   aria-controls="v-pills-request" aria-selected="true"><i class="fa fa-key">
+                </i><span>בקשות הרשמה</span></a>
+
                 <a class="nav-link" id="v-pills-event-request-tab" data-toggle="pill" href="#v-pills-event-request"
-                   role="tab"
-                   aria-controls="v-pills-event-request" aria-selected="true"><i class="fa fa-key"
-                                                                                 onclick="buildAdminRequestTable()"></i><span>בקשות אירועים</span></a>
+                   role="tab" aria-controls="v-pills-event-request" aria-selected="true"><i class="fa fa-key">
+                </i><span>בקשות אירועים</span></a>
+
                 <a class="nav-link" id="v-pills-search-tab" data-toggle="pill" href="#v-pills-search" role="tab"
-                   aria-controls="v-pills-search" aria-selected="false"><i class="fa fa-credit-card"
-                                                                           onclick="buildUserTable();"></i><span>חיפוש משתמש</span></a>
+                   aria-controls="v-pills-search" aria-selected="false"><i class="fa fa-credit-card">
+                </i><span>חיפוש משתמש</span></a>
+
+                <a class="nav-link" id="v-pills-reports-tab" data-toggle="pill" href="#v-pills-reports" role="tab"
+                   aria-controls="v-pills-reports" aria-selected="false"><i class="fa fa-credit-card">
+                </i><span>דוחות מנהל</span></a>
             </div>
         </div>
 
@@ -173,7 +186,26 @@
                         </template>
                     </div>
                 </div>
+            </div>
 
+            <div class="tab-pane fade" id="v-pills-reports" role="tabpanel" aria-labelledby="v-pills-reports-tab">
+                <div class="container">
+                    <div>
+                        <label for="startDateReports">תאריך התחלה</label>
+                        <input type="text" id="startDateReports" class="form-control" >
+                        <label for="endDateReports">תאריך סיום</label>
+                        <input type="text" id="endDateReports" class="form-control" >
+                        <label for="reportSelect">דוחות</label>
+                        <select id="reportSelect" class="custom-select custom-select mb-2">
+                            <option>בחר דוח</option>
+                            <option>דוח משתמשים</option>
+                            <option>דוח עורכי תוכן</option>
+                            <option>דוח אירועים גלובליים</option>
+                        </select>
+                        <button class="btn btn-block" onclick="adminReports()">הנפק דוח</button>
+
+                    </div>
+                </div>
             </div>
 
 
@@ -216,7 +248,7 @@
         </div>
     </div>
 </div>
-
+<iframe name="print_frame" width="0" height="0" frameborder="0" src="about:blank"></iframe>
 </body>
 </html>
 

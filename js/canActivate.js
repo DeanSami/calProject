@@ -36,6 +36,7 @@ $(document).ready(() => {
                                 else{
                                     buildAdminRequestTable();
                                     buildUserTable();
+                                    reports();
                                     closeLoading();
                                 }
                                 break;
@@ -83,7 +84,6 @@ function canActivate() {
         xhttp.onreadystatechange = () => {
             if (xhttp.readyState === 4) {
                 if (xhttp.status === 200)
-                    console.log(xhttp.responseText);
                 resolve(JSON.parse(xhttp.responseText));
                 reject(null);
             }
