@@ -3,6 +3,7 @@ const config = require('../config');
 const User = require('../models/User');
 const Editor = require('../models/Editor');
 const GlobalEvent = require('../models/GlobalEvent');
+const EventRequest = require('../models/EventRequest');
 const RejectedRequest = require('../models/RejectedRequest');
 
 module.exports = (app) => {
@@ -57,6 +58,9 @@ module.exports = (app) => {
                         }
                     };
                     response.declined_requests = declined_requests;
+
+                    let awaiting_requests = await EventRequest.find({ editorRequesting: username });
+                    response.awaiting_requests = awaiting_requests;
                 }
             }
 
