@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-let EventRequestSchema = new Schema({
+let RejectedRequestSchema = new Schema({
     event_id: {
         type: String,
         required: true
@@ -62,6 +62,6 @@ let EventRequestSchema = new Schema({
     }
 });
 
-let EventRequest = mongoose.model('EventRequest', EventRequestSchema);
+let RejectedRequest = mongoose.model('RejectedRequest', RejectedRequestSchema);
 
-module.exports = EventRequest;
+module.exports = RejectedRequest;

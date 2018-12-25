@@ -1,7 +1,9 @@
 const config = require('../config');
 
 const User = require('../models/User');
+const Editor = require('../models/Editor');
 const GlobalEvent = require('../models/GlobalEvent');
+const RejectedRequest = require('../models/RejectedRequest');
 
 module.exports = (app) => {
 
@@ -43,6 +45,20 @@ module.exports = (app) => {
                 categories: config.getCategories(),
                 places: config.getPlaces()
             };
+
+            if (user.permission == 'editor') {
+                const editor = await Editor.findOne({ username: username });
+                if (editor) {
+                    let declined_requests = [];
+                    for (let i = 0; i < editor.declinedRequests.length; i++) {
+                        const declined_found = await RejectedRequest.findById(editor.declinedRequests[i]._id);
+                        if (declined_found) {
+                            declined_requests.push(declined_found);
+                        }
+                    };
+                    response.declined_requests = declined_requests;
+                }
+            }
 
         } else {
 
