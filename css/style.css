@@ -3,7 +3,6 @@ body {
     padding: 0;
     font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
     font-size: 14px;
-    overflow: hidden;
 }
 
 #calendar {
@@ -85,7 +84,7 @@ body {
     text-align: center;
     background: none;
     border-width: 0 0 1px 0;
-    padding-left: 5px;
+    padding-top: 5px;
 }
 .form-group {
     display: flex;
@@ -287,4 +286,8 @@ body {
 
 .descriptionShowDialog {
     display: flex;
+}
+
+#v-pills-tab i {
+    padding-left: 5px;
 }

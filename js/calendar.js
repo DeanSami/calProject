@@ -48,11 +48,13 @@ function loadCalendar() {
                 document.getElementById('titleModifyEvent').innerHTML = 'צור אירוע חדש';
                 document.getElementById('submitButton').innerHTML = 'צור אירוע';
                 $('#deleteButton').hide();
-                document.getElementById('startDate').value = startDate.format('HH:mm DD/MM/YYYY');
+                if (endDate === null || (moment(startDate).utc().format('HH:mm:ss') === '00:00:00' && moment(endDate).utc().format('HH:mm:ss') === '00:00:00'))
+                    allDay = true;
+                document.getElementById('startDate').value = allDay ? startDate.utc().format('DD/MM/YYYY') + ' (כל היום) ' : startDate.utc().format('HH:mm DD/MM/YYYY');
                 document.getElementById('title').value = '';
                 document.getElementById('eventDescription').value = '';
-                if (!allDay)
-                    document.getElementById('endDate').value = endDate.format('HH:mm DD/MM/YYYY');
+                if (Math.abs(moment(startDate).diff(moment(endDate), 'd')) !== 1)
+                    document.getElementById('endDate').value = allDay ? endDate.utc().format('DD/MM/YYYY') + ' (כל היום) ' : endDate.utc().format('HH:mm DD/MM/YYYY');
                 allDay = false;
             },
             dayClick: function () {
@@ -60,6 +62,7 @@ function loadCalendar() {
                 document.getElementById('endDate').value = '';
             },
             eventClick: (event) => {
+                allDay = false;
                 currentEvent = event;
                 currentEvent.start = new Date(event.start);
                 currentEvent.end = currentEvent.end ? new Date(event.end) : null;
@@ -81,11 +84,18 @@ function loadCalendar() {
                     document.getElementById('titleModifyEvent').innerHTML = 'ערוך אירוע';
                     document.getElementById('submitButton').innerHTML = 'ערוך אירוע';
                     $('#deleteButton').show();
-                    document.getElementById('startDate').value = moment(event.start).format('HH:mm MM/DD/YYYY');
+                    if (event.end === null || (moment(event.start).utc().format('HH:mm:ss') === '00:00:00' && moment(event.end).utc().format('HH:mm:ss') === '00:00:00'))
+                        allDay = true;
+                    document.getElementById('startDate').value = allDay ? moment(event.start).utc().format('DD/MM/YYYY') + ' (כל היום) ' : moment(event.start).utc().format('HH:mm DD/MM/YYYY');
                     document.getElementById('title').value = event.title.toString();
                     document.getElementById('eventDescription').value = event.description;
-                    if (event.end)
-                        document.getElementById('endDate').value = moment(event.end).format('HH:mm MM/DD/YYYY');
+
+                    if (event.end !== null){
+                        if(moment(event.start).utc().format('HH:mm:ss') === '00:00:00' && moment(event.end).utc().format('HH:mm:ss') === '00:00:00')
+                            document.getElementById('endDate').value = moment(event.end).utc().format('DD/MM/YYYY') + ' (כל היום) ';
+                        else
+                            document.getElementById('endDate').value = moment(event.end).utc().format('HH:mm DD/MM/YYYY');
+                    }
                     else
                         document.getElementById('endDate').value = '';
                 }
@@ -132,7 +142,7 @@ function editUserEvent() {
             title: $('#title').val().toString() === '' ? currentEvent.title : $('#title').val().toString(),
             start: new Date(currentEvent.start),
             end: new Date(currentEvent.end),
-            allDay: currentEvent.end === null && moment(currentEvent.start).format('HH:mm') === '02:00',
+            allDay: currentEvent.end === null || (moment(currentEvent.start).utc().format('HH:mm:ss') === '00:00:00' && moment(currentEvent.end).utc().format('HH:mm:ss') === '00:00:00'),
             description: $('#eventDescription').val().toString()
         };
     apiEditUserEvent(event).then(res => {
@@ -165,7 +175,7 @@ function addUserEvent(event, permitAddEvent) {
             addEvent(res.event, permitAddEvent);
             toastr["success"](res.message);
             $('#submitButton').prop('disabled', false);
-        } else{
+        } else {
             toastr["error"](res.message);
             $('#submitButton').prop('disabled', false);
         }
@@ -191,7 +201,7 @@ function addEvent(event, permitAddEvent) {
                 title: event.title,
                 start: event.start,
                 end: event.end !== null ? event.end : null,
-                allDay: event.end === null,
+                allDay: event.end === null || (moment(event.start).utc().format('HH:mm:ss') === '00:00:00' && moment(event.end).utc().format('HH:mm:ss') === '00:00:00'),
                 description: event.description,
                 color: idx >= 0 ? colorEvents[idx].color : null
             },
@@ -266,7 +276,7 @@ function addAllUserEvent() {
                         title: event.title,
                         start: event.start,
                         end: event.end !== null ? event.end : null,
-                        allDay: event.end === null && moment(event.start).format('HH:mm') === '02:00',
+                        allDay: event.end === null || (moment(event.start).utc().format('HH:mm:ss') === '00:00:00' && moment(event.end).utc().format('HH:mm:ss') === '00:00:00'),
                         description: event.description
                     }
                 });
@@ -400,7 +410,7 @@ function addPermissionEvents() {
                             title: event.title,
                             start: event.start,
                             end: event.end !== null ? event.end : null,
-                            allDay: event.end === null && moment(event.start).format('HH:mm') === '02:00',
+                            allDay: event.end === null || (moment(event.start).utc().format('HH:mm:ss') === '00:00:00' && moment(event.end).utc().format('HH:mm:ss') === '00:00:00'),
                             description: event.description,
                             color: color
                         }
@@ -440,11 +450,11 @@ function reportEvents() {
     let eventReports = [], columnReportsTable = [];
     let start = $('#startDateReports').val();
     let end = $('#endDateReports').val();
-    if(start !== '')
+    if (start !== '')
         start = start.split('/')[1] + '/' + start.split('/')[0] + '/' + start.split('/')[2];
-    if(end !== '')
+    if (end !== '')
         end = end.split('/')[1] + '/' + end.split('/')[0] + '/' + end.split('/')[2];
-    switch($('#reportSelect').val()){
+    switch ($('#reportSelect').val()) {
         case 'התחברויות':
             columnReportsTable = ["#", "תאריך", "שעה"];
             loggedInAt.forEach((log) => {
@@ -484,7 +494,7 @@ function reportEvents() {
 }
 
 function exportTableService(column, row, title, start, end) {
-    let time = (start === '' || end === '') ? 'הכל' : moment(start).format('DD/MM/YYYY') + ' - ' + moment(end).format('DD/MM/YYYY') ;
+    let time = (start === '' || end === '') ? 'הכל' : moment(start).format('DD/MM/YYYY') + ' - ' + moment(end).format('DD/MM/YYYY');
     let table = `
     <style>
         h2 {
