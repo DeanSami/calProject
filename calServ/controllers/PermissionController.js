@@ -17,19 +17,11 @@ module.exports = (app) => {
             if (user_editing.theyPermit.indexOf(user_permiting._id) >= 0 && user_permiting.iPermit.indexOf(user_editing._id) >= 0) {
 
                 const   events      = await Event.find().where('owner').equals(user_permiting.username).exec();
-                let     user_events = [],
-                        theyPermit = [];
+                let     user_events = [];
 
                 events.forEach((event) => {
                     user_events.push(event);
                 });
-                
-                // for (let i = 0; i < user_editing.theyPermit.length; i++) {
-                //     user_that_permited = await User.findOne( { _id: user_editing.theyPermit[i] } );
-                //     if (user_that_permited) {
-                //         theyPermit.push(user_that_permited.username);
-                //     }
-                // }
 
                 const msg = "האירועים של ".concat(user_permiting.username).concat(' התווספו ליומן');
 
@@ -67,7 +59,7 @@ module.exports = (app) => {
             if (user_editing.theyPermit.indexOf(user_permiting._id) >= 0 && user_permiting.iPermit.indexOf(user_editing._id) >= 0) {
 
                 const event = await Event.create({
-                    title: title,
+                    title: (title)?title:'',
                     start: start,
                     end: end,
                     description: description,

@@ -186,14 +186,14 @@ module.exports = (app) => {
 
             if (event_to_edit) {
 
-                if (title) event_to_edit.title = title;
-                if (allDay) event_to_edit.allDay = allDay;
-                if (start) event_to_edit.start = start;
-                if (end) event_to_edit.end = end;
-                if (description) event_to_edit.description = description;
+                event_to_edit.title = (title) ? title : event_to_edit.title;
+                event_to_edit.allDay = (allDay) ? allDay : event_to_edit.allDay;
+                event_to_edit.start = (start) ? start : event_to_edit.start;
+                event_to_edit.end = (end) ? end : event_to_edit.end;
+                event_to_edit.description = (description) ? description : event_to_edit.description;
 
                 if (event_to_edit.owner == username) {
-                    
+
                     await event_to_edit.save();
 
                     response = {
