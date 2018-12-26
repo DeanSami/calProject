@@ -68,31 +68,22 @@ module.exports = (app) => {
             user = await User.findOne({ username: username, token: token });
 
         if (user) {
-            if (title) {
 
-                const event = await Event.create({
-                    title: title,
-                    allDay: allDay,
-                    start: start,
-                    end: end,
-                    description: description,
-                    owner: user.username
-                });
+            const event = await Event.create({
+                title: title,
+                allDay: allDay,
+                start: start,
+                end: end,
+                description: description,
+                owner: user.username
+            });
 
-                response = {
-                    success: 'true',
-                    message: 'אירוע נוצר בהצלחה',
-                    event: event
-                };
+            response = {
+                success: 'true',
+                message: 'אירוע נוצר בהצלחה',
+                event: event
+            };
 
-            } else {
-
-                response = {
-                    success: 'false',
-                    message: 'כותרת הוא שדה חובה למילוי'
-                };
-
-            }
         } else {
 
             response = {

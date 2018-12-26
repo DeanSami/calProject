@@ -15,7 +15,8 @@ let EventSchema = new Schema({
     },
     title: {
         type: String,
-        required: true
+        default: '',
+        required: false
     },
     start: {
         type: Date,
