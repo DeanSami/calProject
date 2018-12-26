@@ -2,6 +2,9 @@ const { check, validationResult } = require('express-validator/check');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const config = require('../config');
+const bcrypt = require('bcrypt');
+
+const saltRounds = 10;
 
 const User = require('../models/User');
 const RegisterRequest = require('../models/RegisterRequest');
@@ -64,9 +67,11 @@ module.exports = (app) => {
 
                 } else if (password == password2) {
 
+                    const hash = bcrypt.hashSync(password, saltRounds);
+                    
                     await User.create({
                         username: username,
-                        password: password,
+                        password: hash,
                         fullname: fullname
                     });
 
@@ -75,7 +80,7 @@ module.exports = (app) => {
 
                             await RegisterRequest.create({
                                 username: username,
-                                password: password,
+                                password: hash,
                                 fullname: fullname,
                                 category: category,
                                 experience: experience
@@ -132,7 +137,7 @@ module.exports = (app) => {
 
         if (user) {
 
-            if (password == user.password) {
+            if (bcrypt.compareSync(password, user.password)) {
 
                 const   cert    = fs.readFileSync('private.key'),
                         token   = await jwt.sign({ username: user.username, loggedInAt: Date.now().toString() }, cert, { algorithm: 'RS256', expiresIn: '1h' }),
