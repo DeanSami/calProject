@@ -110,7 +110,8 @@ module.exports = (app) => {
             const event = await Event.findOne({ _id: id });
 
             if (event) {
-                if (event.owner == user.username) {
+                const event_owner = await User.findOne( { username: event.owner });
+                if (event.owner == user.username || user.theyPermit.findIndex(id => id.equals(event_owner._id)) > -1 ) {
 
                     await Event.deleteOne({ _id: id });
 
