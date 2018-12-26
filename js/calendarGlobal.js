@@ -104,7 +104,7 @@ function loadGlobalCalendar() {
         });
         addAllGlobalEvent().then(() => {
             $("#loading").hide();
-            if (resEvents.permission !== 'editor' && resEvents.permission !== 'admin') {
+            if (resEvents.permission !== 'editor') {
                 $('#editorReports').hide();
                 $('#calendar').fullCalendar('option', {
                     editable: false,
@@ -120,6 +120,8 @@ function loadGlobalCalendar() {
                     }
                 });
             }
+            $(() => $('#startDateReports').datepicker());
+            $(() => $('#endDateReports').datepicker());
             setFilter();
             resolve();
         }).catch(() => reject());
@@ -402,7 +404,7 @@ function editGlobalEvent(event) {
 }
 
 function reportEvents() {
-    if (resEvents.permission !== 'editor' && resEvents.permission !== 'admin') {
+    if (resEvents.permission !== 'editor') {
         toastr['error']('אין הרשאות לפעולה זו');
     }
     else {
@@ -414,38 +416,29 @@ function reportEvents() {
         if (end !== '')
             end = end.split('/')[1] + '/' + end.split('/')[0] + '/' + end.split('/')[2];
         switch ($('#reportSelect').val()) {
-            case 'התחברויות':
-                columnReportsTable = ["#", "תאריך", "שעה"];
-                loggedInAt.forEach((log) => {
-                    if ((start === '' || end === '') || moment(log) >= moment(start) && moment(log) <= moment(end)) {
+            case 'אירועים ממתינים לאישור':
+                columnReportsTable = ["#", "שם האירוע", "סוג הבקשה", "תאריך התחלה", "תאריך סיום", "סיבה"];
+                resEvents.awaiting_requests.forEach((event) => {
+                    if ((start === '' || end === '') || moment(event.start) >= moment(start) && moment(event.start) <= moment(end)) {
                         eventReports.push(
-                            [moment(log).format('DD/MM/YYYY'), moment(log).format('HH:mm')]
+                            [event.title, event.delete === true ? 'מחיקה' : 'עריכה',
+                                moment(event.start).format('DD/MM/YYYY'), moment(event.end).format('DD/MM/YYYY'),event.reason]
                         );
                     }
                 });
                 exportTableService(columnReportsTable, eventReports, 'דוח התחברויות', start, end);
                 break;
-            case 'אירועים גלובליים':
-                columnReportsTable = ["#", "שם האירוע", "תאריך התחלה", "תאריך סיום"];
-                globalEvents.forEach((event) => {
+            case 'אירועים שסורבו':
+                columnReportsTable = ["#", "שם האירוע", "סוג הבקשה", "תאריך התחלה", "תאריך סיום", "סיבה"];
+                resEvents.declined_requests.forEach((event) => {
                     if ((start === '' || end === '') || moment(event.start) >= moment(start) && moment(event.start) <= moment(end)) {
                         eventReports.push(
-                            [event.title, moment(event.start).format('DD/MM/YYYY'), moment(event.end).format('DD/MM/YYYY')]
+                            [event.title, event.delete === true ? 'מחיקה' : 'עריכה',
+                                moment(event.start).format('DD/MM/YYYY'), moment(event.end).format('DD/MM/YYYY'),event.reason]
                         );
                     }
                 });
                 exportTableService(columnReportsTable, eventReports, 'דוח אירועים גלובליים', start, end);
-                break;
-            case 'אירועים אישיים':
-                columnReportsTable = ["#", "שם האירוע", "תאריך התחלה", "תאריך סיום"];
-                events.forEach((event) => {
-                    if ((start === '' || end === '') || moment(event.start) >= moment(start) && moment(event.start) <= moment(end)) {
-                        eventReports.push(
-                            [event.title, moment(event.start).format('DD/MM/YYYY'), moment(event.end).format('DD/MM/YYYY')]
-                        );
-                    }
-                });
-                exportTableService(columnReportsTable, eventReports, 'דוח אירועים אישיים', start, end);
                 break;
             default:
                 toastr['error']('אנא בחר דוח מהרשימה');
