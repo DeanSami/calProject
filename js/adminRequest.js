@@ -8,7 +8,7 @@ function getAdminRequest() {
     }
     else {
         let xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "http://localhost:3000/admin/requests");
+        xhttp.open("POST", url + "/admin/requests");
         xhttp.setRequestHeader("Content-Type", "application/json");
 
         return new Promise((resolve, reject) => {
@@ -90,7 +90,7 @@ function getUserRequest() {
     }
     else {
         let xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "http://localhost:3000/admin/getusers");
+        xhttp.open("POST", url + "/admin/getusers");
         xhttp.setRequestHeader("Content-Type", "application/json");
 
         return new Promise((resolve, reject) => {
@@ -254,7 +254,7 @@ function sendApiEditUser(username, info) {
     }
     else {
         let xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "http://localhost:3000/admin/updateuser/" + username);
+        xhttp.open("POST", url + "/admin/updateuser/" + username);
         xhttp.setRequestHeader("Content-Type", "application/json");
 
         return new Promise((resolve, reject) => {
@@ -343,7 +343,7 @@ function sendApiDeleteUser(username) {
     }
     else {
         let xhttp = new XMLHttpRequest();
-        xhttp.open("DELETE", "http://localhost:3000/admin/deleteuser/" + username);
+        xhttp.open("DELETE", url + "/admin/deleteuser/" + username);
         xhttp.setRequestHeader("Content-Type", "application/json");
 
         return new Promise((resolve, reject) => {
@@ -372,7 +372,7 @@ function sendApiAcceptRequest(id, approve) {
     }
     else {
         let xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "http://localhost:3000/admin/requests/" + id);
+        xhttp.open("POST", url + "/admin/requests/" + id);
         xhttp.setRequestHeader("Content-Type", "application/json");
 
         return new Promise((resolve, reject) => {
@@ -541,7 +541,7 @@ function getGlobalEvents() {
     }
     else {
         let xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "http://localhost:3000/globalCal");
+        xhttp.open("POST", url + "/globalCal");
         xhttp.setRequestHeader("Content-Type", "application/json");
 
         return new Promise((resolve, reject) => {

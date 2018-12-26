@@ -1,3 +1,4 @@
+let url='http://104.248.95.224:3000';
 $(document).ready(() => {
     $("#loading").show(1000);
     $(".user-form").hide();
@@ -77,7 +78,7 @@ $(document).ready(() => {
 
 function canActivate() {
     let xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "http://localhost:3000/canActivate");
+    xhttp.open("POST", url + "/canActivate");
     xhttp.setRequestHeader("Content-Type", "application/json");
 
     return new Promise((resolve, reject) => {

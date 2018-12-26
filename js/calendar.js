@@ -72,8 +72,12 @@ function loadCalendar() {
                     $('#submitButton').hide();
                     $('.toWhere').show();
                     $('#modalBodyShow').show();
-                    document.getElementById('titleModifyEvent').innerHTML = 'תצוגת אירוע גלובלי';
                     $('#titleShow').html(event.title.toString());
+                    let idx = globalEvents.findIndex(eventG => eventG._id === event._id);
+                    if(idx >= 0) {
+                        $('.showEventsLocation').html(globalEvents[idx].place);
+                        $('.showEventsCategory').html(globalEvents[idx].category);
+                    }
                     $('#eventDescriptionShow').html(event.description.toString());
                 }
                 else {
@@ -289,7 +293,9 @@ function addAllUserEvent() {
                         end: event.end !== null ? event.end : null,
                         allDay: true,
                         description: event.description,
-                        color: 'SandyBrown'
+                        color: 'SandyBrown',
+                        place: event.place,
+                        category: event.category
                     }
                 });
                 $('#calendar').fullCalendar('addEventSource', globalEvents);

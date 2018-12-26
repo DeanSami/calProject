@@ -10,7 +10,7 @@ function getGlobalEvents() {
     }
     else {
         let xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "http://localhost:3000/globalCal");
+        xhttp.open("POST", url + "/globalCal");
         xhttp.setRequestHeader("Content-Type", "application/json");
 
         return new Promise((resolve,reject) => {
@@ -31,7 +31,7 @@ function getGlobalEvents() {
 
 function userPullGlobalEvent(eventId){
         let xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "http://localhost:3000/globalCal/pull/" + eventId);
+        xhttp.open("POST", url + "/globalCal/pull/" + eventId);
         xhttp.setRequestHeader("Content-Type", "application/json");
 
         return new Promise((resolve,reject) => {
@@ -55,7 +55,7 @@ function apiAddEditorGlobalEvent(event) {
         return null;
     } else {
         let xhttp = new XMLHttpRequest();
-        xhttp.open("PUT", "http://localhost:3000/globalCal");
+        xhttp.open("PUT", url + "/globalCal");
         xhttp.setRequestHeader("Content-Type", "application/json");
 
         return new Promise((resolve,reject) => {
@@ -84,7 +84,7 @@ function apiEditGlobalEvent(event) {
         return null;
     } else {
         let xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "http://localhost:3000/globalCal/" + event._id);
+        xhttp.open("POST", url + "/globalCal/" + event._id);
         xhttp.setRequestHeader("Content-Type", "application/json");
 
         return new Promise((resolve,reject) => {
@@ -113,7 +113,7 @@ function apiDeleteGlobalEvent(event) {
         return null;
     } else {
         let xhttp = new XMLHttpRequest();
-        xhttp.open("DELETE", "http://localhost:3000/globalCal/" + event._id);
+        xhttp.open("DELETE", url + "/globalCal/" + event._id);
         xhttp.setRequestHeader("Content-Type", "application/json");
 
         return new Promise((resolve,reject) => {

@@ -48,7 +48,7 @@
 </div>
 <div class="container main">
 
-    <div class="menu p-2 col-3 d-none d-md-block">
+    <div class="menu p-2 col-3">
         <div id="accordion">
             <div class="colors-events" id="colorEventsNav">
 
@@ -121,9 +121,9 @@
 
                         <div>
                             <label for="startDateReports">תאריך התחלה</label>
-                            <input type="text" id="startDateReports" class="form-control" >
+                            <input type="text" id="startDateReports" class="form-control">
                             <label for="endDateReports">תאריך סיום</label>
-                            <input type="text" id="endDateReports" class="form-control" >
+                            <input type="text" id="endDateReports" class="form-control">
                             <label for="reportSelect">דוחות</label>
                             <select id="reportSelect" class="custom-select custom-select mb-2">
                                 <option>בחר דוח</option>
@@ -191,10 +191,22 @@
             </div>
 
             <div id="modalBodyShow" class="modal-body">
-                <label for="titleShow" class="text-primary"><u>שם האירוע</u></label>
-                <p id="titleShow"></p>
-                <label for="eventDescriptionShow" class="text-primary"><u>תיאור האירוע</u></label>
-                <p id="eventDescriptionShow"></p>
+                <h5 class="font-weight-bold text-primary text-center" id="titleShow"><u class="showEventName"></u></h5>
+                <div class="descriptionGlobalEventDialog">
+                    <label class="text-primary mb-0"><u>תיאור</u></label>
+                    <div class="showEventDescription" id="eventDescriptionShow"></div>
+                </div>
+                <div class="descriptionShowDialog pt-3">
+                    <div class="flex-column col-6">
+                        <label class="text-primary mb-0"><u>קטגוריה</u></label>
+                        <div class="showEventsLocation"></div>
+                    </div>
+                    <div class="flex-column col-6">
+                        <label class="text-primary mb-0"><u>מקום</u></label>
+                        <div class="showEventsCategory"></div>
+                    </div>
+
+                </div>
             </div>
 
             <div class="modal-footer">
@@ -208,8 +220,7 @@
 
         </div>
     </div>
-</div>
-<iframe name="print_frame" width="0" height="0" frameborder="0" src="about:blank"></iframe>
+    <iframe name="print_frame" width="0" height="0" frameborder="0" src="about:blank"></iframe>
 </body>
 </html>
 

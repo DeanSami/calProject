@@ -5,7 +5,7 @@ $(document).ready(function () {
 
 function login(username, password) {
         let xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "http://localhost:3000/login");
+        xhttp.open("POST", url + "/login");
         xhttp.setRequestHeader("Content-Type", "application/json");
         if(recaptcha) {
         new Promise((resolve, reject) => {
@@ -38,7 +38,7 @@ function login(username, password) {
 
 function register(data) {
         let xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "http://localhost:3000/register");
+        xhttp.open("POST", url + "/register");
         xhttp.setRequestHeader("Content-Type", "application/json");
 
         if(recaptcha){
@@ -79,7 +79,7 @@ function getUserEvents() {
     }
     else {
         let xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "http://localhost:3000/calendar");
+        xhttp.open("POST", url + "/calendar");
         xhttp.setRequestHeader("Content-Type", "application/json");
 
         return new Promise((resolve,reject) => {
@@ -105,9 +105,9 @@ function apiAddUserEvent(event, permitAddEvent) {
     } else {
         let xhttp = new XMLHttpRequest();
         if(permitAddEvent === '')
-            xhttp.open("PUT", "http://localhost:3000/calendar/" + permitAddEvent);
+            xhttp.open("PUT", url + "/calendar/" + permitAddEvent);
         else
-            xhttp.open("PUT", "http://localhost:3000/permitedCalendar/" + permitAddEvent);
+            xhttp.open("PUT", url + "/permitedCalendar/" + permitAddEvent);
 
         xhttp.setRequestHeader("Content-Type", "application/json");
 
@@ -137,7 +137,7 @@ function apiEditUserEvent(event) {
         return null;
     } else {
         let xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "http://localhost:3000/calendar/" + event._id);
+        xhttp.open("POST", url + "/calendar/" + event._id);
         xhttp.setRequestHeader("Content-Type", "application/json");
 
         return new Promise((resolve,reject) => {
@@ -167,7 +167,7 @@ function apiDeleteUserEvent(event) {
         return null;
     } else {
         let xhttp = new XMLHttpRequest();
-        xhttp.open("DELETE", "http://localhost:3000/calendar/" + event._id);
+        xhttp.open("DELETE", url + "/calendar/" + event._id);
         xhttp.setRequestHeader("Content-Type", "application/json");
 
         return new Promise((resolve,reject) => {
@@ -190,7 +190,7 @@ function apiDeleteUserEvent(event) {
 
 function apiGivePermissionsRequest(userName) {
         let xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "http://localhost:3000/permitedCalendar/givepermissions");
+        xhttp.open("POST", url + "/permitedCalendar/givepermissions");
         xhttp.setRequestHeader("Content-Type", "application/json");
 
         return new Promise((resolve,reject) => {
@@ -213,7 +213,7 @@ function apiGivePermissionsRequest(userName) {
 
 function apiRemovePermissionsRequest(userName) {
     let xhttp = new XMLHttpRequest();
-    xhttp.open("DELETE", "http://localhost:3000/permitedCalendar/removepermission/" + userName);
+    xhttp.open("DELETE", url + "/permitedCalendar/removepermission/" + userName);
     xhttp.setRequestHeader("Content-Type", "application/json");
 
     return new Promise((resolve,reject) => {
@@ -235,7 +235,7 @@ function apiRemovePermissionsRequest(userName) {
 
 function apiGetPermissionEvent(userName) {
         let xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "http://localhost:3000/permitedCalendar/getEvents/" + userName);
+        xhttp.open("POST", url + "/permitedCalendar/getEvents/" + userName);
         xhttp.setRequestHeader("Content-Type", "application/json");
 
         return new Promise((resolve,reject) => {
@@ -271,7 +271,7 @@ function PopDetailsEditor(){
 
 function apiGetCategory() {
     let xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "http://localhost:3000/categories");
+    xhttp.open("GET", url + "/categories");
     xhttp.setRequestHeader("Content-Type", "application/json");
 
     return new Promise((resolve,reject) => {
