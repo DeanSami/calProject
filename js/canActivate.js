@@ -25,6 +25,9 @@ $(document).ready(() => {
                                 break;
                         }
                         switch(currentUrl[currentUrl.length - 1]) {
+                            case '':
+                                loadCalendar().then(() => closeLoading()).catch(() => window.location.assign('/404'));
+                                break;
                             case 'index.html':
                                 loadCalendar().then(() => closeLoading()).catch(() => window.location.assign('/404'));
                                 break;

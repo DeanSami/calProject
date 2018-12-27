@@ -104,8 +104,9 @@ function loadGlobalCalendar() {
         });
         addAllGlobalEvent().then(() => {
             $("#loading").hide();
-            if (resEvents.permission !== 'editor') {
+            if (resEvents.permission !== 'editor')
                 $('#editorReports').hide();
+            if (resEvents.permission !== 'editor' && resEvents.permission !== 'admin') {
                 $('#calendar').fullCalendar('option', {
                     editable: false,
                     selectable: false,
@@ -405,7 +406,10 @@ function editGlobalEvent(event) {
 
 function reportEvents() {
     if (resEvents.permission !== 'editor') {
-        toastr['error']('אין הרשאות לפעולה זו');
+        if (resEvents.permission === 'admin')
+            toastr['error']('מנהל לא יכול להנפיק דוחות עורך תוכן');
+        else
+            toastr['error']('אין הרשאות לפעולה זו');
     }
     else {
         let eventReports = [], columnReportsTable = [];
@@ -422,11 +426,11 @@ function reportEvents() {
                     if ((start === '' || end === '') || moment(event.start) >= moment(start) && moment(event.start) <= moment(end)) {
                         eventReports.push(
                             [event.title, event.delete === true ? 'מחיקה' : 'עריכה',
-                                moment(event.start).format('DD/MM/YYYY'), moment(event.end).format('DD/MM/YYYY'),event.reason]
+                                moment(event.start).format('DD/MM/YYYY'), moment(event.end).format('DD/MM/YYYY'), event.reason]
                         );
                     }
                 });
-                exportTableService(columnReportsTable, eventReports, 'דוח התחברויות', start, end);
+                exportTableService(columnReportsTable, eventReports, 'דוח אירועים ממתינים לאישור', start, end);
                 break;
             case 'אירועים שסורבו':
                 columnReportsTable = ["#", "שם האירוע", "סוג הבקשה", "תאריך התחלה", "תאריך סיום", "סיבה"];
@@ -434,11 +438,24 @@ function reportEvents() {
                     if ((start === '' || end === '') || moment(event.start) >= moment(start) && moment(event.start) <= moment(end)) {
                         eventReports.push(
                             [event.title, event.delete === true ? 'מחיקה' : 'עריכה',
-                                moment(event.start).format('DD/MM/YYYY'), moment(event.end).format('DD/MM/YYYY'),event.reason]
+                                moment(event.start).format('DD/MM/YYYY'), moment(event.end).format('DD/MM/YYYY'), event.reason]
                         );
                     }
                 });
-                exportTableService(columnReportsTable, eventReports, 'דוח אירועים גלובליים', start, end);
+                exportTableService(columnReportsTable, eventReports, 'דוח אירועים שסורבו', start, end);
+                break;
+            case 'אירועים שאושרו':
+                columnReportsTable = ["#", "שם האירוע", "תאריך התחלה", "תאריך סיום"];
+                resEvents.globalEvents.forEach((category) => {
+                    category.events.forEach(event => {
+                        if ((start === '' || end === '') || moment(event.start) >= moment(start) && moment(event.start) <= moment(end)) {
+                            eventReports.push(
+                                [event.title, moment(event.start).format('DD/MM/YYYY'), moment(event.end).format('DD/MM/YYYY')]
+                            );
+                        }
+                    })
+                });
+                exportTableService(columnReportsTable, eventReports, 'דוח אירועים שאושרו', start, end);
                 break;
             default:
                 toastr['error']('אנא בחר דוח מהרשימה');

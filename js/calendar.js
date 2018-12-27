@@ -85,7 +85,7 @@ function loadCalendar() {
                     $('#submitButton').show();
                     $('#modalBodyShow').hide();
                     $('.toWhere').hide();
-                    document.getElementById('titleModifyEvent').innerHTML = 'ערוך אירוע';
+                    document.getElementById('titleModifyEvent').innerHTML = 'עריכת אירוע';
                     document.getElementById('submitButton').innerHTML = 'ערוך אירוע';
                     $('#deleteButton').show();
                     if (event.end === null || (moment(event.start).utc().format('HH:mm:ss') === '00:00:00' && moment(event.end).utc().format('HH:mm:ss') === '00:00:00'))
@@ -158,6 +158,7 @@ function editUserEvent() {
             toastr["error"](res.message);
     }).catch(() => {
         toastr["error"]('שגיאה בעדכון אירוע');
+        $('#submitButton').prop('disabled', false);
         $("#createEventModal").modal('hide');
     });
 }
@@ -185,6 +186,7 @@ function addUserEvent(event, permitAddEvent) {
         }
     }).catch(() => {
         toastr["error"]('שגיאה בהוספת אירוע');
+        $('#submitButton').prop('disabled', false);
         $("#createEventModal").modal('hide');
     });
 }
@@ -198,6 +200,10 @@ function addEvent(event, permitAddEvent) {
         add = false;
     }
     $("#createEventModal").modal('hide');
+    eventPermited.forEach(user => {
+        if(user.permited_username === permitAddEvent)
+            user.event.push(event._id);
+    });
     if (add) {
         $("#calendar").fullCalendar('renderEvent',
             {
@@ -226,8 +232,15 @@ function onclickEvent() {
         end: endDate,
         description: $('#eventDescription').val().toString(),
     };
-    if (document.getElementById('titleModifyEvent').innerHTML === 'ערוך אירוע')
+    if (document.getElementById('titleModifyEvent').innerHTML === 'עריכת אירוע'){
+        permitAddEvent = '';
+        eventPermited.forEach(user => {
+            let idx = user.event.findIndex(id => id === currentEvent._id) >= 0;
+            if(idx >= 0)
+                permitAddEvent = user.permited_username;
+        });
         editUserEvent();
+    }
     if (document.getElementById('titleModifyEvent').innerHTML === 'צור אירוע חדש') {
         addUserEvent(event, permitAddEvent);
     }
