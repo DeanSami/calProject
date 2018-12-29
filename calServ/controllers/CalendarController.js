@@ -106,12 +106,15 @@ module.exports = (app) => {
         const user = await User.findOne({ username: username, token: token });
 
         if (user) {
-
+            
             const event = await Event.findOne({ _id: id });
-
+            
             if (event) {
                 const event_owner = await User.findOne( { username: event.owner });
-                if (event.owner == user.username || user.theyPermit.findIndex(id => id.equals(event_owner._id)) > -1 ) {
+                if (event.owner == user.username ||
+                    (user.theyPermit.findIndex(id => id.equals(event_owner._id)) > -1 &&
+                    event_owner.iPermit.findIndex(id => id.equals(user._id)) > -1)
+                    ) {
 
                     await Event.deleteOne({ _id: id });
 
