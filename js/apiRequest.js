@@ -1,6 +1,32 @@
 let recaptcha = false;
-$(document).ready(function () {
-    // $('#submit_form').prop('disabled', true);
+
+$(document).ready(() => {
+    let eyePassword =  $(".toggle-password");
+    eyePassword.mousedown(() => {
+        eyePassword.toggleClass("fa-eye");
+        eyePassword.removeClass("fa-eye-slash");
+        let input = document.querySelector('.field-login-password');
+        input.type = 'text';
+    });
+    eyePassword.mouseup(() => {
+        eyePassword.toggleClass("fa-eye-slash");
+        eyePassword.removeClass("fa-eye");
+        let input = document.querySelector('.field-login-password');
+        input.type = 'password';
+    });
+    let eyePassword2 =  $(".toggle-password2");
+    eyePassword2.mousedown(() => {
+        eyePassword2.toggleClass("fa-eye");
+        eyePassword2.removeClass("fa-eye-slash");
+        let input = document.querySelector('.field-login-password2');
+        input.type = 'text';
+    });
+    eyePassword2.mouseup(() => {
+        eyePassword2.toggleClass("fa-eye-slash");
+        eyePassword2.removeClass("fa-eye");
+        let input = document.querySelector('.field-login-password2');
+        input.type = 'password';
+    });
 });
 
 function login(username, password) {

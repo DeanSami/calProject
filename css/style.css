@@ -295,3 +295,11 @@ body {
 .descriptionGlobalEventDialog {
     padding-right: 15px;
 }
+
+.field-icon {
+    margin-right: -25px;
+    margin-top: 5px;
+    position: absolute;
+    z-index: 10;
+    left: 0;
+}

@@ -1,7 +1,22 @@
 <!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
-    <title>calendar - login</title>
+    <title>#CAL - התחברות</title>
+    <link rel="shortcut icon" type="image/x-icon" href="icon-cal.png" />
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-21187946-2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'UA-21187946-2');
+    </script>
 
     <!--jQuery-->
     <script src="lib/jquery/moment.min.js"></script>
@@ -44,7 +59,8 @@
         <div class="form-group">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                <input type="text" class="form-control" name="password" placeholder="סיסמה" required="required">
+                <input type="password" class="form-control field-login-password" name="password" placeholder="סיסמה" required="required">
+                <span toggle="#password-field" class="fa fa-fw fa-eye-slash field-icon toggle-password"></span>
             </div>
         </div>
         <div class="form-group">
@@ -53,11 +69,15 @@
         </div>
         <div class="form-group">
             <button onclick="login(username.value,password.value)" type="button"
-                    class="btn btn-primary btn-block btn-lg" id="submit_form" disabled>התחבר</button>
+                    class="btn btn-primary btn-block btn-lg" id="submit_form" disabled>התחבר
+            </button>
         </div>
-            <p class="text-right">לא רשום? <a href="register.html" class="text-primary" >הירשם עכשיו!</a></p>
+        <p class="text-right">לא רשום? <a href="register.html" class="text-primary">הירשם עכשיו!</a></p>
     </form>
 
+</div>
+<div class="copyright text-dark text-center pt-2">
+    <p class="text-center">© כל הזכויות שמורות - #CAL קבוצה 20 יסודות תוכנה</p>
 </div>
 </body>
 </html>

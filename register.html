@@ -1,7 +1,22 @@
 <!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
-    <title>calendar - register</title>
+    <title>#CAL - הרשמה</title>
+    <link rel="shortcut icon" type="image/x-icon" href="icon-cal.png" />
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-21187946-2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'UA-21187946-2');
+    </script>
 
     <!--jQuery-->
     <script src="lib/jquery/moment.min.js"></script>
@@ -50,7 +65,8 @@
         <div class="form-group">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                <input type="text" class="form-control" name="password" placeholder="סיסמה">
+                <input type="password" class="form-control field-login-password" name="password" placeholder="סיסמה">
+                <span toggle="#password-field" class="fa fa-fw fa-eye-slash field-icon toggle-password"></span>
             </div>
         </div>
         <div class="form-group">
@@ -58,12 +74,13 @@
 				<span class="input-group-addon">
 					<i class="fa fa-lock"></i>
 				</span>
-                <input type="text" class="form-control" name="confirm_password" placeholder="אשר סיסמה">
+                <input type="password" class="form-control field-login-password2" name="confirm_password" placeholder="אשר סיסמה">
+                <span toggle="#password-field" class="fa fa-fw fa-eye-slash field-icon toggle-password2"></span>
             </div>
         </div>
-            <input type="checkbox" onclick="PopDetailsEditor()" id="checkEditor" name="checkEditor">
-        <label class="text-primary" >הירשם כעורך תוכן</label>
-        <div class="form-group editorDetails" >
+        <input type="checkbox" onclick="PopDetailsEditor()" id="checkEditor" name="checkEditor">
+        <label class="text-primary">הירשם כעורך תוכן</label>
+        <div class="form-group editorDetails">
 
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-list"></i></span>
@@ -72,7 +89,7 @@
             </div>
 
         </div>
-        <div  class="form-group editorDetails">
+        <div class="form-group editorDetails">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
                 <input type="text" class="form-control" name="experience" placeholder="שנות ניסיון">
@@ -94,8 +111,11 @@
             })" class="btn btn-primary btn-block btn-lg" id="submit_form" type="button" disabled>הירשם
             </button>
         </div>
-        <p class="text-right">כבר רשום?<a href="login.html" class="text-primary" >התחבר עכשיו!</a></p>
+        <p class="text-right">כבר רשום?<a href="login.html" class="text-primary">התחבר עכשיו!</a></p>
     </form>
+</div>
+<div class="copyright text-dark text-center pt-2">
+    <p class="text-center">© כל הזכויות שמורות - #CAL קבוצה 20 יסודות תוכנה</p>
 </div>
 </body>
 </html>
