@@ -51,7 +51,7 @@ function login(username, password) {
                 window.localStorage.setItem('username', res.username);
                 window.localStorage.setItem('token', res.token);
                 toastr["success"](res.message);
-                window.location.assign('index.html')
+                window.location.assign('index.html');
             }
             else {
                 toastr["error"](res.message);

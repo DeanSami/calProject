@@ -298,7 +298,7 @@ function editUser() {
             $('#editUserModal').modal('hide');
         }
         else
-            toastr["success"](res.message);
+            toastr["error"](res.message);
     }).catch(() => toastr["error"]('ארעה שגיאה'));
 
 }

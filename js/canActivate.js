@@ -21,7 +21,6 @@ $(document).ready(() => {
                                 break;
                             case 'admin':
                                 currentUserDiv.html('<a href="admin-panel.html" alt="פאנל ניהול מנהל">מנהל</a> מחובר');
-
                                 break;
                         }
                         switch(currentUrl[currentUrl.length - 1]) {
