@@ -61,6 +61,7 @@ module.exports = (app) => {
 
                     let awaiting_requests = await EventRequest.find({ editorRequesting: username });
                     response.awaiting_requests = awaiting_requests;
+                    response.categories = editor.category[0];
                 }
             }
 
