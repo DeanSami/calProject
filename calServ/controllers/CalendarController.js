@@ -108,7 +108,7 @@ module.exports = (app) => {
         if (user) {
             
             const event = await Event.findOne({ _id: id });
-            
+            console.log(id);
             if (event) {
                 const event_owner = await User.findOne( { username: event.owner });
                 if (event.owner == user.username ||

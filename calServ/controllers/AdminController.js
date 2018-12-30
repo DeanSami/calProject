@@ -4,6 +4,8 @@ const RegisterRequest = require('../models/RegisterRequest');
 const EventRequest = require('../models/EventRequest');
 const GlobalEvent = require('../models/GlobalEvent');
 const RejectedRequest = require('../models/RejectedRequest');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 module.exports = (app) => {
 
@@ -297,7 +299,7 @@ module.exports = (app) => {
 
                 if (user) {
 
-                    if (password) user.password = password;
+                    if (password) user.password = bcrypt.hashSync(password, saltRounds);
                     if (fullname) user.fullname = fullname;
 
                     await user.save();
