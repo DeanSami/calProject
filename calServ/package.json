@@ -4,18 +4,21 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "ECHO no error"
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^3.0.3",
     "body-parser": "^1.18.3",
+    "chai": "^4.2.0",
+    "chai-http": "^4.2.0",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "express-validator": "^5.3.0",
     "jsonwebtoken": "^8.4.0",
     "mocha": "^5.2.0",
-    "mongoose": "^5.3.13"
+    "mongoose": "^5.3.13",
+    "sinon": "^7.2.2"
   }
 }

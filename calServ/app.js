@@ -33,3 +33,5 @@ GlobalCalendarRoutes(app);
 app.listen(app.get('PORT'), () => {
     console.log('Server is listening on ' + app.get('PORT'));
 });
+
+module.exports = { app, mongoose };

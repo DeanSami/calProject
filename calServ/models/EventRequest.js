@@ -8,6 +8,7 @@ let EventRequestSchema = new Schema({
     },
     title: {
         type: String,
+        default: '',
         required: false
     },
     start: {
