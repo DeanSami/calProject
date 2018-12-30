@@ -15,7 +15,8 @@ let GlobalEventSchema = new Schema({
     },
     title: {
         type: String,
-        require: true
+        default: '',
+        require: false
     },
     start: {
         type: Date, 
