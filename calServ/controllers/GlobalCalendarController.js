@@ -8,7 +8,7 @@ const RejectedRequest = require('../models/RejectedRequest');
 
 module.exports = (app) => {
 
-    app.post('/globalCal', async (req, res) => {
+    app.post('/globalCal', async (req, res) => { //show globle event
 
         let response = {};
 

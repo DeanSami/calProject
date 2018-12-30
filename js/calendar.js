@@ -48,6 +48,7 @@ function loadCalendar() {
                 document.getElementById('titleModifyEvent').innerHTML = 'צור אירוע חדש';
                 document.getElementById('submitButton').innerHTML = 'צור אירוע';
                 $('#deleteButton').hide();
+                allDay = false;
                 if (endDate === null || (moment(startDate).utc().format('HH:mm:ss') === '00:00:00' && moment(endDate).utc().format('HH:mm:ss') === '00:00:00'))
                     allDay = true;
                 document.getElementById('startDate').value = allDay ? startDate.utc().format('DD/MM/YYYY') + ' (כל היום) ' : startDate.utc().format('HH:mm DD/MM/YYYY');

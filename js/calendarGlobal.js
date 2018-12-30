@@ -67,6 +67,7 @@ function loadGlobalCalendar() {
                 document.getElementById('startDate').value = moment(event.start).format('DD/MM/YYYY');
                 document.getElementById('title').value = event.title.toString();
                 document.getElementById('eventDescription').value = event.description;
+                document.getElementById('reasonEdit').value = '';
                 if (event.end)
                     document.getElementById('endDate').value = moment(event.end).format('DD/MM/YYYY');
                 else

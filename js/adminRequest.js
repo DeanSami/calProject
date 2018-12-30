@@ -218,7 +218,8 @@ function filterEventTable(key) {
                 node.removeChild(node.lastChild);
             if ('content' in document.createElement('template')) {
                 for (let i = 0; i < eventRequest.length; i++) {
-                    if (eventRequest[i].title.search(key) >= 0 || eventRequest[i].reason.search(key) >= 0 || key === '.') {
+                    let kind = eventRequest[i].delete ? 'מחיקה' : 'עריכה';
+                    if (eventRequest[i].title.search(key) >= 0 || eventRequest[i].reason.search(key) >= 0 || key === '.' || kind.search(key) >= 0) {
                         let t = document.querySelector('#eventRequestTemplate');
                         let tb = document.getElementById("eventRequest");
 
@@ -466,7 +467,7 @@ function adminReports() {
         case 'דוח עורכי תוכן':
             columnReportsTable = ["#", "שם מלא", "שם משתמש", "תאריך הרשמה", "סוג משתמש"];
             users.forEach((user) => {
-                if (user.permission === 'editor' && (start === '' || end === '') || moment(user.registeredAt) >= moment(start) && moment(user.registeredAt) <= moment(end)) {
+                if (user.permission === 'editor' && ((start === '' || end === '') || moment(user.registeredAt) >= moment(start) && moment(user.registeredAt) <= moment(end))) {
                     eventReports.push(
                         [user.fullname, user.username, moment(user.registeredAt).format('DD/MM/YYYY'), user.permission]
                     );
