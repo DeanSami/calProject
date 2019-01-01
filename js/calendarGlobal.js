@@ -139,7 +139,10 @@ function setFilter() {
         categoryOptionList.add(new Option(category.categoryName, category.categoryName, false));
         categoryFilter.push(category.categoryName);
     });
-    categoryFilterDialog.add(new Option(categories, categories, false));
+    if(resEvents.permission === 'admin')
+        categories.forEach(category => categoryFilterDialog.add(new Option(category, category, false)));
+    else
+        categoryFilterDialog.add(new Option(categories, categories, false));
     places.forEach(place => {
             placeOptionList.add(new Option(place, place, false));
             placeFilterDialog.add(new Option(place, place, false));
