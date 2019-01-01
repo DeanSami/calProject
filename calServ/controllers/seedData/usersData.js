@@ -7,21 +7,21 @@ let users = [
     },
     {
         username: "dorz@cal.co.il",
-        password: "321",
+        password: "123",
         fullname: "Dor Shushan",
-        permission: "editor"
+        permission: "admin"
     },
     {
         username: "edenz@cal.co.il",
-        password: "213",
+        password: "123",
         fullname: "Eden Ohana",
-        permission: "user"
+        permission: "admin"
     },
     {
         username: "ofekz@cal.co.il",
-        password: "132",
+        password: "123",
         fullname: "Ofek Talker",
-        permission: "user"
+        permission: "admin"
     }
 ];
 

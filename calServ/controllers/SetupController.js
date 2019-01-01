@@ -11,8 +11,8 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 const usersData = require('./seedData/usersData');
-const eventsData = require('./seedData/eventData');
-const editorsData = require('./seedData/editorsData');
+// const eventsData = require('./seedData/eventData');
+// const editorsData = require('./seedData/editorsData');
 
 module.exports = (app) => {
 
@@ -26,13 +26,11 @@ module.exports = (app) => {
         });
 
         let users = await User.create(usersData);
-        let events = await Event.create(eventsData);
-        let editors = await Editor.create(editorsData);
-        if (users && events && editors) {
+        // let events = await Event.create(eventsData);
+        // let editors = await Editor.create(editorsData);
+        if (users) {
             response.success = 'true';
             response.users = users;
-            response.events = events;
-            response.editors = editors;
         }
         res.json(response);
     });
