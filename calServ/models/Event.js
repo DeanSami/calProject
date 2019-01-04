@@ -20,7 +20,7 @@ let EventSchema = new Schema({
     },
     start: {
         type: Date,
-        default: Date.now(),
+        default: new Date(),
         required: false
     },
     end: {

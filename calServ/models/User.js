@@ -23,7 +23,7 @@ let UserSchema = new Schema({
     },
     registeredAt: {
         type: Date,
-        default: Date.now(),
+        default: new Date(),
         required: false
     },
     loggedInAt: {

@@ -26,7 +26,7 @@ let RegisterRequestSchema = new Schema({
     createdAt: {
         type: Date,
         required: false,
-        default: Date.now()
+        default: new Date()
     }
 });
 

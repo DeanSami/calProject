@@ -69,12 +69,11 @@ module.exports = (app) => {
 
                     const hash = bcrypt.hashSync(password, saltRounds);
                     
-                    await User.create({
+                    const user = await User.create({
                         username: username,
                         password: hash,
                         fullname: fullname
                     });
-
                     if (editor) {
                         if (category && experience) {
 
@@ -140,10 +139,10 @@ module.exports = (app) => {
             if (bcrypt.compareSync(password, user.password)) {
 
                 const   cert    = fs.readFileSync('private.key'),
-                        token   = await jwt.sign({ username: user.username, loggedInAt: Date.now().toString() }, cert, { algorithm: 'RS256', expiresIn: '1h' }),
+                        token   = await jwt.sign({ username: user.username, loggedInAt: (new Date()).toString() }, cert, { algorithm: 'RS256', expiresIn: '1h' }),
                         msg = 'ברוך הבא, '.concat(username);
 
-                user.loggedInAt.push(Date.now());
+                user.loggedInAt.push(new Date());
                 user.token = token;
 
                 await user.save();
