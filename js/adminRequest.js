@@ -124,9 +124,10 @@ function buildUserTable() {
                     td = clone.querySelectorAll("td");
                     td[0].textContent = (i + 1).toString();
                     td[1].textContent = users[i].fullname;
-                    td[2].textContent = moment(users[i].registeredAt).format('DD/MM/YYYY');
-                    td[3].textContent = users[i].username;
-                    td[4].innerHTML =
+                    td[2].textContent = users[i].permission;
+                    td[3].textContent = moment(users[i].registeredAt).format('DD/MM/YYYY');
+                    td[4].textContent = users[i].username;
+                    td[5].innerHTML =
                         `<button type="button" class="btn btn-success mr-2" id="acceptRequestButton"` +
                         `onclick='editUserMode("${users[i].username}", "${users[i].fullname}")'> ערוך</button>` +
                         `<button type="button" class="btn btn-danger mr-2"` +
@@ -158,9 +159,10 @@ function filterUserTable(key) {
                         td = clone.querySelectorAll("td");
                         td[0].textContent = (i + 1).toString();
                         td[1].textContent = users[i].fullname;
-                        td[2].textContent = moment(users[i].registeredAt).format('DD/MM/YYYY');
-                        td[3].textContent = users[i].username;
-                        td[4].innerHTML =
+                        td[2].textContent = users[i].permission;
+                        td[3].textContent = moment(users[i].registeredAt).format('DD/MM/YYYY');
+                        td[4].textContent = users[i].username;
+                        td[5].innerHTML =
                             `<button type="button" class="btn btn-success mr-2"` +
                             `onclick='editUserMode("${users[i].username}", "${users[i].fullname}")'>ערוך</button>` +
                             `<button type="button" class="btn btn-danger mr-2"` +

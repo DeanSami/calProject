@@ -56,6 +56,8 @@ $(document).ready(() => {
                 if (currentUrl[currentUrl.length - 1] !== 'login.html' && currentUrl[currentUrl.length - 1] !== 'register.html')
                     window.location.assign('login.html');
                 else {
+                    if(currentUrl[currentUrl.length - 1] === 'register.html')
+                        setRegisterCategory();
                     $("#loading").hide(1000);
                 }
                 $(".user-form").show(1000);

@@ -1,7 +1,7 @@
 let recaptcha = false;
 
 $(document).ready(() => {
-    let eyePassword =  $(".toggle-password");
+    let eyePassword = $(".toggle-password");
     eyePassword.mousedown(() => {
         eyePassword.toggleClass("fa-eye");
         eyePassword.removeClass("fa-eye-slash");
@@ -14,7 +14,7 @@ $(document).ready(() => {
         let input = document.querySelector('.field-login-password');
         input.type = 'password';
     });
-    let eyePassword2 =  $(".toggle-password2");
+    let eyePassword2 = $(".toggle-password2");
     eyePassword2.mousedown(() => {
         eyePassword2.toggleClass("fa-eye");
         eyePassword2.removeClass("fa-eye-slash");
@@ -29,73 +29,104 @@ $(document).ready(() => {
     });
 });
 
+function validLogin(username, password) {
+    if (username && password)
+        return !(password.length > 20 || username.length > 30 || username.length < 6);
+    else
+        return false
+}
+
+function validRegister() {
+    fullname = $('.field-register-fullname');
+    username = $('.field-register-username');
+    password = $('.field-login-password');
+    password2 = $('.field-login-password2');
+    experience = $('.field-register-experience');
+    if (username.val() && password.val() && fullname.val() && password2.val()) {
+        return !(password.val().length > 20 || password2.val().length > 20 || password.val().length < 6 || password2.val().length < 6 ||
+            username.val().length > 30 || username.val().length < 6 ||
+            fullname.val().length > 25 || fullname.val().length < 4 );
+    }
+    else
+        return false
+}
+
 function login(username, password) {
-        let xhttp = new XMLHttpRequest();
-        xhttp.open("POST", url + "/login");
-        xhttp.setRequestHeader("Content-Type", "application/json");
-        if(recaptcha) {
-        new Promise((resolve, reject) => {
-            xhttp.onreadystatechange = () => {
-                if (xhttp.readyState === 4) {
-                    if (xhttp.status === 200)
-                        resolve(JSON.parse(xhttp.responseText));
-                    reject(null);
+    let xhttp = new XMLHttpRequest();
+    xhttp.open("POST", url + "/login");
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    if (recaptcha) {
+        if (validLogin(username, password)) {
+            new Promise((resolve, reject) => {
+                xhttp.onreadystatechange = () => {
+                    if (xhttp.readyState === 4) {
+                        if (xhttp.status === 200)
+                            resolve(JSON.parse(xhttp.responseText));
+                        reject(null);
+                    }
+                };
+                xhttp.send(JSON.stringify({
+                    username: username,
+                    password: password
+                }));
+            }).then(res => {
+                if (res.success === 'true') {
+                    window.localStorage.setItem('username', res.username);
+                    window.localStorage.setItem('token', res.token);
+                    toastr["success"](res.message);
+                    window.location.assign('index.html');
                 }
-            };
-            xhttp.send(JSON.stringify({
-                username: username,
-                password: password
-            }));
-        }).then(res => {
-            if (res.success === 'true') {
-                window.localStorage.setItem('username', res.username);
-                window.localStorage.setItem('token', res.token);
-                toastr["success"](res.message);
-                window.location.assign('index.html');
-            }
-            else {
-                toastr["error"](res.message);
-            }
-        }).catch(() => toastr["error"]('אין גישה לשרת'));
+                else {
+                    toastr["error"](res.message);
+                }
+            }).catch(() => toastr["error"]('אין גישה לשרת'));
         }
         else
-            toastr["error"]('זיהוי אנושיות לא תקין');
+            toastr["error"]('שדות לא תקינים');
+    }
+    else
+        toastr["error"]('זיהוי אנושיות לא תקין');
 }
 
 function register(data) {
-        let xhttp = new XMLHttpRequest();
-        xhttp.open("POST", url + "/register");
-        xhttp.setRequestHeader("Content-Type", "application/json");
+    let xhttp = new XMLHttpRequest();
+    xhttp.open("POST", url + "/register");
+    xhttp.setRequestHeader("Content-Type", "application/json");
 
-        if(recaptcha){
-        new Promise((resolve, reject) => {
-            xhttp.onreadystatechange = () => {
-                if (xhttp.readyState === 4) {
-                    if (xhttp.status === 200)
-                        resolve(JSON.parse(xhttp.responseText));
-                    reject(null);
+    if (recaptcha) {
+        if (validRegister()) {
+            new Promise((resolve, reject) => {
+                xhttp.onreadystatechange = () => {
+                    if (xhttp.readyState === 4) {
+                        if (xhttp.status === 200)
+                            resolve(JSON.parse(xhttp.responseText));
+                        reject(null);
+                    }
+                };
+                xhttp.send(JSON.stringify({
+                    fullname: data.fullname,
+                    password: data.password,
+                    password2: data.password2,
+                    username: data.username,
+                    editor: data.editor,
+                    category: data.category,
+                    experience: data.experience
+                }));
+            }).then(res => {
+                if (res.success === 'true') {
+                    toastr["success"](res.message);
+                    setTimeout(() => login(data.username, data.password), 2000);
                 }
-            };
-            xhttp.send(JSON.stringify({
-                fullname: data.fullname,
-                password: data.password,
-                password2: data.password2,
-                username: data.username,
-                editor: data.editor,
-                category: data.category,
-                experience: data.experience
-            }));
-        }).then(res => {
-            if (res.success === 'true') {
-                toastr["success"](res.message);
-                setTimeout(() => login(data.username,data.password), 2000);
-            }
-            else
-                toastr["error"](res.message);
-        }).catch(() => toastr["error"]('אין גישה לשרת'));
+                else
+                    toastr["error"](res.message);
+            }).catch(() => toastr["error"]('אין גישה לשרת'));
         }
         else
-            toastr["error"]('זיהוי אנושיות לא תקין');
+            toastr["error"]('שדות לא תקינים');
+
+    }
+    else
+        toastr["error"]('זיהוי אנושיות לא תקין');
 }
 
 function getUserEvents() {
@@ -108,7 +139,7 @@ function getUserEvents() {
         xhttp.open("POST", url + "/calendar");
         xhttp.setRequestHeader("Content-Type", "application/json");
 
-        return new Promise((resolve,reject) => {
+        return new Promise((resolve, reject) => {
             xhttp.onreadystatechange = () => {
                 if (xhttp.readyState === 4) {
                     if (xhttp.status === 200)
@@ -125,23 +156,23 @@ function getUserEvents() {
 }
 
 function apiAddUserEvent(event, permitAddEvent) {
-    if (!event){
+    if (!event) {
         toastr["error"]('ארעה שגיאה');
         return null;
     } else {
         let xhttp = new XMLHttpRequest();
-        if(permitAddEvent === '')
+        if (permitAddEvent === '')
             xhttp.open("PUT", url + "/calendar/" + permitAddEvent);
         else
             xhttp.open("PUT", url + "/permitedCalendar/" + permitAddEvent);
 
         xhttp.setRequestHeader("Content-Type", "application/json");
 
-        return new Promise((resolve,reject) => {
+        return new Promise((resolve, reject) => {
             xhttp.onreadystatechange = () => {
                 if (xhttp.readyState === 4) {
-                    if (xhttp.status === 200){
-                            resolve(JSON.parse(xhttp.responseText));
+                    if (xhttp.status === 200) {
+                        resolve(JSON.parse(xhttp.responseText));
                     }
                     else
                         reject();
@@ -158,7 +189,7 @@ function apiAddUserEvent(event, permitAddEvent) {
 }
 
 function apiEditUserEvent(event) {
-    if (!event){
+    if (!event) {
         toastr["error"]('ארעה שגיאה');
         return null;
     } else {
@@ -166,10 +197,10 @@ function apiEditUserEvent(event) {
         xhttp.open("POST", url + "/calendar/" + event._id);
         xhttp.setRequestHeader("Content-Type", "application/json");
 
-        return new Promise((resolve,reject) => {
+        return new Promise((resolve, reject) => {
             xhttp.onreadystatechange = () => {
                 if (xhttp.readyState === 4) {
-                    if (xhttp.status === 200){
+                    if (xhttp.status === 200) {
                         resolve(JSON.parse(xhttp.responseText));
                     }
                     else
@@ -188,7 +219,7 @@ function apiEditUserEvent(event) {
 }
 
 function apiDeleteUserEvent(event) {
-    if (!event){
+    if (!event) {
         toastr["error"]('ארעה שגיאה');
         return null;
     } else {
@@ -196,10 +227,10 @@ function apiDeleteUserEvent(event) {
         xhttp.open("DELETE", url + "/calendar/" + event._id);
         xhttp.setRequestHeader("Content-Type", "application/json");
 
-        return new Promise((resolve,reject) => {
+        return new Promise((resolve, reject) => {
             xhttp.onreadystatechange = () => {
                 if (xhttp.readyState === 4) {
-                    if (xhttp.status === 200){
+                    if (xhttp.status === 200) {
                         resolve(JSON.parse(xhttp.responseText));
                     }
                     else
@@ -215,26 +246,26 @@ function apiDeleteUserEvent(event) {
 }
 
 function apiGivePermissionsRequest(userName) {
-        let xhttp = new XMLHttpRequest();
-        xhttp.open("POST", url + "/permitedCalendar/givepermissions");
-        xhttp.setRequestHeader("Content-Type", "application/json");
+    let xhttp = new XMLHttpRequest();
+    xhttp.open("POST", url + "/permitedCalendar/givepermissions");
+    xhttp.setRequestHeader("Content-Type", "application/json");
 
-        return new Promise((resolve,reject) => {
-            xhttp.onreadystatechange = () => {
-                if (xhttp.readyState === 4) {
-                    if (xhttp.status === 200){
-                        resolve(JSON.parse(xhttp.responseText));
-                    }
-                    else
-                        reject();
+    return new Promise((resolve, reject) => {
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === 4) {
+                if (xhttp.status === 200) {
+                    resolve(JSON.parse(xhttp.responseText));
                 }
-            };
-            xhttp.send(JSON.stringify({
-                username: window.localStorage.getItem('username'),
-                token: window.localStorage.getItem('token'),
-                permiteduname: userName
-            }));
-        });
+                else
+                    reject();
+            }
+        };
+        xhttp.send(JSON.stringify({
+            username: window.localStorage.getItem('username'),
+            token: window.localStorage.getItem('token'),
+            permiteduname: userName
+        }));
+    });
 }
 
 function apiRemovePermissionsRequest(userName) {
@@ -242,10 +273,10 @@ function apiRemovePermissionsRequest(userName) {
     xhttp.open("DELETE", url + "/permitedCalendar/removepermission/" + userName);
     xhttp.setRequestHeader("Content-Type", "application/json");
 
-    return new Promise((resolve,reject) => {
+    return new Promise((resolve, reject) => {
         xhttp.onreadystatechange = () => {
             if (xhttp.readyState === 4) {
-                if (xhttp.status === 200){
+                if (xhttp.status === 200) {
                     resolve(JSON.parse(xhttp.responseText));
                 }
                 else
@@ -260,25 +291,25 @@ function apiRemovePermissionsRequest(userName) {
 }
 
 function apiGetPermissionEvent(userName) {
-        let xhttp = new XMLHttpRequest();
-        xhttp.open("POST", url + "/permitedCalendar/getEvents/" + userName);
-        xhttp.setRequestHeader("Content-Type", "application/json");
+    let xhttp = new XMLHttpRequest();
+    xhttp.open("POST", url + "/permitedCalendar/getEvents/" + userName);
+    xhttp.setRequestHeader("Content-Type", "application/json");
 
-        return new Promise((resolve,reject) => {
-            xhttp.onreadystatechange = () => {
-                if (xhttp.readyState === 4) {
-                    if (xhttp.status === 200){
-                        resolve(JSON.parse(xhttp.responseText));
-                    }
-                    else
-                        reject();
+    return new Promise((resolve, reject) => {
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === 4) {
+                if (xhttp.status === 200) {
+                    resolve(JSON.parse(xhttp.responseText));
                 }
-            };
-            xhttp.send(JSON.stringify({
-                username: window.localStorage.getItem('username'),
-                token: window.localStorage.getItem('token')
-            }));
-        });
+                else
+                    reject();
+            }
+        };
+        xhttp.send(JSON.stringify({
+            username: window.localStorage.getItem('username'),
+            token: window.localStorage.getItem('token')
+        }));
+    });
 }
 
 function recaptcha_callback() {
@@ -286,9 +317,10 @@ function recaptcha_callback() {
     $('#submit_form').prop('disabled', false);
 }
 
-function PopDetailsEditor(){
-    if(!document.getElementById("checkEditor").checked){
-        $(".editorDetails").hide();}
+function PopDetailsEditor() {
+    if (!document.getElementById("checkEditor").checked) {
+        $(".editorDetails").hide();
+    }
 
     else {
         $(".editorDetails").show();
@@ -300,10 +332,10 @@ function apiGetCategory() {
     xhttp.open("GET", url + "/categories");
     xhttp.setRequestHeader("Content-Type", "application/json");
 
-    return new Promise((resolve,reject) => {
+    return new Promise((resolve, reject) => {
         xhttp.onreadystatechange = () => {
             if (xhttp.readyState === 4) {
-                if (xhttp.status === 200){
+                if (xhttp.status === 200) {
                     resolve(JSON.parse(xhttp.responseText));
                 }
                 else

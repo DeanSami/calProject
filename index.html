@@ -81,7 +81,7 @@
                     <div class="card-body">
                         <div class="pb-2">
                             <label for="givePermissions">שם משתמש</label>
-                            <input type="text" id="givePermissions" class="form-control">
+                            <input type="text" maxlength="35" minlength="6" id="givePermissions" class="form-control">
                         </div>
                         <button class="btn btn-block" onclick="givePermissions()">הוסף הרשאות</button>
                         <button class="btn btn-block" onclick="removePermissions()">הסר הרשאות</button>
@@ -132,9 +132,9 @@
 
                         <div>
                             <label for="startDateReports">תאריך התחלה</label>
-                            <input type="text" id="startDateReports" class="form-control">
+                            <input type="text" maxlength="15" id="startDateReports" class="form-control">
                             <label for="endDateReports">תאריך סיום</label>
-                            <input type="text" id="endDateReports" class="form-control">
+                            <input type="text" maxlength="15" id="endDateReports" class="form-control">
                             <label for="reportSelect">דוחות</label>
                             <select id="reportSelect" class="custom-select custom-select mb-2">
                                 <option>בחר דוח</option>
@@ -172,24 +172,24 @@
             <div id="modalBody" class="modal-body">
                 <div class="form-group">
                     <div class="input-group">
-                        <input type="text" class="form-control" id="title" placeholder="שם אירוע"
+                        <input type="text" maxlength="20" class="form-control" id="title" placeholder="שם אירוע"
                                required="required">
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="input-group date">
-                        <input type="text" class="form-control" id="startDate" placeholder="" required="required"
+                        <input type="text" maxlength="20" class="form-control" id="startDate" placeholder="" required="required"
                                disabled>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="input-group date">
-                        <input type="text" class="form-control" id="endDate" placeholder="" disabled>
+                        <input type="text" maxlength="20" class="form-control" id="endDate" placeholder="" disabled>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="input-group date">
-                        <textarea class="form-control" type="text" rows="4" placeholder="פרטי אירוע"
+                        <textarea class="form-control" maxlength="50" type="text" rows="4" placeholder="פרטי אירוע"
                                   id="eventDescription"></textarea>
                     </div>
                 </div>

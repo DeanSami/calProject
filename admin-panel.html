@@ -91,7 +91,7 @@
                     <div id="searchRegisterRequest">
                         <label for="searchRegisterRequestInput">טקסט לחיפוש</label>
                         <div class="actUserFilter">
-                            <input type="text" id="searchRegisterRequestInput" class="form-control mr-2"
+                            <input type="text" maxlength="20" id="searchRegisterRequestInput" class="form-control mr-2"
                                    name="searchRegisterRequestInput">
                             <button class="btn mr-2" onclick="filterRegisterTable(searchRegisterRequestInput.value)">חפש
                             </button>
@@ -130,7 +130,7 @@
                     <div id="searchEventRequest">
                         <label for="searchEventRequestInput">טקסט לחיפוש</label>
                         <div class="actUserFilter">
-                            <input type="text" id="searchEventRequestInput" class="form-control mr-2"
+                            <input type="text" maxlength="20" id="searchEventRequestInput" class="form-control mr-2"
                                    name="searchEventRequestInput">
                             <button class="btn mr-2" onclick="filterEventTable(searchEventRequestInput.value)">חפש
                             </button>
@@ -171,7 +171,7 @@
                     <div id="searchUser">
                         <label for="searchUserInput">טקסט לחיפוש</label>
                         <div class="actUserFilter">
-                            <input type="text" id="searchUserInput" class="form-control mr-2" name="searchUserInput">
+                            <input type="text" maxlength="20" id="searchUserInput" class="form-control mr-2" name="searchUserInput">
                             <button class="btn mr-2" onclick="filterUserTable(searchUserInput.value)">חפש</button>
                             <button class="btn" onclick="filterUserTable('.')">הצג הכל</button>
                         </div>
@@ -182,6 +182,7 @@
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">שם מלא</th>
+                                <th scope="col">סוג משתמש</th>
                                 <th scope="col">תאריך רישום</th>
                                 <th scope="col">אימייל</th>
                                 <th scope="col">פעולות</th>
@@ -196,6 +197,7 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
+                                <td></td>
                             </tr>
                         </template>
                     </div>
@@ -206,9 +208,9 @@
                 <div class="container">
                     <div>
                         <label for="startDateReports">תאריך התחלה</label>
-                        <input type="text" id="startDateReports" class="form-control" >
+                        <input type="text" maxlength="20" id="startDateReports" class="form-control" >
                         <label for="endDateReports">תאריך סיום</label>
-                        <input type="text" id="endDateReports" class="form-control" >
+                        <input type="text" maxlength="20" id="endDateReports" class="form-control" >
                         <label for="reportSelect">דוחות</label>
                         <select id="reportSelect" class="custom-select custom-select mb-2">
                             <option>בחר דוח</option>
@@ -240,12 +242,12 @@
             <div id="modalBody" class="modal-body">
                 <div class="form-group">
                     <div class="input-group">
-                        <input type="text" class="form-control" id="full-name-edit-user" placeholder="שם משתמש">
+                        <input type="text" maxlength="20" class="form-control" id="full-name-edit-user" placeholder="שם משתמש">
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="input-group date">
-                        <input type="text" class="form-control" id="password-edit-user" placeholder="סיסמה">
+                        <input type="text" maxlength="20" class="form-control" id="password-edit-user" placeholder="סיסמה">
                     </div>
                 </div>
 
