@@ -23,8 +23,8 @@ describe('POST /register', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('true');
                 res.body.message.should.equal('מעביר לדף ראשי');
+                res.body.success.should.eql('true');
                 User.deleteOne({ username: 'test@cal.co.il' }, err => {
                     if (err) console.log(err);
                     done();
@@ -41,8 +41,8 @@ describe('POST /register', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('false');
                 res.body.message.should.equal('שם משתמש חייב להיות מייל תקני');
+                res.body.success.should.eql('false');
                 done();
             })
     })
@@ -57,8 +57,8 @@ describe('POST /register', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('false');
                 res.body.message.should.equal('סיסמא חייבת להיות לפחות באורך 6');
+                res.body.success.should.eql('false');
                 done();
             })
     })
@@ -73,8 +73,8 @@ describe('POST /register', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('false');
                 res.body.message.should.equal('משתמש כבר רשום');
+                res.body.success.should.eql('false');
                 done();
             })
     })
@@ -90,8 +90,8 @@ describe('POST /register', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('false');
                 res.body.message.should.equal('סיסמאות לא תואמות');
+                res.body.success.should.eql('false');
                 done();
             })
     })
@@ -109,10 +109,10 @@ describe('POST /login', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('true');
                 res.body.should.include.keys(
                     'success', 'message', 'username', 'token', 'permission'
                 );
+                res.body.success.should.eql('true');
                 token = res.body.token;
                 done();
             })
@@ -127,8 +127,8 @@ describe('POST /login', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('false');
                 res.body.message.should.equal('לא נמצא אימייל');
+                res.body.success.should.eql('false');
                 done();
             })
     })
@@ -143,8 +143,8 @@ describe('POST /login', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('false');
                 res.body.message.should.equal('סיסמאות לא תואמות');
+                res.body.success.should.eql('false');
                 done();
             })
     })
@@ -162,10 +162,10 @@ describe('POST /calendar', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('true');
                 res.body.should.include.keys(
                     'success', 'message', 'events', 'globalEvents', 'theyPermit', 'permission', 'loggedInAt'
                 );
+                res.body.success.should.eql('true');
                 done();
             })
     })
@@ -179,8 +179,8 @@ describe('POST /calendar', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('false');
                 res.body.message.should.equal('שגיאת משתמש');
+                res.body.success.should.eql('false');
                 done();
             })
     })
@@ -195,8 +195,8 @@ describe('POST /calendar', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('false');
                 res.body.message.should.equal('שגיאת משתמש');
+                res.body.success.should.eql('false');
                 done();
             })
     })
@@ -219,11 +219,11 @@ describe('PUT /calendar', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('true');
                 res.body.message.should.equal('אירוע נוצר בהצלחה');
                 res.body.should.include.keys(
                     'success', 'message', 'event'
                 );
+                res.body.success.should.eql('true');
                 event_id = res.body.event._id;
                 done();
             })
@@ -239,8 +239,8 @@ describe('PUT /calendar', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('false');
                 res.body.message.should.equal('שגיאת משתמש');
+                res.body.success.should.eql('false');
                 done();
             })
     })
@@ -256,8 +256,8 @@ describe('PUT /calendar', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('false');
                 res.body.message.should.equal('שגיאת משתמש');
+                res.body.success.should.eql('false');
                 done();
             })
     })
@@ -275,8 +275,8 @@ describe('post /calendar/:id', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('false');
                 res.body.message.should.equal('שגיאת משתמש');
+                res.body.success.should.eql('false');
                 done();
             })
     })
@@ -292,8 +292,8 @@ describe('post /calendar/:id', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('false');
                 res.body.message.should.equal('שגיאת משתמש');
+                res.body.success.should.eql('false');
                 done();
             })
     })
@@ -328,8 +328,8 @@ describe('post /calendar/:id', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('true');
                 res.body.message.should.equal('אירוע עודכן בהצלחה');
+                res.body.success.should.eql('true');
                 done();
             })
     })
@@ -347,8 +347,8 @@ describe('DELETE /calendar/:id', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('false');
                 res.body.message.should.equal('שגיאת משתמש');
+                res.body.success.should.eql('false');
                 done();
             })
     })
@@ -363,8 +363,8 @@ describe('DELETE /calendar/:id', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('false');
                 res.body.message.should.equal('שגיאת משתמש');
+                res.body.success.should.eql('false');
                 done();
             })
     })
@@ -394,8 +394,8 @@ describe('DELETE /calendar/:id', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('true');
                 res.body.message.should.equal('אירוע נמחק בהצלחה');
+                res.body.success.should.eql('true');
                 done();
             })
     })
@@ -414,8 +414,8 @@ describe('POST /permitedCalendar/givepermissions', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('true');
                 res.body.message.should.equal('הרשאה ניתנה בהצלחה');
+                res.body.success.should.eql('true');
                 done();
             })
     })
@@ -429,8 +429,8 @@ describe('POST /permitedCalendar/givepermissions', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('false');
                 res.body.message.should.equal('שגיאת משתמש');
+                res.body.success.should.eql('false');
                 done();
             })
     })
@@ -446,8 +446,8 @@ describe('POST /permitedCalendar/givepermissions', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('false');
                 res.body.message.should.equal('משתמש לא נמצא');
+                res.body.success.should.eql('false');
                 done();
             })
     })
@@ -463,8 +463,8 @@ describe('POST /permitedCalendar/givepermissions', () => {
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('false');
                 res.body.message.should.equal('למשתמש זה כבר קיימת הרשאה');
+                res.body.success.should.eql('false');
                 done();
             })
     })
@@ -482,8 +482,8 @@ describe('DELETE /permitedCalendar/removepermission/:username_to_remove', () => 
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('false');
                 res.body.message.should.equal('משתמש לא נמצא ברשימת מורשים');
+                res.body.success.should.eql('false');
                 done();
             })
     })
@@ -498,8 +498,8 @@ describe('DELETE /permitedCalendar/removepermission/:username_to_remove', () => 
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('false');
                 res.body.message.should.equal('שגיאה במציאת משתמש');
+                res.body.success.should.eql('false');
                 done();
             })
     })
@@ -513,8 +513,8 @@ describe('DELETE /permitedCalendar/removepermission/:username_to_remove', () => 
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('false');
                 res.body.message.should.equal('שגיאת משתמש');
+                res.body.success.should.eql('false');
                 done();
             })
     })
@@ -529,8 +529,8 @@ describe('DELETE /permitedCalendar/removepermission/:username_to_remove', () => 
                 should.not.exist(err);
                 res.status.should.equal(200);
                 res.type.should.equal('application/json');
-                res.body.success.should.eql('true');
                 res.body.message.should.equal('הרשאה הוסרה בהצלחה');
+                res.body.success.should.eql('true');
                 done();
             })
     })

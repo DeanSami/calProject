@@ -120,7 +120,7 @@ option 1: (regular running)
 
 Dor Shoshan – [@facebook](https://www.facebook.com/shoshan2) – email: dorsh3@ac.sce.ac.il <br>
 Dean Abutbul – [@facebook](https://www.facebook.com/profile.php?id=100017200627018) – email: deanab@ac.sce.ac.il <br>
-Ofek Talker – [@facebook](https://www.facebook.com/ofek.talker.3) – email: YourEmail@example.com <br>
+Ofek Talker – [@facebook](https://www.facebook.com/ofek.talker.3) – email: mailto:ofekta1@ac.sce.ac.il <br>
 Eden Ohana – [@facebook](https://www.facebook.com/eden.ohana.94) – email: edenoh2@ac.sce.ac.il <br>
 
 [git Link](https://github.com/DeanSami/calProject/tree/dor)
