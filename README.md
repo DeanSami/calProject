@@ -116,6 +116,15 @@ option 1: (regular running)
     $ node app.js
 ```
 
+
+## Development unit test
+run as root:
+```
+$ cd ~
+$ cd root/calServ/test
+$ node test.js
+```
+
 ## Meta
 
 Dor Shoshan – [@facebook](https://www.facebook.com/shoshan2) – email: dorsh3@ac.sce.ac.il <br>
