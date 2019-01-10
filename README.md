@@ -121,8 +121,8 @@ option 1: (regular running)
 run as root:
 ```
 $ cd ~
-$ cd root/calServ/test
-$ node test.js
+$ cd root/calServ
+$ npm test
 ```
 
 ## Meta
